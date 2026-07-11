@@ -3,13 +3,36 @@ const expoConfig = require("eslint-config-expo/flat");
 const tseslint = require("typescript-eslint");
 
 module.exports = defineConfig([
+  {
+    ignores: [
+      "**/.expo/**",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/coverage/**",
+      "**/.react-native/**",
+      "eslint.config.js",
+      "prettier.config.js",
+    ],
+  },
+
   expoConfig,
   ...tseslint.configs.recommended,
+
   {
-    
     rules: {
-      "no-console": ["warn", { allow: ["warn", "error"] }],
-      "no-debugger": "error",
+      "import/order": "off",
+      "sort-imports": "off",
+
+      "@typescript-eslint/array-type": "off",
+      "@typescript-eslint/require-await": "off",
+
+      "no-console": [
+        "warn",
+        {
+          allow: ["warn", "error"],
+        },
+      ],
 
       "@typescript-eslint/no-unused-vars": [
         "warn",
@@ -18,22 +41,13 @@ module.exports = defineConfig([
           varsIgnorePattern: "^_",
         },
       ],
-
-      "import/order": [
-        "warn",
-        {
-          "newlines-between": "always",
-          alphabetize: {
-            order: "asc",
-          },
-        },
-      ],
     },
+  },
 
-    ignores: [
-      "dist",
-      "node_modules",
-      ".expo",
-    ],
+  {
+    files: ["src/**/*.test.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
+    },
   },
 ]);
