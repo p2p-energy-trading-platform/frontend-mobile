@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
 
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { IconSymbol } from '@/shared/components/ui/icon-symbol';
+import { Colors } from '@/shared/constants/theme';
+import { useColorScheme } from '@/shared/hooks/use-color-scheme';
 
 const preferences = [
   {

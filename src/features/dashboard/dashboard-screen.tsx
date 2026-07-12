@@ -1,8 +1,8 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { IconSymbol } from '@/shared/components/ui/icon-symbol';
+import { Colors } from '@/shared/constants/theme';
+import { useColorScheme } from '@/shared/hooks/use-color-scheme';
 
 const metrics = [
   { label: 'Active sites', value: '24', note: '+4 this week' },
