@@ -20,7 +20,6 @@ module.exports = {
     ],
     // Keep the scope and summary lowercase.
     'scope-case': [2, 'always', 'lower-case'],
-    'subject-case': [2, 'always', 'lower-case'],
     // Commit summaries should not end with a period.
     'subject-full-stop': [2, 'never', '.'],
   },
