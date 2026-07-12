@@ -1,9 +1,9 @@
-const { defineConfig } = require('eslint/config');
-const expoConfig = require('eslint-config-expo/flat');
-const tseslint = require('typescript-eslint');
-const prettierConfig = require('eslint-config-prettier');
+import { defineConfig } from 'eslint/config';
+import expoConfig from 'eslint-config-expo/flat.js';
+import tseslint from 'typescript-eslint';
+import prettierConfig from 'eslint-config-prettier';
 
-module.exports = defineConfig([
+export default defineConfig([
   {
     ignores: [
       '**/.expo/**',
