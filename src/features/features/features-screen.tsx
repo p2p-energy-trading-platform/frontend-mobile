@@ -1,5 +1,5 @@
 import { ScrollView, Text, View } from 'react-native';
-
+import { Screen } from '@/shared/components/layout/Screen';
 import { IconSymbol } from '@/shared/components/ui/icon-symbol';
 import { Colors } from '@/shared/constants/theme';
 import { useColorScheme } from '@/shared/hooks/use-color-scheme';
@@ -29,6 +29,7 @@ export default function FeaturesScreen() {
   const theme = Colors[colorScheme];
 
   return (
+    <Screen>
     <ScrollView className="flex-1" style={{ backgroundColor: theme.background }} contentContainerClassName="gap-4 p-5">
       <View>
         <View className="mb-3 self-start flex-row items-center gap-2 rounded-full border px-3 py-2" style={{ backgroundColor: theme.surface, borderColor: theme.border }}>
@@ -81,5 +82,6 @@ export default function FeaturesScreen() {
         </View>
       </View>
     </ScrollView>
+    </Screen>
   );
 }

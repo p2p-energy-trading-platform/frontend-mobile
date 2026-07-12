@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
-
+import { Screen } from '@/shared/components/layout/Screen';
 import { IconSymbol } from '@/shared/components/ui/icon-symbol';
 import { Colors } from '@/shared/constants/theme';
 import { useColorScheme } from '@/shared/hooks/use-color-scheme';
@@ -29,6 +29,7 @@ export default function SettingsScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   return (
+    <Screen>
     <ScrollView className="flex-1" style={{ backgroundColor: theme.background }} contentContainerClassName="gap-4 p-5">
       <View className="gap-4 rounded-[28px] border p-4" style={{ backgroundColor: theme.surface, borderColor: theme.border }}>
         <View className="flex-row items-center gap-3.5">
@@ -68,5 +69,6 @@ export default function SettingsScreen() {
         </View>
       </View>
     </ScrollView>
+    </Screen>
   );
 }

@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
-
+import { Screen } from '@/shared/components/layout/Screen';
 import { IconSymbol } from '@/shared/components/ui/icon-symbol';
 import { Colors } from '@/shared/constants/theme';
 import { useColorScheme } from '@/shared/hooks/use-color-scheme';
@@ -21,6 +21,7 @@ export default function DashboardScreen() {
   const theme = Colors[colorScheme];
 
   return (
+    <Screen>
     <ScrollView className="flex-1" style={{ backgroundColor: theme.background }} contentContainerClassName="gap-4 p-5">
       <View className="gap-4 rounded-[28px] border p-[18px]" style={{ backgroundColor: theme.surface, borderColor: theme.border }}>
         <View className="flex-row items-center justify-between gap-3">
@@ -80,5 +81,6 @@ export default function DashboardScreen() {
         ))}
       </View>
     </ScrollView>
+    </Screen>
   );
 }
