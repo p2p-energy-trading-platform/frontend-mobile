@@ -30,39 +30,39 @@ export default function SettingsScreen() {
 
   return (
     <Screen>
-    <ScrollView className="flex-1" style={{ backgroundColor: theme.background }} contentContainerClassName="gap-4 p-5">
-      <View className="gap-4 rounded-[28px] border p-4" style={{ backgroundColor: theme.surface, borderColor: theme.border }}>
+    <ScrollView className="flex-1 bg-background dark:bg-background-dark" contentContainerClassName="gap-4 p-5">
+      <View className="gap-4 rounded-[28px] border border-border bg-surface p-4 dark:border-border-dark dark:bg-surface-dark">
         <View className="flex-row items-center gap-3.5">
-          <View className="h-14 w-14 items-center justify-center rounded-[18px]" style={{ backgroundColor: theme.tint }}>
-            <Text className="text-[18px] font-black" style={{ color: theme.background }}>GX</Text>
+          <View className="h-14 w-14 items-center justify-center rounded-[18px] bg-tint dark:bg-tint-dark">
+            <Text className="text-[18px] font-black text-background dark:text-background-dark">GX</Text>
           </View>
           <View className="flex-1 gap-1.5">
-            <Text className="text-[18px] font-extrabold" style={{ color: theme.text }}>GridX operator</Text>
-            <Text className="text-[13px] font-semibold" style={{ color: theme.muted }}>Theme: {colorScheme}</Text>
+            <Text className="text-[18px] font-extrabold text-text dark:text-text-dark">GridX operator</Text>
+            <Text className="text-[13px] font-semibold text-muted dark:text-muted-dark">Theme: {colorScheme}</Text>
           </View>
         </View>
 
-        <View className="flex-row items-center justify-between gap-3 rounded-[20px] p-3.5" style={{ backgroundColor: theme.surfaceAlt }}>
+        <View className="flex-row items-center justify-between gap-3 rounded-[20px] bg-surfaceAlt p-3.5 dark:bg-surfaceAlt-dark">
           <View className="flex-1 gap-1">
-            <Text className="text-sm font-extrabold" style={{ color: theme.text }}>Push notifications</Text>
-            <Text className="text-xs leading-[18px]" style={{ color: theme.muted }}>Receive important alerts on mobile.</Text>
+            <Text className="text-sm font-extrabold text-text dark:text-text-dark">Push notifications</Text>
+            <Text className="text-xs leading-[18px] text-muted dark:text-muted-dark">Receive important alerts on mobile.</Text>
           </View>
           <Switch value={notificationsEnabled} onValueChange={setNotificationsEnabled} />
         </View>
       </View>
 
-      <View className="gap-3.5 rounded-[28px] border p-4" style={{ backgroundColor: theme.surface, borderColor: theme.border }}>
-        <Text className="text-[18px] font-extrabold" style={{ color: theme.text }}>Preferences</Text>
+      <View className="gap-3.5 rounded-[28px] border border-border bg-surface p-4 dark:border-border-dark dark:bg-surface-dark">
+        <Text className="text-[18px] font-extrabold text-text dark:text-text-dark">Preferences</Text>
 
         <View className="gap-2">
           {preferences.map((item) => (
-            <View key={item.title} className="flex-row items-center gap-3 border-t pt-3" style={{ borderTopColor: theme.border }}>
-              <View className="h-[42px] w-[42px] items-center justify-center rounded-[14px]" style={{ backgroundColor: theme.surfaceAlt }}>
+            <View key={item.title} className="flex-row items-center gap-3 border-t border-border pt-3 dark:border-border-dark">
+              <View className="h-[42px] w-[42px] items-center justify-center rounded-[14px] bg-surfaceAlt dark:bg-surfaceAlt-dark">
                 <IconSymbol name={item.icon} color={theme.tint} size={18} />
               </View>
               <View className="flex-1 gap-1">
-                <Text className="text-sm font-extrabold" style={{ color: theme.text }}>{item.title}</Text>
-                <Text className="text-xs leading-[18px]" style={{ color: theme.muted }}>{item.subtitle}</Text>
+                <Text className="text-sm font-extrabold text-text dark:text-text-dark">{item.title}</Text>
+                <Text className="text-xs leading-[18px] text-muted dark:text-muted-dark">{item.subtitle}</Text>
               </View>
             </View>
           ))}
