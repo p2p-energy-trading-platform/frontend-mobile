@@ -14,9 +14,7 @@ export function ActivityList() {
     <Card>
       <View className="gap-4">
         <View className="flex-row items-center justify-between">
-          <AppText variant="title">
-            Live Activity
-          </AppText>
+          <AppText variant="title">Live Activity</AppText>
 
           <AppText
             variant="caption"
@@ -29,11 +27,7 @@ export function ActivityList() {
         </View>
 
         {activities.map((activity) => (
-          <ActivityItem
-            key={activity.title}
-            title={activity.title}
-            detail={activity.detail}
-          />
+          <ActivityItem key={activity.title} title={activity.title} detail={activity.detail} />
         ))}
       </View>
     </Card>

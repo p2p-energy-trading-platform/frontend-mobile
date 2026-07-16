@@ -6,16 +6,6 @@ type IconProps = {
   color?: string;
 };
 
-export function Icon({
-  name,
-  size = 24,
-  color,
-}: IconProps) {
-  return (
-    <MaterialIcons
-      name={name}
-      size={size}
-      color={color}
-    />
-  );
+export function Icon({ name, size = 24, color }: IconProps) {
+  return <MaterialIcons name={name} size={size} color={color} />;
 }

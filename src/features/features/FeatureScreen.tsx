@@ -9,20 +9,17 @@ import { useTheme } from '@/shared/design-system/hooks/use-theme';
 const modules = [
   {
     title: 'Telemetry',
-    description:
-      'Track device health, power flow, and live status from one place.',
+    description: 'Track device health, power flow, and live status from one place.',
     icon: 'bar-chart',
   },
   {
     title: 'Scheduling',
-    description:
-      'Shift load automatically with weather-aware and price-aware policies.',
+    description: 'Shift load automatically with weather-aware and price-aware policies.',
     icon: 'schedule',
   },
   {
     title: 'Alerts',
-    description:
-      'Surface exceptions with clear priority so operators can act quickly.',
+    description: 'Surface exceptions with clear priority so operators can act quickly.',
     icon: 'notifications',
   },
 ] as const;
@@ -47,10 +44,7 @@ export default function FeaturesScreen() {
 
   return (
     <Screen>
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-5 p-5"
-      >
+      <ScrollView className="flex-1" contentContainerClassName="gap-5 p-5">
         {/* Header */}
 
         <View>
@@ -62,20 +56,12 @@ export default function FeaturesScreen() {
               borderWidth: 1,
             }}
           >
-            <Icon
-              name="bar-chart"
-              size={18}
-              color={theme.primary}
-            />
+            <Icon name="bar-chart" size={18} color={theme.primary} />
 
-            <AppText variant="caption">
-              Feature Driven Screens
-            </AppText>
+            <AppText variant="caption">Feature Driven Screens</AppText>
           </View>
 
-          <AppText variant="heading">
-            Built around the same product flow as web
-          </AppText>
+          <AppText variant="heading">Built around the same product flow as web</AppText>
 
           <AppText
             style={{
@@ -99,17 +85,11 @@ export default function FeaturesScreen() {
                     backgroundColor: theme.surfaceAlt,
                   }}
                 >
-                  <Icon
-                    name={module.icon}
-                    size={22}
-                    color={theme.primary}
-                  />
+                  <Icon name={module.icon} size={22} color={theme.primary} />
                 </View>
 
                 <View className="gap-1">
-                  <AppText variant="title">
-                    {module.title}
-                  </AppText>
+                  <AppText variant="title">{module.title}</AppText>
 
                   <AppText
                     variant="caption"
@@ -129,9 +109,7 @@ export default function FeaturesScreen() {
 
         <Card>
           <View className="gap-4">
-            <AppText variant="title">
-              Flow
-            </AppText>
+            <AppText variant="title">Flow</AppText>
 
             {flow.map((step, index) => (
               <View key={step.title}>
@@ -142,15 +120,11 @@ export default function FeaturesScreen() {
                       backgroundColor: theme.surfaceAlt,
                     }}
                   >
-                    <AppText variant="body">
-                      {index + 1}
-                    </AppText>
+                    <AppText variant="body">{index + 1}</AppText>
                   </View>
 
                   <View className="flex-1 gap-1">
-                    <AppText variant="body">
-                      {step.title}
-                    </AppText>
+                    <AppText variant="body">{step.title}</AppText>
 
                     <AppText
                       variant="caption"

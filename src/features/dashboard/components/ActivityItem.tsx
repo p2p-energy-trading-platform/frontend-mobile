@@ -8,10 +8,7 @@ type ActivityItemProps = {
   detail: string;
 };
 
-export function ActivityItem({
-  title,
-  detail,
-}: ActivityItemProps) {
+export function ActivityItem({ title, detail }: ActivityItemProps) {
   const { theme } = useTheme();
 
   return (

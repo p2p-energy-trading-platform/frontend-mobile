@@ -1,50 +1,207 @@
-# Welcome to your Expo app 👋
+# GridX Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+GridX Mobile is the cross-platform mobile application for the GridX peer-to-peer energy trading platform. It enables users to monitor the grid, manage trading activities, receive real-time notifications, and interact with the GridX ecosystem from iOS and Android devices.
 
-## Get started
+---
 
-1. Install dependencies
+# Tech Stack
 
-   ```bash
-   npm install
-   ```
+- Expo
+- React Native
+- Expo Router
+- TypeScript
+- NativeWind
+- Tailwind CSS
+- Zustand
+- TanStack Query
+- React Navigation
+- Zod
+- ESLint
+- Prettier
+- Husky
+- Commitlint
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+# Requirements
 
-In the output, you'll find options to open the app in a
+- Node.js 22+
+- npm 10+
+- Expo CLI
+- Android Studio (Android)
+- Xcode (macOS only, for iOS)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+# Getting Started
 
-## Get a fresh project
-
-When you're ready, run:
+Install dependencies.
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Create the environment file.
 
-## Learn more
+```bash
+cp .env.example .env
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Update the environment variables.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```env
+EXPO_PUBLIC_APP_NAME=GridX
+EXPO_PUBLIC_APP_ENV=development
+EXPO_PUBLIC_API_BASE_URL=http://localhost:8080
+```
 
-## Join the community
+Start the development server.
 
-Join our community of developers creating universal apps.
+```bash
+npm run start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Run on Android.
+
+```bash
+npm run android
+```
+
+Run on iOS.
+
+```bash
+npm run ios
+```
+
+---
+
+# Available Scripts
+
+Lint the project.
+
+```bash
+npm run lint
+```
+
+Format the project.
+
+```bash
+npm run format
+```
+
+Check formatting.
+
+```bash
+npm run format:check
+```
+
+Type check.
+
+```bash
+npm run typecheck
+```
+
+---
+
+# Environment Variables
+
+Environment variables are validated using **Zod** during application startup.
+
+Example:
+
+```env
+EXPO_PUBLIC_APP_NAME=GridX
+EXPO_PUBLIC_APP_ENV=development
+EXPO_PUBLIC_API_BASE_URL=http://localhost:8080
+```
+
+Only variables prefixed with `EXPO_PUBLIC_` are exposed to the mobile application.
+
+---
+
+# Project Structure
+
+```text
+src/
+├── config/
+├── features/
+├── lib/
+├── providers/
+├── shared/
+├── store/
+└── types/
+```
+
+## config
+
+Application configuration.
+
+- Environment variables
+- Application configuration
+
+## features
+
+Feature-based modules.
+
+Example:
+
+```
+dashboard/
+settings/
+markets/
+orders/
+```
+
+## lib
+
+Initialized third-party libraries.
+
+Examples:
+
+- Axios
+- TanStack Query
+- Storage
+
+## providers
+
+Application providers.
+
+- Query Provider
+- Future providers
+
+## shared
+
+Reusable code shared across the application.
+
+- UI Components
+- Design System
+- Hooks
+- Navigation
+- Utilities
+- Shared Types
+
+## store
+
+Global client state managed with Zustand.
+
+## types
+
+Application-wide shared TypeScript types.
+
+---
+
+# Design System
+
+The application includes a centralized design system.
+
+Current foundation:
+
+- Design Tokens
+- Light Theme
+- Dark Theme
+- Theme Hook
+- Shared UI Components
+
+The complete Figma design system will be integrated incrementally as development progresses.
+
+---

@@ -1,9 +1,6 @@
 import { useColorScheme } from '@/shared/hooks/use-color-scheme';
 
-import {
-  NavigationDarkTheme,
-  NavigationLightTheme,
-} from '../themes/navigation';
+import { NavigationDarkTheme, NavigationLightTheme } from '../themes/navigation';
 
 import { darkTheme } from '../themes/dark';
 import { lightTheme } from '../themes/light';
@@ -19,8 +16,6 @@ export function useTheme() {
 
     theme: isDark ? darkTheme : lightTheme,
 
-    navigationTheme: isDark
-      ? NavigationDarkTheme
-      : NavigationLightTheme,
+    navigationTheme: isDark ? NavigationDarkTheme : NavigationLightTheme,
   };
 }

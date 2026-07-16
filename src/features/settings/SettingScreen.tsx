@@ -32,10 +32,7 @@ export default function SettingsScreen() {
 
   return (
     <Screen>
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-5 p-5"
-      >
+      <ScrollView className="flex-1" contentContainerClassName="gap-5 p-5">
         {/* Profile */}
 
         <Card>
@@ -58,9 +55,7 @@ export default function SettingsScreen() {
               </View>
 
               <View className="flex-1 gap-1">
-                <AppText variant="title">
-                  GridX Operator
-                </AppText>
+                <AppText variant="title">GridX Operator</AppText>
 
                 <AppText
                   variant="caption"
@@ -80,9 +75,7 @@ export default function SettingsScreen() {
               }}
             >
               <View className="flex-1 gap-1">
-                <AppText variant="body">
-                  Push Notifications
-                </AppText>
+                <AppText variant="body">Push Notifications</AppText>
 
                 <AppText
                   variant="caption"
@@ -94,10 +87,7 @@ export default function SettingsScreen() {
                 </AppText>
               </View>
 
-              <Switch
-                value={notificationsEnabled}
-                onValueChange={setNotificationsEnabled}
-              />
+              <Switch value={notificationsEnabled} onValueChange={setNotificationsEnabled} />
             </View>
           </View>
         </Card>
@@ -106,9 +96,7 @@ export default function SettingsScreen() {
 
         <Card>
           <View className="gap-4">
-            <AppText variant="title">
-              Preferences
-            </AppText>
+            <AppText variant="title">Preferences</AppText>
 
             {preferences.map((item, index) => (
               <View key={item.title}>
@@ -119,17 +107,11 @@ export default function SettingsScreen() {
                       backgroundColor: theme.surfaceAlt,
                     }}
                   >
-                    <Icon
-                      name={item.icon}
-                      size={20}
-                      color={theme.primary}
-                    />
+                    <Icon name={item.icon} size={20} color={theme.primary} />
                   </View>
 
                   <View className="flex-1 gap-1">
-                    <AppText variant="body">
-                      {item.title}
-                    </AppText>
+                    <AppText variant="body">{item.title}</AppText>
 
                     <AppText
                       variant="caption"
