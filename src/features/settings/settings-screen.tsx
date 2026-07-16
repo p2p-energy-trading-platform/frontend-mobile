@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { ScrollView, Switch, Text, View } from 'react-native';
-import { Screen } from '@/shared/components/layout/Screen';
+import { Screen } from '@/shared/components/ui/Screen';
 import { IconSymbol } from '@/shared/components/ui/icon-symbol';
 import { Colors } from '@/shared/constants/theme';
 import { useColorScheme } from '@/shared/hooks/use-color-scheme';
+import { useState } from 'react';
+import { ScrollView, Switch, Text, View } from 'react-native';
 
 const preferences = [
   {
