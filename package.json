@@ -1,5 +1,5 @@
 {
-  "name": "frontend-mobile",
+  "name": "GridX",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -10,6 +10,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "lint:fix": "expo lint --fix",
+    "typecheck": "tsc --noEmit",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "prepare": "husky"
