@@ -19,8 +19,10 @@ export function createTabScreenOptions(
       backgroundColor: theme.tabBarBackground,
       borderTopColor: theme.border,
       borderTopWidth: 1,
+      height: 80,
 
-      elevation: 0,
+      paddingTop: 10,
+      elevation:0
     },
   };
 }
