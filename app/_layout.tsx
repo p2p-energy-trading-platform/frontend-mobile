@@ -7,6 +7,8 @@ import 'react-native-reanimated';
 import '../global.css';
 
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
+import { QueryProvider } from '@/providers';
+
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -16,6 +18,7 @@ export default function RootLayout() {
   const { navigationTheme, isDark } = useTheme();
 
   return (
+    <QueryProvider>
     <ThemeProvider value={navigationTheme}>
       <SafeAreaProvider>
         <StatusBar style={isDark ? 'light' : 'dark'} />
@@ -28,5 +31,6 @@ export default function RootLayout() {
         />
       </SafeAreaProvider>
     </ThemeProvider>
+    </QueryProvider>
   );
 }
