@@ -2,6 +2,7 @@ export interface Theme {
   background: string;
 
   surface: string;
+  surfaceAlt: string;
   surfaceSecondary: string;
 
   text: string;

@@ -5,6 +5,7 @@ export const darkTheme: Theme = {
   background: Palette.common.black,
 
   surface: Palette.neutral[950],
+  surfaceAlt: Palette.neutral[800],
   surfaceSecondary: Palette.neutral[900],
 
   text: Palette.common.white,

@@ -5,6 +5,7 @@ export const lightTheme: Theme = {
   background: Palette.common.white,
 
   surface: Palette.common.white,
+  surfaceAlt: Palette.neutral[50],
   surfaceSecondary: Palette.neutral[100],
 
   text: Palette.common.black,
