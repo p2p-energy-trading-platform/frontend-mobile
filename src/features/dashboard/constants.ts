@@ -15,3 +15,18 @@ export const metrics = [
     note: 'Rolling 7 day average',
   },
 ];
+
+export const activities = [
+  {
+    title: 'Demand response window',
+    detail: 'Starts in 18 minutes',
+  },
+  {
+    title: 'Weather model synced',
+    detail: 'Updated from the latest forecast',
+  },
+  {
+    title: 'Battery cluster online',
+    detail: '12 devices reporting',
+  },
+];
