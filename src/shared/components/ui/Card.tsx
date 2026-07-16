@@ -8,7 +8,7 @@ type CardProps = PropsWithChildren<{
 }>;
 
 export function Card({ children, style }: CardProps) {
-  const theme = useTheme();
+    const { theme } = useTheme();
 
   return (
     <View

@@ -6,7 +6,7 @@ export function Input({
   style,
   ...props
 }: TextInputProps) {
-  const theme = useTheme();
+    const { theme } = useTheme();
 
   return (
     <TextInput

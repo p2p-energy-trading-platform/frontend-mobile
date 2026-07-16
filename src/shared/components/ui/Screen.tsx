@@ -9,7 +9,7 @@ type ScreenProps = PropsWithChildren<{
 }>;
 
 export function Screen({ children, style }: ScreenProps) {
-  const theme = useTheme();
+    const { theme } = useTheme();
 
   return (
     <SafeAreaView

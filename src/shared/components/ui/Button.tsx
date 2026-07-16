@@ -17,7 +17,7 @@ export function Button({
   textStyle,
   ...props
 }: ButtonProps) {
-  const theme = useTheme();
+    const { theme } = useTheme();
 
   return (
     <Pressable
