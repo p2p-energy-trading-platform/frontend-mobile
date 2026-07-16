@@ -18,10 +18,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
-        <StatusBar
-          style={colorScheme === 'dark' ? 'light' : 'dark'}
-          translucent
-        />
+        
 
         <Stack
           screenOptions={{
