@@ -2,11 +2,8 @@ import { TextInput, TextInputProps } from 'react-native';
 
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
-export function Input({
-  style,
-  ...props
-}: TextInputProps) {
-    const { theme } = useTheme();
+export function Input({ style, ...props }: TextInputProps) {
+  const { theme } = useTheme();
 
   return (
     <TextInput

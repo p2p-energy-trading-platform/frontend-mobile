@@ -3,9 +3,7 @@ import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { HapticTab } from '@/shared/navigation/haptic-tab';
 import { Theme } from '@/shared/design-system/themes';
 
-export function createTabScreenOptions(
-  theme: Theme,
-): BottomTabNavigationOptions {
+export function createTabScreenOptions(theme: Theme): BottomTabNavigationOptions {
   return {
     headerShown: false,
 
@@ -22,7 +20,7 @@ export function createTabScreenOptions(
       height: 80,
 
       paddingTop: 10,
-      elevation:0
+      elevation: 0,
     },
   };
 }

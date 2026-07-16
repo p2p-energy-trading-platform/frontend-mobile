@@ -3,11 +3,7 @@ import { z } from 'zod';
 const envSchema = z.object({
   EXPO_PUBLIC_APP_NAME: z.string().min(1),
 
-  EXPO_PUBLIC_APP_ENV: z.enum([
-    'development',
-    'staging',
-    'production',
-  ]),
+  EXPO_PUBLIC_APP_ENV: z.enum(['development', 'staging', 'production']),
 
   EXPO_PUBLIC_API_BASE_URL: z.string().url(),
 });

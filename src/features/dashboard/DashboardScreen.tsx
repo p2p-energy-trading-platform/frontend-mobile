@@ -9,10 +9,7 @@ import { MetricsList } from './components/MetricList';
 export default function DashboardScreen() {
   return (
     <Screen>
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-5 p-5"
-      >
+      <ScrollView className="flex-1" contentContainerClassName="gap-5 p-5">
         <DashboardHeader />
 
         <MetricsList />

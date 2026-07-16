@@ -11,13 +11,8 @@ interface ButtonProps extends Omit<PressableProps, 'style'> {
 
   textStyle?: StyleProp<TextStyle>;
 }
-export function Button({
-  title,
-  containerStyle,
-  textStyle,
-  ...props
-}: ButtonProps) {
-    const { theme } = useTheme();
+export function Button({ title, containerStyle, textStyle, ...props }: ButtonProps) {
+  const { theme } = useTheme();
 
   return (
     <Pressable

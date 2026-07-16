@@ -30,6 +30,5 @@ export const useAppStore = create<AppStore>((set) => ({
       status,
     }),
 
-  reset: () =>
-    set(initialState),
+  reset: () => set(initialState),
 }));

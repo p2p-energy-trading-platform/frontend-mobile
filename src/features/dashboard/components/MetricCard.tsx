@@ -10,19 +10,13 @@ type MetricCardProps = {
   note: string;
 };
 
-export function MetricCard({
-  value,
-  label,
-  note,
-}: MetricCardProps) {
+export function MetricCard({ value, label, note }: MetricCardProps) {
   const { theme } = useTheme();
 
   return (
     <Card>
       <View className="gap-1">
-        <AppText variant="heading">
-          {value}
-        </AppText>
+        <AppText variant="heading">{value}</AppText>
 
         <AppText
           variant="body"

@@ -13,13 +13,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Overview',
-          tabBarIcon: ({ color, size }) => (
-            <Icon
-              name="home"
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ color, size }) => <Icon name="home" color={color} size={size} />,
         }}
       />
 
@@ -27,13 +21,7 @@ export default function TabLayout() {
         name="features"
         options={{
           title: 'Features',
-          tabBarIcon: ({ color, size }) => (
-            <Icon
-              name="star"
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ color, size }) => <Icon name="star" color={color} size={size} />,
         }}
       />
 
@@ -41,13 +29,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color, size }) => (
-            <Icon
-              name="settings"
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ color, size }) => <Icon name="settings" color={color} size={size} />,
         }}
       />
     </Tabs>

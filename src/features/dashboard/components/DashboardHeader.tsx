@@ -17,44 +17,30 @@ export function DashboardHeader() {
             className="flex-row items-center gap-2 rounded-full px-3 py-2"
             style={{ backgroundColor: theme.surfaceAlt }}
           >
-            <Icon
-              name="home"
-              size={18}
-              color={theme.primary}
-            />
+            <Icon name="home" size={18} color={theme.primary} />
 
-            <AppText variant="caption">
-              GridX Mobile
-            </AppText>
+            <AppText variant="caption">GridX Mobile</AppText>
           </View>
 
           <View
             className="flex-row items-center gap-2 rounded-full px-3 py-2"
             style={{ backgroundColor: theme.surfaceAlt }}
           >
-            <View
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: theme.success }}
-            />
+            <View className="h-2 w-2 rounded-full" style={{ backgroundColor: theme.success }} />
 
-            <AppText variant="caption">
-              Live Sync
-            </AppText>
+            <AppText variant="caption">Live Sync</AppText>
           </View>
         </View>
 
         <View className="gap-2">
-          <AppText variant="display">
-            Operations at a glance
-          </AppText>
+          <AppText variant="display">Operations at a glance</AppText>
 
           <AppText
             style={{
               color: theme.textSecondary,
             }}
           >
-            Track active sites, forecast quality, and open alerts in one
-            place.
+            Track active sites, forecast quality, and open alerts in one place.
           </AppText>
         </View>
 

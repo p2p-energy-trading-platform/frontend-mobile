@@ -73,7 +73,6 @@ Run on iOS.
 npm run ios
 ```
 
-
 ---
 
 # Available Scripts
@@ -206,4 +205,3 @@ Current foundation:
 The complete Figma design system will be integrated incrementally as development progresses.
 
 ---
-

@@ -6,17 +6,7 @@ module.exports = {
     'type-enum': [
       2,
       'always',
-      [
-        'feat',
-        'fix',
-        'doc',
-        'style',
-        'refactor',
-        'perf',
-        'test',
-        'chore',
-        'remove',
-      ],
+      ['feat', 'fix', 'doc', 'style', 'refactor', 'perf', 'test', 'chore', 'remove'],
     ],
     // Keep the scope and summary lowercase.
     'scope-case': [2, 'always', 'lower-case'],

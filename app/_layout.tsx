@@ -9,7 +9,6 @@ import '../global.css';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { QueryProvider } from '@/providers';
 
-
 export const unstable_settings = {
   anchor: '(tabs)',
 };
@@ -19,18 +18,18 @@ export default function RootLayout() {
 
   return (
     <QueryProvider>
-    <ThemeProvider value={navigationTheme}>
-      <SafeAreaProvider>
-        <StatusBar style={isDark ? 'light' : 'dark'} />
+      <ThemeProvider value={navigationTheme}>
+        <SafeAreaProvider>
+          <StatusBar style={isDark ? 'light' : 'dark'} />
 
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            animation: 'default',
-          }}
-        />
-      </SafeAreaProvider>
-    </ThemeProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: 'default',
+            }}
+          />
+        </SafeAreaProvider>
+      </ThemeProvider>
     </QueryProvider>
   );
 }
