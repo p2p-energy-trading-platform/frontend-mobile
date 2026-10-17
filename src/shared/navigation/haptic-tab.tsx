@@ -9,7 +9,10 @@ type HoverEffectProps = {
   activeOpacity?: number;
 };
 
-type HapticTabProps = Omit<ComponentProps<typeof PlatformPressable>, 'pressColor' | 'hoverEffect'> & {
+type HapticTabProps = Omit<
+  ComponentProps<typeof PlatformPressable>,
+  'pressColor' | 'hoverEffect'
+> & {
   pressColor?: ColorValue;
   hoverEffect?: HoverEffectProps;
 };
