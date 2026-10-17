@@ -8,7 +8,7 @@ export default function TabLayout() {
   const { theme } = useTheme();
 
   return (
-    <Tabs screenOptions={createTabScreenOptions(theme) as any}>
+    <Tabs screenOptions={createTabScreenOptions(theme)}>
       <Tabs.Screen
         name="index"
         options={{

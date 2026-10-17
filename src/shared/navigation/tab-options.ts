@@ -1,9 +1,7 @@
-import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
-
-import { HapticTab } from '@/shared/navigation/haptic-tab';
 import { Theme } from '@/shared/design-system/themes';
+import { HapticTab } from '@/shared/navigation/haptic-tab';
 
-export function createTabScreenOptions(theme: Theme): BottomTabNavigationOptions {
+export function createTabScreenOptions(theme: Theme) {
   return {
     headerShown: false,
 
