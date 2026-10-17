@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   // Use the standard Conventional Commits rules as the base.
   extends: ['@commitlint/config-conventional'],
   rules: {

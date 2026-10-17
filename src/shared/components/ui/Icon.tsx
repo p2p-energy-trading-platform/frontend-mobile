@@ -1,9 +1,10 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { ColorValue } from 'react-native';
 
 type IconProps = {
   name: keyof typeof MaterialIcons.glyphMap;
   size?: number;
-  color?: string;
+  color?: ColorValue | string;
 };
 
 export function Icon({ name, size = 24, color }: IconProps) {

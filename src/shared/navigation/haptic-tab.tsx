@@ -1,12 +1,35 @@
-import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import { PlatformPressable } from '@react-navigation/elements';
 import * as Haptics from 'expo-haptics';
-import { Platform } from 'react-native';
+import type { ComponentProps } from 'react';
+import { Platform, type ColorValue } from 'react-native';
 
-export function HapticTab(props: BottomTabBarButtonProps) {
+type HoverEffectProps = {
+  color?: ColorValue;
+  hoverOpacity?: number;
+  activeOpacity?: number;
+};
+
+type HapticTabProps = Omit<
+  ComponentProps<typeof PlatformPressable>,
+  'pressColor' | 'hoverEffect'
+> & {
+  pressColor?: ColorValue;
+  hoverEffect?: HoverEffectProps;
+};
+
+export function HapticTab({ pressColor, hoverEffect, ...props }: HapticTabProps) {
+  const normalizedHoverEffect = hoverEffect
+    ? {
+        ...hoverEffect,
+        color: typeof hoverEffect.color === 'string' ? hoverEffect.color : undefined,
+      }
+    : undefined;
+
   return (
     <PlatformPressable
       {...props}
+      pressColor={typeof pressColor === 'string' ? pressColor : undefined}
+      hoverEffect={normalizedHoverEffect}
       onPress={(event) => {
         if (Platform.OS === 'ios') {
           Haptics.selectionAsync();
