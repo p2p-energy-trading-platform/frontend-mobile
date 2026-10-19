@@ -1,4 +1,3 @@
-import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -14,22 +13,21 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  const { navigationTheme, isDark } = useTheme();
+  const { isDark } = useTheme();
 
   return (
     <QueryProvider>
-      <ThemeProvider value={navigationTheme}>
-        <SafeAreaProvider>
-          <StatusBar style={isDark ? 'light' : 'dark'} />
+      <SafeAreaProvider>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
 
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              animation: 'default',
-            }}
-          />
-        </SafeAreaProvider>
-      </ThemeProvider>
+        <Stack
+          initialRouteName="splash"
+          screenOptions={{
+            headerShown: false,
+            animation: 'default',
+          }}
+        />
+      </SafeAreaProvider>
     </QueryProvider>
   );
 }
