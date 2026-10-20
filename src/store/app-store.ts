@@ -5,9 +5,11 @@ export type AppStatus = 'idle' | 'loading' | 'ready' | 'error';
 type AppStore = {
   initialized: boolean;
   status: AppStatus;
+  isAuthenticated: boolean;
 
   setInitialized: (initialized: boolean) => void;
   setStatus: (status: AppStatus) => void;
+  setAuthenticated: (isAuthenticated: boolean) => void;
 
   reset: () => void;
 };
@@ -15,6 +17,7 @@ type AppStore = {
 const initialState = {
   initialized: false,
   status: 'idle' as AppStatus,
+  isAuthenticated: false,
 };
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -30,5 +33,11 @@ export const useAppStore = create<AppStore>((set) => ({
       status,
     }),
 
+  setAuthenticated: (isAuthenticated) =>
+    set({
+      isAuthenticated,
+    }),
+
   reset: () => set(initialState),
 }));
+
