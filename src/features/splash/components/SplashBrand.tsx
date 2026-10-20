@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { AppText } from '@/shared/components/ui/AppText';
 import { Icon } from '@/shared/components/ui/Icon';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
+import { Spacing } from '@/shared/design-system/tokens';
 
 export function SplashBrand() {
   const { theme } = useTheme();
@@ -10,19 +11,17 @@ export function SplashBrand() {
   return (
     <View className="items-center gap-4">
       <View
-        className="h-[72px] w-[72px] items-center justify-center rounded-3xl"
+        className="h-20 w-20 items-center justify-center rounded-3xl"
         style={{
-          backgroundColor: theme.primary,
+          backgroundColor: theme.accent,
         }}
       >
-        <Icon name="bolt" size={36} color={theme.primaryForeground} />
+        <Icon name="bolt" size={Spacing[10]} color={theme.accentForeground} />
       </View>
 
       <AppText
         variant="heading"
         style={{
-          fontSize: 32,
-          lineHeight: 40,
           textAlign: 'center',
         }}
       >
@@ -32,8 +31,6 @@ export function SplashBrand() {
       <AppText
         style={{
           color: theme.textSecondary,
-          fontSize: 15,
-          lineHeight: 22,
           textAlign: 'center',
         }}
       >
@@ -42,3 +39,4 @@ export function SplashBrand() {
     </View>
   );
 }
+
