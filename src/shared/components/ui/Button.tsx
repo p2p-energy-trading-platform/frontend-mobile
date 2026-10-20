@@ -4,22 +4,43 @@ import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
 import { AppText } from './AppText';
 
+type Variant = 'primary' | 'accent';
+
 interface ButtonProps extends Omit<PressableProps, 'style'> {
   title: string;
+
+  variant?: Variant;
 
   containerStyle?: StyleProp<ViewStyle>;
 
   textStyle?: StyleProp<TextStyle>;
 }
-export function Button({ title, containerStyle, textStyle, ...props }: ButtonProps) {
+export function Button({
+  title,
+  variant = 'primary',
+  containerStyle,
+  textStyle,
+  ...props
+}: ButtonProps) {
   const { theme } = useTheme();
+
+  const colors = {
+    primary: {
+      background: theme.primary,
+      foreground: theme.primaryForeground,
+    },
+    accent: {
+      background: theme.accent,
+      foreground: theme.accentForeground,
+    },
+  };
 
   return (
     <Pressable
       className="items-center justify-center rounded-xl px-5 py-3"
       style={[
         {
-          backgroundColor: theme.primary,
+          backgroundColor: colors[variant].background,
         },
         containerStyle,
       ]}
@@ -28,7 +49,7 @@ export function Button({ title, containerStyle, textStyle, ...props }: ButtonPro
       <AppText
         style={[
           {
-            color: theme.primaryForeground,
+            color: colors[variant].foreground,
           },
           textStyle,
         ]}
@@ -38,3 +59,4 @@ export function Button({ title, containerStyle, textStyle, ...props }: ButtonPro
     </Pressable>
   );
 }
+
