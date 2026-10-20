@@ -1,11 +1,18 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 
 import { Icon } from '@/shared/components/ui/Icon';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { createTabScreenOptions } from '@/shared/navigation';
+import { useAppStore } from '@/store/app-store';
 
 export default function TabLayout() {
   const { theme } = useTheme();
+
+  const isAuthenticated = useAppStore((state) => state.isAuthenticated);
+
+  if (!isAuthenticated) {
+    return <Redirect href="/splash" />;
+  }
 
   return (
     <Tabs screenOptions={createTabScreenOptions(theme)}>
