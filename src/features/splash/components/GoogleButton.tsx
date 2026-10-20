@@ -2,6 +2,7 @@ import { Pressable, StyleProp, ViewStyle } from 'react-native';
 
 import { AppText } from '@/shared/components/ui/AppText';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
+import { Spacing, Typography } from '@/shared/design-system/tokens';
 
 type GoogleButtonProps = {
   onPress?: () => void;
@@ -15,18 +16,27 @@ export function GoogleButton({ onPress, style }: GoogleButtonProps) {
     <Pressable
       accessibilityRole="button"
       accessibilityLabel="Continue with Google"
-      className="items-center justify-center rounded-xl border px-5 py-3"
+      className="h-12 flex-row items-center justify-center gap-2.5 rounded-xl border px-5"
       onPress={onPress}
       style={[
         {
-          height: 52,
           borderColor: theme.border,
           backgroundColor: theme.surface,
         },
         style,
       ]}
     >
-      <AppText style={{ fontWeight: '600' }}>Continue with Google</AppText>
+      <AppText
+        style={{
+          color: '#4285F4',
+          fontSize: Spacing[5],
+          fontWeight: Typography.fontWeight.bold,
+        }}
+      >
+        G
+      </AppText>
+
+      <AppText style={{ fontWeight: Typography.fontWeight.semibold }}>Continue with Google</AppText>
     </Pressable>
   );
 }
