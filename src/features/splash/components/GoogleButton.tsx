@@ -1,13 +1,18 @@
 import { Pressable, StyleProp, ViewStyle } from 'react-native';
 
+import GoogleIcon from '../../../../assets/icons/google.svg';
 import { AppText } from '@/shared/components/ui/AppText';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
-import { Spacing, Typography } from '@/shared/design-system/tokens';
+import { Typography } from '@/shared/design-system/tokens';
 
 type GoogleButtonProps = {
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
 };
+
+function GoogleMark() {
+  return <GoogleIcon accessible={false} height={18} width={18} />;
+}
 
 export function GoogleButton({ onPress, style }: GoogleButtonProps) {
   const { theme } = useTheme();
@@ -26,15 +31,7 @@ export function GoogleButton({ onPress, style }: GoogleButtonProps) {
         style,
       ]}
     >
-      <AppText
-        style={{
-          color: '#4285F4',
-          fontSize: Spacing[5],
-          fontWeight: Typography.fontWeight.bold,
-        }}
-      >
-        G
-      </AppText>
+      <GoogleMark />
 
       <AppText style={{ fontWeight: Typography.fontWeight.semibold }}>Continue with Google</AppText>
     </Pressable>

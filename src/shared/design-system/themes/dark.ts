@@ -122,4 +122,3 @@ export const darkTheme: Theme = {
 
   overlay: '#040914A5',
 };
-
