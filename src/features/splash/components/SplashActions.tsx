@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native';
 import { AppText } from '@/shared/components/ui/AppText';
 import { Button } from '@/shared/components/ui/Button';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
+import { Typography } from '@/shared/design-system/tokens';
 
 import { GoogleButton } from './GoogleButton';
 
@@ -23,12 +24,10 @@ export function SplashActions({
     <View className="gap-3">
       <Button
         title="Sign up with email"
+        variant="accent"
         onPress={onSignUpWithEmail}
-        containerStyle={{
-          height: 52,
-        }}
         textStyle={{
-          fontWeight: '600',
+          fontWeight: Typography.fontWeight.semibold,
         }}
       />
 
@@ -38,8 +37,7 @@ export function SplashActions({
         <AppText
           variant="caption"
           style={{
-            color: theme.textSecondary,
-            lineHeight: 20,
+            color: theme.textTertiary,
           }}
         >
           Already have an account?
@@ -49,9 +47,8 @@ export function SplashActions({
           <AppText
             variant="caption"
             style={{
-              color: theme.primary,
-              fontWeight: '600',
-              lineHeight: 20,
+              color: theme.accent,
+              fontWeight: Typography.fontWeight.semibold,
             }}
           >
             Sign in
