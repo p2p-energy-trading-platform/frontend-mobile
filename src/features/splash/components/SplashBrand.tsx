@@ -3,7 +3,8 @@ import { View } from 'react-native';
 import { AppText } from '@/shared/components/ui/AppText';
 import { Icon } from '@/shared/components/ui/Icon';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
-import { Spacing } from '@/shared/design-system/tokens';
+
+const BRAND_ICON_SIZE = 40;
 
 export function SplashBrand() {
   const { theme } = useTheme();
@@ -16,7 +17,7 @@ export function SplashBrand() {
           backgroundColor: theme.accent,
         }}
       >
-        <Icon name="bolt" size={Spacing[10]} color={theme.accentForeground} />
+        <Icon name="bolt" size={BRAND_ICON_SIZE} color={theme.accentForeground} />
       </View>
 
       <AppText
