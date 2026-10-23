@@ -37,7 +37,7 @@ export function Button({
 
   return (
     <Pressable
-      className="items-center justify-center rounded-xl px-5 py-3"
+      className="h-12 items-center justify-center rounded-xl px-5"
       style={[
         {
           backgroundColor: colors[variant].background,
