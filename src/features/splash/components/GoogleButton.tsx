@@ -1,6 +1,7 @@
 import { Pressable, StyleProp, ViewStyle } from 'react-native';
 
-import GoogleIcon from '../../../../assets/icons/google.svg';
+import GoogleIcon from '@assets/icons/google.svg';
+
 import { AppText } from '@/shared/components/ui/AppText';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { Typography } from '@/shared/design-system/tokens';
