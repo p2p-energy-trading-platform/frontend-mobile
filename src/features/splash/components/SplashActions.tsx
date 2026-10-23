@@ -37,7 +37,7 @@ export function SplashActions({
         <AppText
           variant="caption"
           style={{
-            color: theme.textPlaceholder,
+            color: theme.textTertiary,
           }}
         >
           Already have an account?
