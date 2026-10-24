@@ -26,3 +26,12 @@ export const Typography = {
     extrabold: '800',
   },
 } as const;
+
+export const FontFamily = {
+  heading: 'PlusJakartaSans_700Bold',
+  body: 'Inter_400Regular',
+  bodyMedium: 'Inter_500Medium',
+  bodySemibold: 'Inter_600SemiBold',
+  bodyBold: 'Inter_700Bold',
+  mono: 'RobotoMono_700Bold',
+} as const;
