@@ -34,7 +34,15 @@ export function AuthLayout({ children, contentStyle }: AuthLayoutProps) {
         <ScrollView
           className="flex-1"
           contentContainerStyle={[
-            { flexGrow: 1, paddingHorizontal: 24, paddingTop: 16, paddingBottom: 28 },
+            {
+              flexGrow: 1,
+              width: '100%',
+              maxWidth: 440,
+              alignSelf: 'center',
+              paddingHorizontal: 24,
+              paddingTop: 16,
+              paddingBottom: 28,
+            },
             contentStyle,
           ]}
           keyboardShouldPersistTaps="handled"
