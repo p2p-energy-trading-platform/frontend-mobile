@@ -308,9 +308,9 @@ export function VerifyEmailScreen() {
   );
 }
 
-type SelectedFile = { name: string; size?: number };
+export type SelectedFile = { name: string; size?: number };
 
-function FileUploadRow({
+export function FileUploadRow({
   title,
   file,
   onPick,
@@ -622,7 +622,7 @@ export function KycScreen() {
   );
 }
 
-function OptionCard({
+export function OptionCard({
   title,
   subtitle,
   selected,
