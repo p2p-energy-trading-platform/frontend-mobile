@@ -154,6 +154,7 @@ export function PasswordField({
   helper,
   value,
   onChangeText,
+  onBlur,
   placeholder = 'Enter password',
 }: {
   label?: string;
@@ -161,6 +162,7 @@ export function PasswordField({
   helper?: string;
   value: string;
   onChangeText: (value: string) => void;
+  onBlur?: TextInputProps['onBlur'];
   placeholder?: string;
 }) {
   const { theme } = useTheme();
@@ -175,6 +177,7 @@ export function PasswordField({
         <Input
           value={value}
           onChangeText={onChangeText}
+          onBlur={onBlur}
           placeholder={placeholder}
           secureTextEntry={!visible}
           autoCapitalize="none"
@@ -252,7 +255,13 @@ export function CheckBox({
       {richTerms ? (
         <View className="flex-1 flex-row flex-wrap">
           <AppText variant="caption">I agree to the </AppText>
-          <Pressable accessibilityRole="link" onPress={() => showPolicy('Terms of Service')}>
+          <Pressable
+            accessibilityRole="link"
+            onPress={(event) => {
+              event.stopPropagation();
+              showPolicy('Terms of Service');
+            }}
+          >
             <AppText
               variant="caption"
               style={{ color: theme.accent, fontWeight: Typography.fontWeight.semibold }}
@@ -261,7 +270,13 @@ export function CheckBox({
             </AppText>
           </Pressable>
           <AppText variant="caption"> and </AppText>
-          <Pressable accessibilityRole="link" onPress={() => showPolicy('Privacy Policy')}>
+          <Pressable
+            accessibilityRole="link"
+            onPress={(event) => {
+              event.stopPropagation();
+              showPolicy('Privacy Policy');
+            }}
+          >
             <AppText
               variant="caption"
               style={{ color: theme.accent, fontWeight: Typography.fontWeight.semibold }}
@@ -476,9 +491,11 @@ export function SelectField({
 export function DateField({
   value,
   onChange,
+  onBlur,
 }: {
   value: string;
   onChange: (value: string) => void;
+  onBlur?: TextInputProps['onBlur'];
 }) {
   const { theme } = useTheme();
   const pieces = value.split('/');
@@ -503,6 +520,7 @@ export function DateField({
               accessibilityLabel={placeholder}
               value={pieces[index] ?? ''}
               onChangeText={(text) => updatePiece(index, text)}
+              onBlur={onBlur}
               placeholder={placeholder}
               keyboardType="number-pad"
               maxLength={index === 2 ? 4 : 2}

@@ -147,13 +147,19 @@ export function CreateAccountScreen() {
   const [confirmation, setConfirmation] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [confirmationTouched, setConfirmationTouched] = useState(false);
 
   const emailValid = emailPattern.test(email.trim());
   const passwordValid = passwordIsValid(password);
   const passwordsMatch = password.length > 0 && password === confirmation;
   const formValid = emailValid && passwordValid && passwordsMatch && accepted;
-  const passwordError = submitted && !passwordValid ? passwordHint : undefined;
-  const confirmationError = submitted && !passwordsMatch ? 'Passwords do not match.' : undefined;
+  const emailError =
+    (submitted || emailTouched) && !emailValid ? 'Enter a valid email address.' : undefined;
+  const passwordError = (submitted || passwordTouched) && !passwordValid ? passwordHint : undefined;
+  const confirmationError =
+    (submitted || confirmationTouched) && !passwordsMatch ? 'Passwords do not match.' : undefined;
 
   const continueToVerify = () => {
     setSubmitted(true);
@@ -175,17 +181,19 @@ export function CreateAccountScreen() {
             placeholder="name@example.com"
             value={email}
             onChangeText={setEmail}
+            onBlur={() => setEmailTouched(true)}
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
             textContentType="emailAddress"
-            error={submitted && !emailValid ? 'Enter a valid email address.' : undefined}
+            error={emailError}
           />
           <FieldSpacer />
           <PasswordField
             label="Password"
             value={password}
             onChangeText={setPassword}
+            onBlur={() => setPasswordTouched(true)}
             helper={passwordHint}
             error={passwordError}
           />
@@ -194,6 +202,7 @@ export function CreateAccountScreen() {
             label="Confirm password"
             value={confirmation}
             onChangeText={setConfirmation}
+            onBlur={() => setConfirmationTouched(true)}
             placeholder="Re-enter password"
             error={confirmationError}
           />
@@ -505,6 +514,9 @@ export function KycScreen() {
   const [nationality, setNationality] = useState('');
   const [files, setFiles] = useState<Record<string, SelectedFile | undefined>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [nameTouched, setNameTouched] = useState(false);
+  const [idTouched, setIdTouched] = useState(false);
+  const [dateTouched, setDateTouched] = useState(false);
 
   const idValid = /^784-\d{4}-\d{7}-\d$/.test(emiratesId);
   const valid =
@@ -536,20 +548,32 @@ export function KycScreen() {
           placeholder="As shown on your Emirates ID"
           value={name}
           onChangeText={setName}
+          onBlur={() => setNameTouched(true)}
           autoCapitalize="words"
-          error={submitted && name.trim().length < 2 ? 'Enter your full legal name.' : undefined}
+          error={
+            (submitted || nameTouched) && name.trim().length < 2
+              ? 'Enter your full legal name.'
+              : undefined
+          }
         />
         <TextField
           label="Emirates ID number"
           placeholder="784-YYYY-NNNNNNN-C"
           value={emiratesId}
           onChangeText={(value) => setEmiratesId(emiratesIdMask(value))}
+          onBlur={() => setIdTouched(true)}
           keyboardType="number-pad"
-          error={submitted && !idValid ? 'Enter a valid Emirates ID number.' : undefined}
+          error={
+            (submitted || idTouched) && !idValid ? 'Enter a valid Emirates ID number.' : undefined
+          }
         />
         <View className="flex-row gap-3">
           <View className="flex-1">
-            <DateField value={dateOfBirth} onChange={setDateOfBirth} />
+            <DateField
+              value={dateOfBirth}
+              onChange={setDateOfBirth}
+              onBlur={() => setDateTouched(true)}
+            />
           </View>
           <View className="flex-1">
             <SelectField
@@ -569,7 +593,8 @@ export function KycScreen() {
             />
           </View>
         </View>
-        {submitted && !validDateOfBirth(dateOfBirth) ? (
+        {(submitted || (dateTouched && dateOfBirth.replace(/\D/g, '').length === 8)) &&
+        !validDateOfBirth(dateOfBirth) ? (
           <AppText variant="caption" style={{ color: theme.error }}>
             Enter a valid date of birth (18 or older).
           </AppText>
