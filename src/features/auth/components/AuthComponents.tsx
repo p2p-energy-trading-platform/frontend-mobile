@@ -228,7 +228,7 @@ export function PasswordField({
   );
 }
 
-export function CheckBox({
+export function Checkbox({
   checked,
   onPress,
   label,

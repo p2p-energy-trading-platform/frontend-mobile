@@ -16,7 +16,7 @@ import {
   AuthHeading,
   AuthLayout,
   BrandMark,
-  CheckBox,
+  Checkbox,
   DateField,
   Divider,
   InlineLink,
@@ -102,7 +102,7 @@ export function SignInScreen() {
             error={passwordError}
           />
           <View className="mt-4 flex-row items-center justify-between">
-            <CheckBox
+            <Checkbox
               checked={remember}
               onPress={() => setRemember((value) => !value)}
               label="Remember me for 30 days"
@@ -207,7 +207,7 @@ export function CreateAccountScreen() {
             error={confirmationError}
           />
         </View>
-        <CheckBox checked={accepted} onPress={() => setAccepted((value) => !value)} richTerms />
+        <Checkbox checked={accepted} onPress={() => setAccepted((value) => !value)} richTerms />
         <View className="mt-auto gap-4 pt-4">
           <AuthButton title="Continue" disabled={!formValid} onPress={continueToVerify} />
           <View className="flex-row justify-center gap-1">
