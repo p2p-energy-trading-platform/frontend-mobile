@@ -1,5 +1,7 @@
 export const dashboardData = {
   userName: 'Sara',
+  initials: 'SA',
+  unreadCount: 3,
   property: 'Villa 47 · JLT Zone 4',
   meterStatus: 'Meter online',
 
