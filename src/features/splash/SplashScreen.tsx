@@ -1,24 +1,13 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 
 import { Screen } from '@/shared/components/ui/Screen';
-import { useAppStore } from '@/store/app-store';
 
 import { SplashActions } from './components/SplashActions';
 import { SplashBrand } from './components/SplashBrand';
 
 export default function SplashScreen() {
   const router = useRouter();
-
-  const setAuthenticated = useAppStore((state) => state.setAuthenticated);
-
-  // TODO(auth): replace with the real email sign-up, Google OAuth and sign-in flows.
-  // Until then every action simply enters the app.
-  const enterApp = () => {
-    setAuthenticated(true);
-
-    router.replace('/');
-  };
 
   return (
     <Screen>
@@ -30,9 +19,11 @@ export default function SplashScreen() {
         <View className="h-24" />
 
         <SplashActions
-          onSignUpWithEmail={enterApp}
-          onContinueWithGoogle={enterApp}
-          onSignIn={enterApp}
+          onSignUpWithEmail={() => router.push('/create-account')}
+          onContinueWithGoogle={() =>
+            Alert.alert('Google sign in', 'Google sign in is not connected yet.')
+          }
+          onSignIn={() => router.push('/sign-in')}
         />
 
         <View className="flex-1" />

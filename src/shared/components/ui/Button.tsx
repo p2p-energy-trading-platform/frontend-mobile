@@ -23,6 +23,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const { theme } = useTheme();
+  const disabled = Boolean(props.disabled);
 
   const colors = {
     primary: {
@@ -40,7 +41,7 @@ export function Button({
       className="h-12 items-center justify-center rounded-xl px-5"
       style={[
         {
-          backgroundColor: colors[variant].background,
+          backgroundColor: disabled ? theme.surfaceSecondary : colors[variant].background,
         },
         containerStyle,
       ]}
@@ -49,7 +50,7 @@ export function Button({
       <AppText
         style={[
           {
-            color: colors[variant].foreground,
+            color: disabled ? theme.textDisabled : colors[variant].foreground,
           },
           textStyle,
         ]}
