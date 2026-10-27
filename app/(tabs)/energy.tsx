@@ -1,5 +1,1 @@
-import { PlaceholderScreen } from '@/shared/components/ui/PlaceholderScreen';
-
-export default function EnergyRoute() {
-  return <PlaceholderScreen title="Energy" />;
-}
+export { default } from '@/features/energy//EnergyScreen';
