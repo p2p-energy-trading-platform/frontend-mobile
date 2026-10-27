@@ -523,9 +523,7 @@ export function toIsoDate(value: string): string | undefined {
   const [, day, month, year] = match;
   const iso = `${year}-${month}-${day}`;
   const date = new Date(`${iso}T00:00:00.000Z`);
-  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === iso
-    ? iso
-    : undefined;
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === iso ? iso : undefined;
 }
 
 // Same rule as the web: a real calendar date in the past.
@@ -557,10 +555,7 @@ function isValidSriLankanNicNumber(value: string) {
   const daysInYear = new Date(Date.UTC(year, 1, 29)).getUTCDate() === 29 ? 366 : 365;
 
   return (
-    year >= 1900 &&
-    year <= new Date().getUTCFullYear() &&
-    dayOfYear >= 1 &&
-    dayOfYear <= daysInYear
+    year >= 1900 && year <= new Date().getUTCFullYear() && dayOfYear >= 1 && dayOfYear <= daysInYear
   );
 }
 
