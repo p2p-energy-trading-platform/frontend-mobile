@@ -15,7 +15,7 @@ type AppTopBarProps = {
 
 export function AppTopBar({
   unreadCount = 0,
-  initials = 'SA',
+  initials,
   onPressHelp,
   onPressNotifications,
   onPressAccount,
@@ -83,16 +83,20 @@ export function AppTopBar({
           className="h-7 w-7 items-center justify-center rounded-full"
           style={{ backgroundColor: theme.accent }}
         >
-          <AppText
-            style={{
-              color: theme.accentForeground,
-              fontSize: 10,
-              lineHeight: 15,
-              fontFamily: FontFamily.bodyBold,
-            }}
-          >
-            {initials}
-          </AppText>
+          {initials ? (
+            <AppText
+              style={{
+                color: theme.accentForeground,
+                fontSize: 10,
+                lineHeight: 15,
+                fontFamily: FontFamily.bodyBold,
+              }}
+            >
+              {initials}
+            </AppText>
+          ) : (
+            <Icon name="person" size={14} color={theme.accentForeground} />
+          )}
         </Pressable>
       </View>
     </View>

@@ -15,7 +15,7 @@ type AppShellProps = PropsWithChildren<{
  * Top bar + content area. The bottom nav comes from the Expo Router <Tabs> layout,
  * so the safe area is only applied at the top here.
  */
-export function AppShell({ children, unreadCount = 3, initials = 'SA' }: AppShellProps) {
+export function AppShell({ children, unreadCount = 0, initials }: AppShellProps) {
   const { theme } = useTheme();
 
   return (
