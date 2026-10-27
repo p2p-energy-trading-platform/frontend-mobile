@@ -12,10 +12,11 @@ import { SummaryCard } from './components/SummaryCard';
 import { dashboardData } from './constants';
 
 export default function DashboardScreen() {
-  const { userName, property, meterStatus, position, summary, slot } = dashboardData;
+  const { userName, initials, unreadCount, property, meterStatus, position, summary, slot } =
+    dashboardData;
 
   return (
-    <AppShell>
+    <AppShell unreadCount={unreadCount} initials={initials}>
       <ScrollView className="flex-1" contentContainerClassName="gap-6 px-6 py-4">
         <GreetingHeader name={userName} property={property} meterStatus={meterStatus} />
 
