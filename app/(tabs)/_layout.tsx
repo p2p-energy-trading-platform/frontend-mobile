@@ -1,4 +1,5 @@
 import { Redirect, Tabs } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon } from '@/shared/components/ui/Icon';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
@@ -8,6 +9,7 @@ import { useAppStore } from '@/store/app-store';
 
 export default function TabLayout() {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const isAuthenticated = useAppStore((state) => state.isAuthenticated);
 
@@ -16,7 +18,7 @@ export default function TabLayout() {
   }
 
   return (
-    <Tabs screenOptions={createTabScreenOptions(theme)}>
+    <Tabs screenOptions={createTabScreenOptions(theme, insets.bottom)}>
       <Tabs.Screen
         name="index"
         options={{

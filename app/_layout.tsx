@@ -8,7 +8,9 @@ import { PlusJakartaSans_700Bold } from '@expo-google-fonts/plus-jakarta-sans';
 import { RobotoMono_700Bold } from '@expo-google-fonts/roboto-mono';
 import { useFonts } from 'expo-font';
 import { Stack, ThemeProvider } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import 'react-native-reanimated';
@@ -21,10 +23,12 @@ export const unstable_settings = {
   anchor: '(tabs)',
 };
 
+void SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
   const { navigationTheme, isDark } = useTheme();
 
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
@@ -33,7 +37,15 @@ export default function RootLayout() {
     RobotoMono_700Bold,
   });
 
-  if (!fontsLoaded) {
+  const fontsReady = fontsLoaded || fontError !== null;
+
+  useEffect(() => {
+    if (fontsReady) {
+      void SplashScreen.hideAsync();
+    }
+  }, [fontsReady]);
+
+  if (!fontsReady) {
     return null;
   }
 
