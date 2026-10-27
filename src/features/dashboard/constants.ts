@@ -1,32 +1,33 @@
-export const metrics = [
-  {
-    label: 'Active Sites',
-    value: '24',
-    note: '+4 this week',
-  },
-  {
-    label: 'Live Alerts',
-    value: '03',
-    note: '1 needs attention',
-  },
-  {
-    label: 'Forecast Accuracy',
-    value: '96%',
-    note: 'Rolling 7 day average',
-  },
-];
+export const dashboardData = {
+  userName: 'Sara',
+  initials: 'SA',
+  unreadCount: 3,
+  property: 'Villa 47 · JLT Zone 4',
+  meterStatus: 'Meter online',
 
-export const activities = [
-  {
-    title: 'Demand response window',
-    detail: 'Starts in 18 minutes',
+  position: {
+    title: "Today's energy position",
+    badge: 'Surplus',
+    value: '+12.4',
+    unit: 'kWh',
+    stats: [
+      { label: 'Generated', value: '42.6 kWh', highlight: true },
+      { label: 'Consumed', value: '30.2 kWh' },
+      { label: 'Exported', value: '8.4 kWh' },
+      { label: 'Imported', value: '0 kWh' },
+    ],
   },
-  {
-    title: 'Weather model synced',
-    detail: 'Updated from the latest forecast',
+
+  summary: [
+    { key: 'wallet', icon: 'account-balance-wallet', label: 'Wallet balance', value: 'AED 284.50' },
+    { key: 'battery', icon: 'battery-charging-full', label: 'Battery SoC', value: '94%' },
+  ],
+
+  slot: {
+    label: 'Current 30-min slot',
+    time: '14:30 – 15:00',
+    remaining: '18:19 remaining',
+    price: 'AED 0.38',
+    unit: 'per kWh · zone price',
   },
-  {
-    title: 'Battery cluster online',
-    detail: '12 devices reporting',
-  },
-];
+} as const;
