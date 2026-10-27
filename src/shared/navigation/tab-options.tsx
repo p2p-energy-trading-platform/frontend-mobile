@@ -21,7 +21,13 @@ export function renderTabLabel(title: string) {
   };
 }
 
-export function createTabScreenOptions(theme: Theme) {
+const TAB_BAR_CONTENT_HEIGHT = 45;
+const TAB_BAR_PADDING_TOP = 8;
+const TAB_BAR_MIN_PADDING_BOTTOM = 8;
+
+export function createTabScreenOptions(theme: Theme, bottomInset = 0) {
+  const paddingBottom = Math.max(bottomInset, TAB_BAR_MIN_PADDING_BOTTOM);
+
   return {
     headerShown: false,
 
@@ -35,9 +41,9 @@ export function createTabScreenOptions(theme: Theme) {
       backgroundColor: theme.tabBarBackground,
       borderTopColor: theme.border,
       borderTopWidth: 1,
-      height: 81,
-      paddingTop: 8,
-      paddingBottom: 28,
+      height: TAB_BAR_PADDING_TOP + TAB_BAR_CONTENT_HEIGHT + paddingBottom,
+      paddingTop: TAB_BAR_PADDING_TOP,
+      paddingBottom,
       elevation: 0,
     },
   };
