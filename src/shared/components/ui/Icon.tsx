@@ -13,6 +13,7 @@ import {
   RefreshCw,
   Settings,
   TrendingUp,
+  User,
   Wallet,
   type LucideIcon,
 } from 'lucide-react-native';
@@ -30,6 +31,7 @@ const icons = {
   home: House,
   notifications: Bell,
   'notifications-none': Bell,
+  person: User,
   schedule: CalendarClock,
   settings: Settings,
   'south-west': ArrowDownLeft,
