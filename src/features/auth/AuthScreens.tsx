@@ -29,9 +29,18 @@ import {
 } from './components/AuthComponents';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const passwordHint = 'At least 8 characters, including a letter and a number.';
-const passwordIsValid = (password: string) =>
-  password.length >= 8 && /[A-Za-z]/.test(password) && /\d/.test(password);
+const emailIsValid = (email: string) => {
+  const trimmed = email.trim();
+  return trimmed.length <= 254 && emailPattern.test(trimmed);
+};
+const passwordHint = 'Password must be 8 to 128 characters';
+const passwordIsValid = (password: string) => password.length >= 8 && password.length <= 128;
+const fullNameIsValid = (name: string) => {
+  const trimmed = name.trim();
+  return trimmed.length >= 1 && trimmed.length <= 100;
+};
+
+const KYC_DOCUMENT_MAX_BYTES = 10 * 1024 * 1024;
 
 function FieldSpacer() {
   return <View className="h-4" />;
@@ -65,13 +74,13 @@ export function SignInScreen() {
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const emailError =
-    submitted && !emailPattern.test(email.trim()) ? 'Enter a valid email address.' : undefined;
-  const passwordError = submitted && !password ? 'Enter your password.' : undefined;
+  const emailError = submitted && !emailIsValid(email) ? 'Enter a valid email address' : undefined;
+  const passwordError = submitted && !password ? 'Password is required' : undefined;
 
   const signIn = () => {
     setSubmitted(true);
-    if (!emailPattern.test(email.trim()) || !password) return;
+    if (!emailIsValid(email) || !password || password.length > 128) return;
+    // TODO(api): call POST /api/v1/auth/login and show API errors before entering the app.
     setAuthenticated(true);
     router.replace('/(tabs)');
   };
@@ -142,28 +151,38 @@ export function SignInScreen() {
 export function CreateAccountScreen() {
   const router = useRouter();
   const { theme } = useTheme();
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [nameTouched, setNameTouched] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [confirmationTouched, setConfirmationTouched] = useState(false);
 
-  const emailValid = emailPattern.test(email.trim());
+  const nameValid = fullNameIsValid(fullName);
+  const emailValid = emailIsValid(email);
   const passwordValid = passwordIsValid(password);
   const passwordsMatch = password.length > 0 && password === confirmation;
-  const formValid = emailValid && passwordValid && passwordsMatch && accepted;
+  const formValid = nameValid && emailValid && passwordValid && passwordsMatch && accepted;
+  const nameError =
+    (submitted || nameTouched) && !nameValid
+      ? fullName.trim().length > 100
+        ? 'Full name must be 100 characters or fewer'
+        : 'Full name is required'
+      : undefined;
   const emailError =
-    (submitted || emailTouched) && !emailValid ? 'Enter a valid email address.' : undefined;
+    (submitted || emailTouched) && !emailValid ? 'Enter a valid email address' : undefined;
   const passwordError = (submitted || passwordTouched) && !passwordValid ? passwordHint : undefined;
   const confirmationError =
-    (submitted || confirmationTouched) && !passwordsMatch ? 'Passwords do not match.' : undefined;
+    (submitted || confirmationTouched) && !passwordsMatch ? 'Passwords do not match' : undefined;
 
   const continueToVerify = () => {
     setSubmitted(true);
     if (!formValid) return;
+    // TODO(api): call POST /api/v1/auth/register with { name, email, password } first.
     router.push({ pathname: '/verify-email', params: { email: email.trim() } });
   };
 
@@ -176,6 +195,18 @@ export function CreateAccountScreen() {
           subtitle="Set up your details to get started with GridX."
         />
         <View>
+          <TextField
+            label="Full name"
+            placeholder="Enter your full name"
+            value={fullName}
+            onChangeText={setFullName}
+            onBlur={() => setNameTouched(true)}
+            autoCapitalize="words"
+            autoComplete="name"
+            textContentType="name"
+            error={nameError}
+          />
+          <FieldSpacer />
           <TextField
             label="Email address"
             placeholder="name@example.com"
@@ -208,6 +239,11 @@ export function CreateAccountScreen() {
           />
         </View>
         <Checkbox checked={accepted} onPress={() => setAccepted((value) => !value)} richTerms />
+        {submitted && !accepted ? (
+          <AppText variant="caption" style={{ color: theme.error }}>
+            You must accept the terms to continue
+          </AppText>
+        ) : null}
         <View className="mt-auto gap-4 pt-4">
           <AuthButton title="Continue" disabled={!formValid} onPress={continueToVerify} />
           <View className="flex-row justify-center gap-1">
@@ -245,6 +281,7 @@ export function VerifyEmailScreen() {
   const verify = () => {
     setSubmitted(true);
     if (!codeValid) return;
+    // TODO(api): call POST /api/v1/auth/verify-email with { email, otp: code } first.
     router.push('/kyc');
   };
 
@@ -274,7 +311,7 @@ export function VerifyEmailScreen() {
           <OtpInput value={code} onChange={setCode} />
           {submitted && !codeValid ? (
             <AppText variant="caption" style={{ color: theme.error }}>
-              Enter all 6 digits.
+              Enter the complete 6-digit verification code
             </AppText>
           ) : null}
         </View>
@@ -324,8 +361,8 @@ export function FileUploadRow({
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const acceptFile = (name: string, size?: number) => {
-    if (size && size > 5 * 1024 * 1024) {
-      Alert.alert('File is too large', 'Choose a JPG, PNG or PDF file up to 5 MB.');
+    if (size === 0 || (size && size > KYC_DOCUMENT_MAX_BYTES)) {
+      Alert.alert('File is too large', 'The file must be 10 MB or smaller.');
       return;
     }
     onPick({ name, size });
@@ -397,7 +434,7 @@ export function FileUploadRow({
           numberOfLines={1}
           style={{ color: file ? theme.success : theme.textTertiary }}
         >
-          {file ? file.name : 'JPG, PNG or PDF · Max 5 MB'}
+          {file ? file.name : 'JPG, PNG or PDF · Max 10 MB'}
         </AppText>
       </View>
       <Pressable
@@ -440,7 +477,7 @@ export function FileUploadRow({
             />
             <AppText variant="title">Upload {title.toLowerCase()}</AppText>
             <AppText variant="caption" style={{ color: theme.textSecondary }}>
-              Choose an image or a PDF up to 5 MB.
+              Choose an image or a PDF up to 10 MB.
             </AppText>
             <Pressable
               onPress={() => {
@@ -476,63 +513,80 @@ export function FileUploadRow({
   );
 }
 
-function validDateOfBirth(value: string) {
+/**
+ * Converts the DD/MM/YYYY value from DateField into the YYYY-MM-DD format the API
+ * expects. Returns undefined when the value is not a real calendar date.
+ */
+export function toIsoDate(value: string): string | undefined {
   const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  if (!match) return false;
-  const [, dayText, monthText, yearText] = match;
-  const day = Number(dayText);
-  const month = Number(monthText);
-  const year = Number(yearText);
-  const date = new Date(year, month - 1, day);
-  const validCalendarDate =
-    date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
-  const cutoff = new Date();
-  cutoff.setFullYear(cutoff.getFullYear() - 18);
-  return validCalendarDate && date <= cutoff;
+  if (!match) return undefined;
+  const [, day, month, year] = match;
+  const iso = `${year}-${month}-${day}`;
+  const date = new Date(`${iso}T00:00:00.000Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === iso
+    ? iso
+    : undefined;
 }
 
-function emiratesIdMask(value: string) {
-  const raw = value.replace(/\D/g, '');
-  if (!raw) return '';
-  const suffix = raw.startsWith('784') ? raw.slice(3) : raw;
-  const digits = `784${suffix}`.slice(0, 15);
-  const parts = [
-    digits.slice(0, 3),
-    digits.slice(3, 7),
-    digits.slice(7, 14),
-    digits.slice(14, 15),
-  ].filter(Boolean);
-  return parts.join('-');
+// Same rule as the web: a real calendar date in the past.
+function validDateOfBirth(value: string) {
+  const iso = toIsoDate(value);
+  return iso !== undefined && new Date(`${iso}T00:00:00.000Z`).getTime() < Date.now();
+}
+
+// Same check as the web's isValidSriLankanNicNumber: the old format is 9 digits + V/X,
+// the new one 12 digits, and both encode the birth year and day of the year.
+function isValidSriLankanNicNumber(value: string) {
+  const nic = value.trim().toUpperCase();
+
+  let year: number;
+  let dayOfYear: number;
+
+  if (/^\d{12}$/.test(nic)) {
+    year = Number(nic.slice(0, 4));
+    dayOfYear = Number(nic.slice(4, 7));
+  } else if (/^\d{9}[VX]$/.test(nic)) {
+    year = 1900 + Number(nic.slice(0, 2));
+    dayOfYear = Number(nic.slice(2, 5));
+  } else {
+    return false;
+  }
+
+  if (dayOfYear > 500) dayOfYear -= 500;
+
+  const daysInYear = new Date(Date.UTC(year, 1, 29)).getUTCDate() === 29 ? 366 : 365;
+
+  return (
+    year >= 1900 &&
+    year <= new Date().getUTCFullYear() &&
+    dayOfYear >= 1 &&
+    dayOfYear <= daysInYear
+  );
 }
 
 export function KycScreen() {
   const router = useRouter();
   const { theme } = useTheme();
   const [name, setName] = useState('');
-  const [emiratesId, setEmiratesId] = useState('');
+  const [nicNumber, setNicNumber] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
-  const [nationality, setNationality] = useState('');
-  const [files, setFiles] = useState<Record<string, SelectedFile | undefined>>({});
+  const [document, setDocument] = useState<SelectedFile | undefined>();
   const [submitted, setSubmitted] = useState(false);
   const [nameTouched, setNameTouched] = useState(false);
-  const [idTouched, setIdTouched] = useState(false);
+  const [nicTouched, setNicTouched] = useState(false);
   const [dateTouched, setDateTouched] = useState(false);
 
-  const idValid = /^784-\d{4}-\d{7}-\d$/.test(emiratesId);
-  const valid =
-    name.trim().length >= 2 &&
-    idValid &&
-    validDateOfBirth(dateOfBirth) &&
-    Boolean(nationality) &&
-    Boolean(files['ID front']) &&
-    Boolean(files['ID back']) &&
-    Boolean(files.Selfie);
-  const upload = (title: string) => (file: SelectedFile) =>
-    setFiles((current) => ({ ...current, [title]: file }));
+  const nameValid = name.trim().length >= 1 && name.trim().length <= 255;
+  const nicValid = isValidSriLankanNicNumber(nicNumber);
+  const valid = nameValid && nicValid && validDateOfBirth(dateOfBirth) && Boolean(document);
 
   const submit = () => {
     setSubmitted(true);
-    if (valid) router.push('/smart-meter');
+    if (!valid) return;
+    // TODO(api): upload the document with POST /api/v1/kyc/upload-url, then call
+    // POST /api/v1/kyc with { fullName, nicNumber, dateOfBirth: toIsoDate(dateOfBirth),
+    // documentPath: objectKey }.
+    router.push('/smart-meter');
   };
 
   return (
@@ -541,69 +595,59 @@ export function KycScreen() {
         <StepHeader step={3} onBack={() => router.back()} />
         <AuthHeading
           title="Verify your identity"
-          subtitle="Required by UAE regulations before you can trade or use the wallet. Takes about 2 minutes."
+          subtitle="Required before you can trade or use the wallet. Takes about 2 minutes."
         />
         <TextField
-          label="Full legal name"
-          placeholder="As shown on your Emirates ID"
+          label="Legal full name"
+          placeholder="Name as shown on your ID"
           value={name}
           onChangeText={setName}
           onBlur={() => setNameTouched(true)}
           autoCapitalize="words"
           error={
-            (submitted || nameTouched) && name.trim().length < 2
-              ? 'Enter your full legal name.'
+            (submitted || nameTouched) && !nameValid
+              ? name.trim().length > 255
+                ? 'Legal full name must be 255 characters or fewer'
+                : 'Legal full name is required'
               : undefined
           }
         />
         <TextField
-          label="Emirates ID number"
-          placeholder="784-YYYY-NNNNNNN-C"
-          value={emiratesId}
-          onChangeText={(value) => setEmiratesId(emiratesIdMask(value))}
-          onBlur={() => setIdTouched(true)}
-          keyboardType="number-pad"
+          label="Sri Lankan NIC number"
+          placeholder="Enter your NIC number"
+          value={nicNumber}
+          onChangeText={(value) => setNicNumber(value.replace(/[^0-9vVxX]/g, '').slice(0, 12))}
+          onBlur={() => setNicTouched(true)}
+          autoCapitalize="characters"
           error={
-            (submitted || idTouched) && !idValid ? 'Enter a valid Emirates ID number.' : undefined
+            (submitted || nicTouched) && !nicValid
+              ? nicNumber.trim()
+                ? 'Enter a valid Sri Lankan NIC number'
+                : 'NIC number is required'
+              : undefined
           }
         />
-        <View className="flex-row gap-3">
-          <View className="flex-1">
-            <DateField
-              value={dateOfBirth}
-              onChange={setDateOfBirth}
-              onBlur={() => setDateTouched(true)}
-            />
-          </View>
-          <View className="flex-1">
-            <SelectField
-              label="Nationality"
-              placeholder="Select nationality"
-              value={nationality}
-              onSelect={setNationality}
-              options={[
-                'United Arab Emirates',
-                'India',
-                'Pakistan',
-                'Philippines',
-                'United Kingdom',
-                'United States',
-                'Other',
-              ]}
-            />
-          </View>
-        </View>
+        <DateField
+          value={dateOfBirth}
+          onChange={setDateOfBirth}
+          onBlur={() => setDateTouched(true)}
+        />
         {(submitted || (dateTouched && dateOfBirth.replace(/\D/g, '').length === 8)) &&
         !validDateOfBirth(dateOfBirth) ? (
           <AppText variant="caption" style={{ color: theme.error }}>
-            Enter a valid date of birth (18 or older).
+            {dateOfBirth.replace(/\D/g, '')
+              ? 'Enter a valid date of birth in the past'
+              : 'Date of birth is required'}
           </AppText>
         ) : null}
         <View className="gap-3">
-          <SectionLabel title="Upload your documents" hint="JPG / PNG / PDF · Max 5 MB" />
-          <FileUploadRow title="ID front" file={files['ID front']} onPick={upload('ID front')} />
-          <FileUploadRow title="ID back" file={files['ID back']} onPick={upload('ID back')} />
-          <FileUploadRow title="Selfie" file={files.Selfie} onPick={upload('Selfie')} />
+          <SectionLabel title="Identity photo" hint="JPG / PNG / PDF · Max 10 MB" />
+          <FileUploadRow title="ID document" file={document} onPick={setDocument} />
+          {submitted && !document ? (
+            <AppText variant="caption" style={{ color: theme.error }}>
+              Upload a photo or scan of your ID
+            </AppText>
+          ) : null}
         </View>
         <View className="gap-4 pt-1">
           <AuthButton title="Submit for verification" disabled={!valid} onPress={submit} />
