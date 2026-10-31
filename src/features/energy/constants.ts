@@ -13,6 +13,13 @@ export const viewOptions = [
   { label: 'Assets', value: 'assets' },
 ] as const;
 
+export const panelOptions = [
+  { label: 'Time series', value: 'timeSeries' },
+  { label: 'Balance', value: 'balance' },
+  { label: 'Usage', value: 'usage' },
+  { label: 'Insights', value: 'insights' },
+] as const;
+
 export const periodOptions = [
   { label: 'Day', value: 'day' },
   { label: 'Week', value: 'week' },
@@ -130,5 +137,13 @@ export const insights: Insight[] = [
     tone: 'accent',
     title: 'Battery covers evening peak',
     body: '9.2 kWh stored will cover 17:00–21:30, cutting imports to near zero.',
+  },
+
+  {
+    key: 'off-peak-ev',
+    icon: 'battery',
+    tone: 'accent',
+    title: 'Off-peak EV charging',
+    body: 'Charge between 01:00–05:00 at AED 0.21/kWh to save about AED 3.10.',
   },
 ];

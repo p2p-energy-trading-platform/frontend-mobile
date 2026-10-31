@@ -7,9 +7,10 @@ import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { areaPath, smoothPath, type Point } from '../chart-utils';
 import type { TimeSeries } from '../types';
 
-const HEIGHT = 150;
+/** Smallest chart height; the chart grows beyond this to fill the card. */
+const MIN_HEIGHT = 150;
 const PLOT_TOP = 6;
-const PLOT_BOTTOM = 146;
+const PLOT_BOTTOM_INSET = 4; // gap between the baseline and the bottom edge
 const Y_MAX = 2; // kW
 
 type EnergyTimeSeriesChartProps = {
@@ -19,20 +20,28 @@ type EnergyTimeSeriesChartProps = {
 
 export function EnergyTimeSeriesChart({ series, peakIndex }: EnergyTimeSeriesChartProps) {
   const { theme } = useTheme();
-  const [width, setWidth] = useState(0);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const { width, height } = size;
 
-  const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width);
+  const onLayout = (e: LayoutChangeEvent) => {
+    const { width: w, height: h } = e.nativeEvent.layout;
+    setSize({ width: w, height: h });
+  };
+
+  // Plot area follows the measured height so a taller chart uses the extra space.
+  const plotBottom = height - PLOT_BOTTOM_INSET;
+  const plotMiddle = (PLOT_TOP + plotBottom) / 2;
 
   const toPoints = (values: number[]): Point[] =>
     values.map((v, i) => ({
       x: (i / (values.length - 1)) * width,
-      y: PLOT_BOTTOM - (Math.min(v, Y_MAX) / Y_MAX) * (PLOT_BOTTOM - PLOT_TOP),
+      y: plotBottom - (Math.min(v, Y_MAX) / Y_MAX) * (plotBottom - PLOT_TOP),
     }));
 
   const [exportedColor, , generatedColor, consumedColor] = theme.chart;
 
-  if (width === 0 || series.generated.length < 2) {
-    return <View onLayout={onLayout} style={{ height: HEIGHT }} />;
+  if (width === 0 || height === 0 || series.generated.length < 2) {
+    return <View onLayout={onLayout} style={{ flex: 1, minHeight: MIN_HEIGHT }} />;
   }
 
   const generated = toPoints(series.generated);
@@ -40,12 +49,12 @@ export function EnergyTimeSeriesChart({ series, peakIndex }: EnergyTimeSeriesCha
   const exported = toPoints(series.exported);
   const peak = generated[peakIndex];
   if (!peak) {
-    return <View onLayout={onLayout} style={{ height: HEIGHT }} />;
+    return <View onLayout={onLayout} style={{ flex: 1, minHeight: MIN_HEIGHT }} />;
   }
 
   return (
-    <View onLayout={onLayout} style={{ height: HEIGHT }}>
-      <Svg width={width} height={HEIGHT}>
+    <View onLayout={onLayout} style={{ flex: 1, minHeight: MIN_HEIGHT }}>
+      <Svg width={width} height={height}>
         <Defs>
           <LinearGradient id="generatedFill" x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0" stopColor={generatedColor} stopOpacity={0.35} />
@@ -62,11 +71,18 @@ export function EnergyTimeSeriesChart({ series, peakIndex }: EnergyTimeSeriesCha
           stroke={theme.border}
           strokeDasharray="3,4"
         />
-        <Line x1={0} x2={width} y1={76} y2={76} stroke={theme.border} strokeDasharray="3,4" />
-        <Line x1={0} x2={width} y1={PLOT_BOTTOM} y2={PLOT_BOTTOM} stroke={theme.border} />
+        <Line
+          x1={0}
+          x2={width}
+          y1={plotMiddle}
+          y2={plotMiddle}
+          stroke={theme.border}
+          strokeDasharray="3,4"
+        />
+        <Line x1={0} x2={width} y1={plotBottom} y2={plotBottom} stroke={theme.border} />
 
         {/* generated */}
-        <Path d={areaPath(generated, PLOT_BOTTOM)} fill="url(#generatedFill)" />
+        <Path d={areaPath(generated, plotBottom)} fill="url(#generatedFill)" />
         <Path d={smoothPath(generated)} stroke={generatedColor} strokeWidth={2} fill="none" />
 
         {/* consumed (dotted) */}
@@ -86,8 +102,8 @@ export function EnergyTimeSeriesChart({ series, peakIndex }: EnergyTimeSeriesCha
         <Line
           x1={peak.x}
           x2={peak.x}
-          y1={0}
-          y2={PLOT_BOTTOM}
+          y1={PLOT_TOP}
+          y2={plotBottom}
           stroke={theme.textPlaceholder}
           strokeDasharray="3,3"
         />

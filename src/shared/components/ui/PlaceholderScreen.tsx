@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import { AppShell } from '@/shared/components/ui/layout/Appshell';
+import { AppShell } from '@/shared/components/ui/layout/AppShell';
 import { Icon } from '@/shared/components/ui/Icon';
 
 import { AppText } from './AppText';

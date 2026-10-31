@@ -1,1 +1,1 @@
-export { default } from '@/features/energy//EnergyScreen';
+export { default } from '@/features/energy/EnergyScreen';

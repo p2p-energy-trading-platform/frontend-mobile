@@ -11,9 +11,10 @@ import type { BalanceSource, IconTone } from '../types';
 type EnergyBalanceCardProps = {
   sources: readonly BalanceSource[];
   footer: { label: string; value: string };
+  fill?: boolean;
 };
 
-export function EnergyBalanceCard({ sources, footer }: EnergyBalanceCardProps) {
+export function EnergyBalanceCard({ sources, footer, fill }: EnergyBalanceCardProps) {
   const { theme } = useTheme();
 
   const toneColor: Record<IconTone, string> = {
@@ -23,8 +24,11 @@ export function EnergyBalanceCard({ sources, footer }: EnergyBalanceCardProps) {
   };
 
   return (
-    <Card>
-      <View className="gap-5">
+    <Card style={fill ? { flex: 1 } : undefined}>
+      <View
+        className="gap-5"
+        style={fill ? { flex: 1, justifyContent: 'space-between' } : undefined}
+      >
         <AppText style={{ fontSize: 16, lineHeight: 24, fontFamily: FontFamily.bodySemibold }}>
           Energy balance
         </AppText>

@@ -1,6 +1,6 @@
 import { ScrollView, View } from 'react-native';
 
-import { AppShell } from '@/shared/components/ui/layout/Appshell';
+import { AppShell } from '@/shared/components/ui/layout/AppShell';
 import { AppText } from '@/shared/components/ui/AppText';
 import { FontFamily } from '@/shared/design-system/tokens';
 

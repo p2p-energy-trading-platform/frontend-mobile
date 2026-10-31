@@ -10,9 +10,10 @@ import type { UsageCategory } from '../types';
 type UsageByCategoryCardProps = {
   total: string;
   categories: readonly UsageCategory[];
+  fill?: boolean;
 };
 
-export function UsageByCategoryCard({ total, categories }: UsageByCategoryCardProps) {
+export function UsageByCategoryCard({ total, categories, fill }: UsageByCategoryCardProps) {
   const { theme } = useTheme();
 
   const max = Math.max(...categories.map((c) => c.value));
@@ -20,8 +21,11 @@ export function UsageByCategoryCard({ total, categories }: UsageByCategoryCardPr
     c.color === 'muted' ? theme.textPlaceholder : theme.chart[c.color];
 
   return (
-    <Card>
-      <View className="gap-4">
+    <Card style={fill ? { flex: 1 } : undefined}>
+      <View
+        className="gap-4"
+        style={fill ? { flex: 1, justifyContent: 'space-between' } : undefined}
+      >
         <View className="flex-row items-center justify-between">
           <AppText style={{ fontSize: 16, lineHeight: 24, fontFamily: FontFamily.bodySemibold }}>
             Usage by category

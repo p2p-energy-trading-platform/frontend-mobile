@@ -14,9 +14,11 @@ type EnergyTimeSeriesCardProps = {
   series: TimeSeries;
   axis: readonly string[];
   legend: readonly { label: string; color: ChartColor }[];
+  /** Stretch to the available height; the chart takes the extra space (one-screen layout). */
+  fill?: boolean;
 };
 
-export function EnergyTimeSeriesCard({ series, axis, legend }: EnergyTimeSeriesCardProps) {
+export function EnergyTimeSeriesCard({ series, axis, legend, fill }: EnergyTimeSeriesCardProps) {
   const { theme } = useTheme();
   const peak = getPeak(series.generated);
 
@@ -28,8 +30,8 @@ export function EnergyTimeSeriesCard({ series, axis, legend }: EnergyTimeSeriesC
   } as const;
 
   return (
-    <Card>
-      <View className="gap-4">
+    <Card style={fill ? { flex: 1 } : undefined}>
+      <View className="gap-4" style={fill ? { flex: 1 } : undefined}>
         <View className="gap-0.5">
           <AppText style={{ fontSize: 14, lineHeight: 20, fontFamily: FontFamily.bodySemibold }}>
             Energy time series

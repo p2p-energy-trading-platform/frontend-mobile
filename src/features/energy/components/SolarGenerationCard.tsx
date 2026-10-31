@@ -26,8 +26,8 @@ export function SolarGenerationCard({
   const { theme } = useTheme();
 
   return (
-    <Card style={{ padding: 20 }}>
-      <View className="gap-5">
+    <Card>
+      <View className="gap-2">
         <View className="flex-row items-center justify-between">
           <AppText
             style={{
@@ -66,8 +66,6 @@ export function SolarGenerationCard({
             {unit}
           </AppText>
         </View>
-
-        <View className="h-px" style={{ backgroundColor: theme.borderSubtle }} />
 
         <View className="flex-row gap-2">
           {stats.map((stat) => (

@@ -11,9 +11,10 @@ import type { IconTone, Insight } from '../types';
 type InsightsSectionProps = {
   insights: readonly Insight[];
   onViewAll?: () => void;
+  fill?: boolean;
 };
 
-export function InsightsSection({ insights, onViewAll }: InsightsSectionProps) {
+export function InsightsSection({ insights, onViewAll, fill }: InsightsSectionProps) {
   const { theme } = useTheme();
 
   const toneColor: Record<IconTone, string> = {
@@ -23,7 +24,7 @@ export function InsightsSection({ insights, onViewAll }: InsightsSectionProps) {
   };
 
   return (
-    <View className="gap-3">
+    <View className="gap-3" style={fill ? { flex: 1 } : undefined}>
       <View className="flex-row items-center justify-between">
         <AppText style={{ fontSize: 16, lineHeight: 24, fontFamily: FontFamily.bodySemibold }}>
           Insights
