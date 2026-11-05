@@ -6,7 +6,8 @@ import { Icon } from '@/shared/components/ui/Icon';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { FontFamily } from '@/shared/design-system/tokens';
 
-import type { IconTone, Insight } from '../types';
+import type { Insight } from '../types';
+import { useToneColor } from '../use-tone-color';
 
 type InsightsSectionProps = {
   insights: readonly Insight[];
@@ -17,11 +18,7 @@ type InsightsSectionProps = {
 export function InsightsSection({ insights, onViewAll, fill }: InsightsSectionProps) {
   const { theme } = useTheme();
 
-  const toneColor: Record<IconTone, string> = {
-    warning: theme.feedback.warning.icon,
-    info: theme.feedback.info.icon,
-    accent: theme.accent,
-  };
+  const toneColor = useToneColor();
 
   return (
     <View className="gap-3" style={fill ? { flex: 1 } : undefined}>
@@ -30,21 +27,23 @@ export function InsightsSection({ insights, onViewAll, fill }: InsightsSectionPr
           Insights
         </AppText>
 
-        <Pressable onPress={onViewAll} hitSlop={8}>
-          <AppText
-            style={{
-              color: theme.accent,
-              fontSize: 13,
-              lineHeight: 18,
-              fontFamily: FontFamily.bodySemibold,
-            }}
-          >
-            View all
-          </AppText>
-        </Pressable>
+        {onViewAll ? (
+          <Pressable accessibilityRole="button" onPress={onViewAll} hitSlop={8}>
+            <AppText
+              style={{
+                color: theme.accent,
+                fontSize: 13,
+                lineHeight: 18,
+                fontFamily: FontFamily.bodySemibold,
+              }}
+            >
+              View all
+            </AppText>
+          </Pressable>
+        ) : null}
       </View>
 
-      <Card style={{ padding: 0, overflow: 'hidden' }}>
+      <Card style={[{ padding: 0, overflow: 'hidden' }, fill && { flex: 1 }]}>
         {insights.map((insight, index) => (
           <View key={insight.key}>
             {index > 0 ? (

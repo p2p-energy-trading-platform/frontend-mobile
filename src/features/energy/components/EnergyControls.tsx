@@ -31,21 +31,23 @@ export function EnergyControls({
     <View className="gap-3">
       <SegmentedControl options={viewOptions} value={view} onChange={onViewChange} />
 
-      <View className="flex-row items-center justify-between">
-        <SegmentedControl
-          size="sm"
-          options={periodOptions}
-          value={period}
-          onChange={onPeriodChange}
-        />
+      {view === 'usage' ? (
+        <View className="flex-row items-center justify-between">
+          <SegmentedControl
+            size="sm"
+            options={periodOptions}
+            value={period}
+            onChange={onPeriodChange}
+          />
 
-        <DateStepper
-          label={formatPeriodLabel(date, period)}
-          onPrevious={() => onDateChange(shiftDate(date, period, -1))}
-          onNext={() => onDateChange(shiftDate(date, period, 1))}
-          nextDisabled={isAtLatest(date, period)}
-        />
-      </View>
+          <DateStepper
+            label={formatPeriodLabel(date, period)}
+            onPrevious={() => onDateChange(shiftDate(date, period, -1))}
+            onNext={() => onDateChange(shiftDate(date, period, 1))}
+            nextDisabled={isAtLatest(date, period)}
+          />
+        </View>
+      ) : null}
     </View>
   );
 }
