@@ -17,12 +17,27 @@ const MONTHS_LONG = [
   'December',
 ];
 
+export function startOfPeriod(date: Date, period: Period) {
+  const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+  if (period === 'week') start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+  else if (period === 'month') start.setDate(1);
+
+  return start;
+}
+
 export function shiftDate(date: Date, period: Period, direction: 1 | -1) {
   const next = new Date(date);
 
   if (period === 'day') next.setDate(next.getDate() + direction);
   else if (period === 'week') next.setDate(next.getDate() + 7 * direction);
-  else next.setMonth(next.getMonth() + direction);
+  else {
+    const day = next.getDate();
+    next.setDate(1);
+    next.setMonth(next.getMonth() + direction);
+    const daysInMonth = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
+    next.setDate(Math.min(day, daysInMonth));
+  }
 
   return next;
 }
@@ -33,10 +48,7 @@ export function formatPeriodLabel(date: Date, period: Period) {
   }
 
   if (period === 'week') {
-    // Monday → Sunday containing the date
-    const offsetToMonday = (date.getDay() + 6) % 7;
-    const start = new Date(date);
-    start.setDate(date.getDate() - offsetToMonday);
+    const start = startOfPeriod(date, 'week');
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
 
@@ -46,7 +58,7 @@ export function formatPeriodLabel(date: Date, period: Period) {
   return `${MONTHS_LONG[date.getMonth()]} ${date.getFullYear()}`;
 }
 
-/** True when stepping forward would go past today. */
-export function isAtLatest(date: Date, period: Period) {
-  return shiftDate(date, period, 1).getTime() > Date.now();
+/** True when the next period starts in the future, i.e. `date` is in the current period. */
+export function isAtLatest(date: Date, period: Period, now = new Date()) {
+  return startOfPeriod(shiftDate(date, period, 1), period).getTime() > now.getTime();
 }
