@@ -11,7 +11,8 @@ import type { TimeSeries } from '../types';
 const MIN_HEIGHT = 150;
 const PLOT_TOP = 6;
 const PLOT_BOTTOM_INSET = 4; // gap between the baseline and the bottom edge
-const Y_MAX = 2; // kW
+/** Minimum y-axis ceiling (kW) so a quiet day isn't stretched to full height. */
+const MIN_Y_MAX = 2;
 
 type EnergyTimeSeriesChartProps = {
   series: TimeSeries;
@@ -32,10 +33,12 @@ export function EnergyTimeSeriesChart({ series, peakIndex }: EnergyTimeSeriesCha
   const plotBottom = height - PLOT_BOTTOM_INSET;
   const plotMiddle = (PLOT_TOP + plotBottom) / 2;
 
+  const yMax = Math.max(MIN_Y_MAX, ...series.generated, ...series.consumed, ...series.exported);
+
   const toPoints = (values: number[]): Point[] =>
     values.map((v, i) => ({
       x: (i / (values.length - 1)) * width,
-      y: plotBottom - (Math.min(v, Y_MAX) / Y_MAX) * (plotBottom - PLOT_TOP),
+      y: plotBottom - (v / yMax) * (plotBottom - PLOT_TOP),
     }));
 
   const [exportedColor, , generatedColor, consumedColor] = theme.chart;

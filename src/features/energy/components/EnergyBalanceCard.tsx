@@ -6,7 +6,8 @@ import { Icon } from '@/shared/components/ui/Icon';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { FontFamily } from '@/shared/design-system/tokens';
 
-import type { BalanceSource, IconTone } from '../types';
+import type { BalanceSource } from '../types';
+import { useToneColor } from '../use-tone-color';
 
 type EnergyBalanceCardProps = {
   sources: readonly BalanceSource[];
@@ -17,11 +18,7 @@ type EnergyBalanceCardProps = {
 export function EnergyBalanceCard({ sources, footer, fill }: EnergyBalanceCardProps) {
   const { theme } = useTheme();
 
-  const toneColor: Record<IconTone, string> = {
-    warning: theme.feedback.warning.icon,
-    info: theme.feedback.info.icon,
-    accent: theme.accent,
-  };
+  const toneColor = useToneColor();
 
   return (
     <Card style={fill ? { flex: 1 } : undefined}>

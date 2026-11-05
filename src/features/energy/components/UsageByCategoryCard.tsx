@@ -16,7 +16,7 @@ type UsageByCategoryCardProps = {
 export function UsageByCategoryCard({ total, categories, fill }: UsageByCategoryCardProps) {
   const { theme } = useTheme();
 
-  const max = Math.max(...categories.map((c) => c.value));
+  const max = Math.max(0, ...categories.map((c) => c.value));
   const colorOf = (c: UsageCategory) =>
     c.color === 'muted' ? theme.textPlaceholder : theme.chart[c.color];
 
@@ -77,7 +77,7 @@ export function UsageByCategoryCard({ total, categories, fill }: UsageByCategory
                 className="rounded-[3px]"
                 style={{
                   height: 6,
-                  width: `${(category.value / max) * 100}%`,
+                  width: `${max > 0 ? (category.value / max) * 100 : 0}%`,
                   backgroundColor: colorOf(category),
                 }}
               />
