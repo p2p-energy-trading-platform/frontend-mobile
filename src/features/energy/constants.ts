@@ -138,10 +138,9 @@ export const insights: Insight[] = [
     title: 'Battery covers evening peak',
     body: '9.2 kWh stored will cover 17:00–21:30, cutting imports to near zero.',
   },
-
   {
     key: 'off-peak-ev',
-    icon: 'battery',
+    icon: 'bolt',
     tone: 'accent',
     title: 'Off-peak EV charging',
     body: 'Charge between 01:00–05:00 at AED 0.21/kWh to save about AED 3.10.',
