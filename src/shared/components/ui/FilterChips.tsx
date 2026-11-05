@@ -4,8 +4,7 @@ import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { FontFamily } from '@/shared/design-system/tokens';
 
 import { AppText } from './AppText';
-
-type Option<T extends string> = { label: string; value: T };
+import type { Option } from './types';
 
 type FilterChipsProps<T extends string> = {
   options: readonly Option<T>[];
