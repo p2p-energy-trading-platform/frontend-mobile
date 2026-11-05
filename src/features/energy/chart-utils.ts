@@ -43,7 +43,7 @@ export function getPeak(values: number[]) {
 
   const max = Math.max(...values);
   const index = values.indexOf(max);
-  const minutes = Math.round((index / (values.length - 1)) * 24 * 60);
+  const minutes = values.length > 1 ? Math.round((index / (values.length - 1)) * 24 * 60) : 0;
   const hh = String(Math.floor(minutes / 60)).padStart(2, '0');
   const mm = String(minutes % 60).padStart(2, '0');
 
