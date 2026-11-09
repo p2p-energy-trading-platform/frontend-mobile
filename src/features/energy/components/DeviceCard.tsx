@@ -182,7 +182,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
             <View
               className="h-1.5 w-1.5 rounded-full"
               style={{
-                backgroundColor: healthy ? theme.feedback.success.icon : theme.feedback.warning.icon,
+                backgroundColor: healthy
+                  ? theme.feedback.success.icon
+                  : theme.feedback.warning.icon,
               }}
             />
 

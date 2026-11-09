@@ -35,12 +35,7 @@ export function AssetsPanel({ onAddAsset }: AssetsPanelProps) {
   return (
     <View className="flex-1 gap-3">
       <View className="px-6">
-        <SegmentedControl
-          size="md"
-          options={assetViewOptions}
-          value={view}
-          onChange={setView}
-        />
+        <SegmentedControl size="md" options={assetViewOptions} value={view} onChange={setView} />
       </View>
 
       {view === 'devices' ? (

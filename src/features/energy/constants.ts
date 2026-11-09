@@ -257,4 +257,3 @@ export const devices: Device[] = [
     control: 'monitoring',
   },
 ];
-

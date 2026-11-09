@@ -59,4 +59,3 @@ export type Device = {
   lastSeen: string;
   control: DeviceControl;
 };
-
