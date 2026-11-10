@@ -27,6 +27,7 @@ import {
   StepHeader,
   TextField,
 } from './components/AuthComponents';
+import { isValidSriLankanNicNumber, toIsoDate } from './utils';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const emailIsValid = (email: string) => {
@@ -513,50 +514,10 @@ export function FileUploadRow({
   );
 }
 
-/**
- * Converts the DD/MM/YYYY value from DateField into the YYYY-MM-DD format the API
- * expects. Returns undefined when the value is not a real calendar date.
- */
-export function toIsoDate(value: string): string | undefined {
-  const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  if (!match) return undefined;
-  const [, day, month, year] = match;
-  const iso = `${year}-${month}-${day}`;
-  const date = new Date(`${iso}T00:00:00.000Z`);
-  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === iso ? iso : undefined;
-}
-
 // Same rule as the web: a real calendar date in the past.
 function validDateOfBirth(value: string) {
   const iso = toIsoDate(value);
   return iso !== undefined && new Date(`${iso}T00:00:00.000Z`).getTime() < Date.now();
-}
-
-// Same check as the web's isValidSriLankanNicNumber: the old format is 9 digits + V/X,
-// the new one 12 digits, and both encode the birth year and day of the year.
-function isValidSriLankanNicNumber(value: string) {
-  const nic = value.trim().toUpperCase();
-
-  let year: number;
-  let dayOfYear: number;
-
-  if (/^\d{12}$/.test(nic)) {
-    year = Number(nic.slice(0, 4));
-    dayOfYear = Number(nic.slice(4, 7));
-  } else if (/^\d{9}[VX]$/.test(nic)) {
-    year = 1900 + Number(nic.slice(0, 2));
-    dayOfYear = Number(nic.slice(2, 5));
-  } else {
-    return false;
-  }
-
-  if (dayOfYear > 500) dayOfYear -= 500;
-
-  const daysInYear = new Date(Date.UTC(year, 1, 29)).getUTCDate() === 29 ? 366 : 365;
-
-  return (
-    year >= 1900 && year <= new Date().getUTCFullYear() && dayOfYear >= 1 && dayOfYear <= daysInYear
-  );
 }
 
 export function KycScreen() {
