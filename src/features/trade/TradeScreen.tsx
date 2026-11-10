@@ -71,7 +71,14 @@ function Chart({ range }: { range: PriceRange }) {
         y2={CHART_BASELINE}
       />
       <Path d={line} fill="none" stroke={theme.accent} strokeLinecap="round" strokeWidth="2.5" />
-      <Circle cx={last.x} cy={last.y} fill={theme.surface} r="5" stroke={theme.accent} strokeWidth="2.5" />
+      <Circle
+        cx={last.x}
+        cy={last.y}
+        fill={theme.surface}
+        r="5"
+        stroke={theme.accent}
+        strokeWidth="2.5"
+      />
     </Svg>
   );
 }
@@ -93,9 +100,18 @@ function SelectableChip({
       accessibilityState={{ selected: active }}
       className="rounded-full border px-3 py-1.5"
       onPress={onPress}
-      style={{ backgroundColor: active ? theme.surfaceSecondary : theme.surface, borderColor: active ? theme.text : theme.border }}
+      style={{
+        backgroundColor: active ? theme.surfaceSecondary : theme.surface,
+        borderColor: active ? theme.text : theme.border,
+      }}
     >
-      <AppText style={{ color: active ? theme.text : theme.textSecondary, fontFamily: FontFamily.bodyMedium, fontSize: 12 }}>
+      <AppText
+        style={{
+          color: active ? theme.text : theme.textSecondary,
+          fontFamily: FontFamily.bodyMedium,
+          fontSize: 12,
+        }}
+      >
         {label}
       </AppText>
     </Pressable>
@@ -114,13 +130,17 @@ export default function TradeScreen() {
 
   const numericQuantity = Number(quantity);
   const numericPrice = Number(limitPrice);
-  const quantityValid = Number.isFinite(numericQuantity) && numericQuantity > 0 && numericQuantity <= availableBalance;
+  const quantityValid =
+    Number.isFinite(numericQuantity) && numericQuantity > 0 && numericQuantity <= availableBalance;
   const priceValid = orderType === 'market' || (Number.isFinite(numericPrice) && numericPrice > 0);
   const formValid = quantityValid && priceValid;
   const effectivePrice = orderType === 'market' ? tradePrice : numericPrice;
   const estimatedTotal = numericQuantity * effectivePrice;
 
-  const chartLabels = useMemo(() => ({ start: range === '1D' ? '00:00' : '13:00', end: 'Now' }), [range]);
+  const chartLabels = useMemo(
+    () => ({ start: range === '1D' ? '00:00' : '13:00', end: 'Now' }),
+    [range],
+  );
 
   const setQuickQuantity = (amount: number | 'max') => {
     setQuantity(String(amount === 'max' ? availableBalance : amount));
@@ -128,7 +148,10 @@ export default function TradeScreen() {
 
   return (
     <AppShell unreadCount={tradeHeader.unreadCount} initials={tradeHeader.initials}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        className="flex-1"
+      >
         <ScrollView
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ gap: 12, paddingBottom: 16, paddingTop: 12 }}
@@ -142,7 +165,9 @@ export default function TradeScreen() {
               onPress={() => setSlotPickerOpen((open) => !open)}
               style={{ backgroundColor: theme.surface, borderColor: theme.border }}
             >
-              <AppText style={{ fontFamily: FontFamily.bodySemibold, fontSize: 12 }}>{selectedSlot}</AppText>
+              <AppText style={{ fontFamily: FontFamily.bodySemibold, fontSize: 12 }}>
+                {selectedSlot}
+              </AppText>
               <ChevronDown color={theme.textSecondary} size={15} style={{ marginLeft: 5 }} />
             </Pressable>
             {slotPickerOpen ? (
@@ -155,7 +180,11 @@ export default function TradeScreen() {
                       setSelectedSlot(slot.value);
                       setSlotPickerOpen(false);
                     }}
-                    style={slot.value === selectedSlot ? { backgroundColor: theme.surfaceSecondary } : undefined}
+                    style={
+                      slot.value === selectedSlot
+                        ? { backgroundColor: theme.surfaceSecondary }
+                        : undefined
+                    }
                   >
                     <AppText style={{ fontSize: 13 }}>{slot.label}</AppText>
                   </Pressable>
@@ -168,9 +197,13 @@ export default function TradeScreen() {
             <Card>
               <View className="flex-row items-start justify-between">
                 <View>
-                  <AppText style={{ color: theme.textSecondary, fontSize: 12 }}>Current price</AppText>
+                  <AppText style={{ color: theme.textSecondary, fontSize: 12 }}>
+                    Current price
+                  </AppText>
                   <View className="mt-1 flex-row items-baseline gap-2">
-                    <AppText style={{ fontFamily: FontFamily.heading, fontSize: 28 }}>{tradePrice.toFixed(2)}</AppText>
+                    <AppText style={{ fontFamily: FontFamily.heading, fontSize: 28 }}>
+                      {tradePrice.toFixed(2)}
+                    </AppText>
                     <AppText style={{ color: theme.textSecondary, fontSize: 12 }}>AED/kWh</AppText>
                   </View>
                 </View>
@@ -187,8 +220,12 @@ export default function TradeScreen() {
               <View className="mt-2">
                 <Chart range={range} />
                 <View className="flex-row justify-between">
-                  <AppText style={{ color: theme.textPlaceholder, fontSize: 10 }}>{chartLabels.start}</AppText>
-                  <AppText style={{ color: theme.textPlaceholder, fontSize: 10 }}>{chartLabels.end}</AppText>
+                  <AppText style={{ color: theme.textPlaceholder, fontSize: 10 }}>
+                    {chartLabels.start}
+                  </AppText>
+                  <AppText style={{ color: theme.textPlaceholder, fontSize: 10 }}>
+                    {chartLabels.end}
+                  </AppText>
                 </View>
               </View>
             </Card>
@@ -219,7 +256,11 @@ export default function TradeScreen() {
               />
               <View className="mt-2 flex-row gap-2">
                 {quickAmounts.map((amount) => (
-                  <SelectableChip key={amount} label={`${amount} kWh`} onPress={() => setQuickQuantity(amount)} />
+                  <SelectableChip
+                    key={amount}
+                    label={`${amount} kWh`}
+                    onPress={() => setQuickQuantity(amount)}
+                  />
                 ))}
                 <SelectableChip label="Max" onPress={() => setQuickQuantity('max')} />
               </View>
@@ -238,9 +279,17 @@ export default function TradeScreen() {
               {orderType === 'limit' ? (
                 <View className="mt-3">
                   <View className="flex-row items-center justify-between">
-                    <AppText style={{ color: theme.textSecondary, fontSize: 12 }}>Limit price</AppText>
+                    <AppText style={{ color: theme.textSecondary, fontSize: 12 }}>
+                      Limit price
+                    </AppText>
                     <Pressable onPress={() => setLimitPrice(bestAsk.toFixed(2))}>
-                      <AppText style={{ color: theme.accent, fontFamily: FontFamily.bodySemibold, fontSize: 12 }}>
+                      <AppText
+                        style={{
+                          color: theme.accent,
+                          fontFamily: FontFamily.bodySemibold,
+                          fontSize: 12,
+                        }}
+                      >
                         Best ask AED {bestAsk.toFixed(2)}
                       </AppText>
                     </Pressable>
@@ -256,12 +305,18 @@ export default function TradeScreen() {
 
               <View className="mt-4 flex-row items-center justify-between">
                 <View>
-                  <AppText style={{ color: theme.textSecondary, fontSize: 12 }}>Estimated total</AppText>
-                  <AppText style={{ fontFamily: FontFamily.bodySemibold, fontSize: 16, marginTop: 2 }}>
+                  <AppText style={{ color: theme.textSecondary, fontSize: 12 }}>
+                    Estimated total
+                  </AppText>
+                  <AppText
+                    style={{ fontFamily: FontFamily.bodySemibold, fontSize: 16, marginTop: 2 }}
+                  >
                     {formValid ? `AED ${estimatedTotal.toFixed(2)}` : 'AED —'}
                   </AppText>
                 </View>
-                <AppText style={{ color: theme.textSecondary, fontSize: 12 }}>{selectedSlot}</AppText>
+                <AppText style={{ color: theme.textSecondary, fontSize: 12 }}>
+                  {selectedSlot}
+                </AppText>
               </View>
               <Button
                 disabled={!formValid}
@@ -282,21 +337,29 @@ export default function TradeScreen() {
               <Card>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
-                    <AppText style={{ fontFamily: FontFamily.bodySemibold, fontSize: 14 }}>Open orders</AppText>
+                    <AppText style={{ fontFamily: FontFamily.bodySemibold, fontSize: 14 }}>
+                      Open orders
+                    </AppText>
                     <Chip label={String(openOrderCount)} tone="success" semibold />
                   </View>
                   <AppText style={{ color: theme.textSecondary, fontSize: 12 }}>›</AppText>
                 </View>
                 <View className="mt-3 flex-row justify-between">
                   <View>
-                    <AppText style={{ color: theme.textSecondary, fontSize: 11 }}>Best sell</AppText>
-                    <AppText style={{ fontFamily: FontFamily.bodySemibold, fontSize: 14, marginTop: 2 }}>
+                    <AppText style={{ color: theme.textSecondary, fontSize: 11 }}>
+                      Best sell
+                    </AppText>
+                    <AppText
+                      style={{ fontFamily: FontFamily.bodySemibold, fontSize: 14, marginTop: 2 }}
+                    >
                       AED {bestSellPrice.toFixed(2)}
                     </AppText>
                   </View>
                   <View className="items-end">
                     <AppText style={{ color: theme.textSecondary, fontSize: 11 }}>Best buy</AppText>
-                    <AppText style={{ fontFamily: FontFamily.bodySemibold, fontSize: 14, marginTop: 2 }}>
+                    <AppText
+                      style={{ fontFamily: FontFamily.bodySemibold, fontSize: 14, marginTop: 2 }}
+                    >
                       AED {bestBuyPrice.toFixed(2)}
                     </AppText>
                   </View>
