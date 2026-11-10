@@ -11,6 +11,7 @@ import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { Typography } from '@/shared/design-system/tokens';
 import { useAppStore } from '@/store/app-store';
 
+import { login, register, verifyEmail } from './api';
 import {
   AuthButton,
   AuthHeading,
@@ -74,15 +75,23 @@ export function SignInScreen() {
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [busy, setBusy] = useState(false);
   const emailError = submitted && !emailIsValid(email) ? 'Enter a valid email address' : undefined;
   const passwordError = submitted && !password ? 'Password is required' : undefined;
 
-  const signIn = () => {
+  const signIn = async () => {
     setSubmitted(true);
     if (!emailIsValid(email) || !password || password.length > 128) return;
-    // TODO(api): call POST /api/v1/auth/login and show API errors before entering the app.
-    setAuthenticated(true);
-    router.replace('/(tabs)');
+    setBusy(true);
+    try {
+      await login(email.trim(), password);
+      setAuthenticated(true);
+      router.replace('/(tabs)');
+    } catch (error) {
+      Alert.alert('Unable to sign in', error instanceof Error ? error.message : 'Please try again.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -130,7 +139,7 @@ export function SignInScreen() {
         </View>
 
         <View className="gap-5">
-          <AuthButton title="Sign in" onPress={signIn} />
+          <AuthButton title="Sign in" disabled={busy} onPress={signIn} />
           <Divider />
           <GoogleButton
             onPress={() => Alert.alert('Google sign in', 'Google sign in is not connected yet.')}
@@ -161,6 +170,7 @@ export function CreateAccountScreen() {
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [confirmationTouched, setConfirmationTouched] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   const nameValid = fullNameIsValid(fullName);
   const emailValid = emailIsValid(email);
@@ -179,11 +189,18 @@ export function CreateAccountScreen() {
   const confirmationError =
     (submitted || confirmationTouched) && !passwordsMatch ? 'Passwords do not match' : undefined;
 
-  const continueToVerify = () => {
+  const continueToVerify = async () => {
     setSubmitted(true);
     if (!formValid) return;
-    // TODO(api): call POST /api/v1/auth/register with { name, email, password } first.
-    router.push({ pathname: '/verify-email', params: { email: email.trim() } });
+    setBusy(true);
+    try {
+      await register(fullName.trim(), email.trim(), password);
+      router.push({ pathname: '/verify-email', params: { email: email.trim() } });
+    } catch (error) {
+      Alert.alert('Unable to create account', error instanceof Error ? error.message : 'Please try again.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -245,7 +262,7 @@ export function CreateAccountScreen() {
           </AppText>
         ) : null}
         <View className="mt-auto gap-4 pt-4">
-          <AuthButton title="Continue" disabled={!formValid} onPress={continueToVerify} />
+          <AuthButton title="Continue" disabled={!formValid || busy} onPress={continueToVerify} />
           <View className="flex-row justify-center gap-1">
             <AppText variant="caption" style={{ color: theme.textSecondary }}>
               Already have an account?
@@ -278,11 +295,15 @@ export function VerifyEmailScreen() {
 
   const codeValid = /^\d{6}$/.test(code);
 
-  const verify = () => {
+  const verify = async () => {
     setSubmitted(true);
     if (!codeValid) return;
-    // TODO(api): call POST /api/v1/auth/verify-email with { email, otp: code } first.
-    router.push('/kyc');
+    try {
+      await verifyEmail(email, code);
+      router.push('/kyc');
+    } catch (error) {
+      Alert.alert('Unable to verify email', error instanceof Error ? error.message : 'Please try again.');
+    }
   };
 
   return (
