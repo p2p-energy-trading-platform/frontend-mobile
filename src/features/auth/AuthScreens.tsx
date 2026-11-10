@@ -88,7 +88,10 @@ export function SignInScreen() {
       setAuthenticated(true);
       router.replace('/(tabs)');
     } catch (error) {
-      Alert.alert('Unable to sign in', error instanceof Error ? error.message : 'Please try again.');
+      Alert.alert(
+        'Unable to sign in',
+        error instanceof Error ? error.message : 'Please try again.',
+      );
     } finally {
       setBusy(false);
     }
@@ -197,7 +200,10 @@ export function CreateAccountScreen() {
       await register(fullName.trim(), email.trim(), password);
       router.push({ pathname: '/verify-email', params: { email: email.trim() } });
     } catch (error) {
-      Alert.alert('Unable to create account', error instanceof Error ? error.message : 'Please try again.');
+      Alert.alert(
+        'Unable to create account',
+        error instanceof Error ? error.message : 'Please try again.',
+      );
     } finally {
       setBusy(false);
     }
@@ -302,7 +308,10 @@ export function VerifyEmailScreen() {
       await verifyEmail(email, code);
       router.push('/kyc');
     } catch (error) {
-      Alert.alert('Unable to verify email', error instanceof Error ? error.message : 'Please try again.');
+      Alert.alert(
+        'Unable to verify email',
+        error instanceof Error ? error.message : 'Please try again.',
+      );
     }
   };
 
