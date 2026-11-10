@@ -37,7 +37,6 @@ export default function EnergyScreen() {
 
   return (
     <AppShell unreadCount={energyHeader.unreadCount} initials={energyHeader.initials}>
-
       <ScrollView
         className={view === 'usage' ? 'flex-1' : 'hidden'}
         contentContainerStyle={{ flexGrow: 1, gap: 12, paddingTop: 12, paddingBottom: 10 }}
