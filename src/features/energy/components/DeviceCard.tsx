@@ -54,13 +54,13 @@ function StatusChip({ status }: { status: Device['status'] }) {
 }
 
 export function DeviceCard({ device }: DeviceCardProps) {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
 
   const toneColor = {
     warning: theme.feedback.warning.icon,
     accent: theme.accent,
     info: theme.feedback.info.icon,
-    purple: theme.chart[3],
+    purple: theme.chart[isDark ? 3 : 4],
   }[device.tone];
 
   const healthy = device.health === 'good';
