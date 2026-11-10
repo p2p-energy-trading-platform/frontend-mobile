@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { PropsWithChildren } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,11 +18,16 @@ type AppShellProps = PropsWithChildren<{
  */
 export function AppShell({ children, unreadCount = 0, initials }: AppShellProps) {
   const { theme } = useTheme();
+  const router = useRouter();
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
       <SafeAreaView edges={['top']} style={{ backgroundColor: theme.surface }}>
-        <AppTopBar unreadCount={unreadCount} initials={initials} />
+        <AppTopBar
+          unreadCount={unreadCount}
+          initials={initials}
+          onPressNotifications={() => router.push('/(tabs)/notification')}
+        />
       </SafeAreaView>
 
       <View className="flex-1">{children}</View>
