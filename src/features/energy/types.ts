@@ -35,3 +35,27 @@ export type Insight = {
   title: string;
   body: string;
 };
+
+export type DeviceCategory = 'solar' | 'battery' | 'ev' | 'charger' | 'flex';
+export type DeviceStatus = 'online' | 'idle';
+export type DeviceHealth = 'good' | 'degraded';
+export type DeviceControl = 'controllable' | 'monitoring';
+export type DeviceTone = 'warning' | 'accent' | 'info' | 'purple';
+
+export type Device = {
+  key: string;
+  name: string;
+  model: string;
+  icon: IconName;
+  category: DeviceCategory;
+  status: DeviceStatus;
+  tone: DeviceTone;
+  value: string;
+  unit: string;
+  activity: string;
+  /** 0–100, only for batteries / EVs */
+  stateOfCharge?: number;
+  health: DeviceHealth;
+  lastSeen: string;
+  control: DeviceControl;
+};

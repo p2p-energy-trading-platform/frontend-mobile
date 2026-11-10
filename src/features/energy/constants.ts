@@ -1,4 +1,4 @@
-import type { BalanceSource, Insight, TimeSeries, UsageCategory } from './types';
+import type { Device, BalanceSource, Insight, TimeSeries, UsageCategory } from './types';
 
 export const energyHeader = {
   title: 'Energy',
@@ -144,5 +144,116 @@ export const insights: Insight[] = [
     tone: 'accent',
     title: 'Off-peak EV charging',
     body: 'Charge between 01:00–05:00 at AED 0.21/kWh to save about AED 3.10.',
+  },
+];
+
+/* ---------- Assets ---------- */
+
+export const assetViewOptions = [
+  { label: 'Devices', value: 'devices' },
+  { label: 'Automation', value: 'automation' },
+] as const;
+
+export const deviceFilterOptions = [
+  { label: 'All assets', value: 'all' },
+  { label: 'Solar', value: 'solar' },
+  { label: 'Battery', value: 'battery' },
+  { label: 'EV', value: 'ev' },
+  { label: 'Charger', value: 'charger' },
+  { label: 'Flex loads', value: 'flex' },
+] as const;
+
+export const devices: Device[] = [
+  {
+    key: 'solar',
+    name: 'Rooftop Solar Array',
+    model: 'JA Solar · JAM72S20 370/MR',
+    icon: 'sun',
+    category: 'solar',
+    status: 'online',
+    tone: 'warning',
+    value: '+3.4',
+    unit: 'kW',
+    activity: 'Generating',
+    health: 'good',
+    lastSeen: 'Just now',
+    control: 'monitoring',
+  },
+  {
+    key: 'battery',
+    name: 'Home Battery',
+    model: 'Tesla · Powerwall 2',
+    icon: 'battery',
+    category: 'battery',
+    status: 'online',
+    tone: 'accent',
+    value: '+1.2',
+    unit: 'kW',
+    activity: 'Charging',
+    stateOfCharge: 67,
+    health: 'good',
+    lastSeen: '1 min ago',
+    control: 'controllable',
+  },
+  {
+    key: 'ev',
+    name: 'Tesla Model Y',
+    model: 'Tesla · Model Y Long Range',
+    icon: 'car',
+    category: 'ev',
+    status: 'idle',
+    tone: 'purple',
+    value: '0',
+    unit: 'kW',
+    activity: 'Active draw',
+    stateOfCharge: 67,
+    health: 'good',
+    lastSeen: '8 min ago',
+    control: 'controllable',
+  },
+  {
+    key: 'charger',
+    name: 'EV Charger',
+    model: 'Wallbox · Pulsar Plus 22',
+    icon: 'plug',
+    category: 'charger',
+    status: 'idle',
+    tone: 'accent',
+    value: '0',
+    unit: 'kW',
+    activity: 'Active draw',
+    health: 'good',
+    lastSeen: '3 min ago',
+    control: 'controllable',
+  },
+  {
+    key: 'water-heater',
+    name: 'Water Heater',
+    model: 'Ariston · Lydos Hybrid 80L',
+    icon: 'droplets',
+    category: 'flex',
+    status: 'online',
+    tone: 'info',
+    value: '+0.8',
+    unit: 'kW',
+    activity: 'Active draw',
+    health: 'degraded',
+    lastSeen: '5 min ago',
+    control: 'controllable',
+  },
+  {
+    key: 'hvac',
+    name: 'HVAC — Main Zone',
+    model: 'Daikin · SkyAir RZQS100',
+    icon: 'wind',
+    category: 'flex',
+    status: 'online',
+    tone: 'purple',
+    value: '+3.2',
+    unit: 'kW',
+    activity: 'Active draw',
+    health: 'good',
+    lastSeen: '2 min ago',
+    control: 'monitoring',
   },
 ];
