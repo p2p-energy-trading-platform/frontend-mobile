@@ -2,6 +2,7 @@ import { defineConfig } from 'eslint/config';
 import expoConfig from 'eslint-config-expo/flat.js';
 import tseslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
+import globals from 'globals';
 
 export default defineConfig([
   {
@@ -46,9 +47,13 @@ export default defineConfig([
   },
 
   {
-    files: ['src/**/*.test.{ts,tsx}'],
+    files: ['src/**/*.test.{ts,tsx}', 'src/test/**/*.{ts,tsx}', 'jest.setup.ts'],
+    languageOptions: {
+      globals: globals.jest,
+    },
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
   prettierConfig,
