@@ -6,6 +6,7 @@ import { useTheme } from '@/shared/design-system/hooks/use-theme';
 type NotificationsHeaderProps = {
   title: string;
   unreadCount: number;
+  onBack?: () => void;
   onMarkAllRead?: () => void;
 };
 
@@ -13,6 +14,7 @@ type NotificationsHeaderProps = {
 export function NotificationsHeader({
   title,
   unreadCount,
+  onBack,
   onMarkAllRead,
 }: NotificationsHeaderProps) {
   const { theme } = useTheme();
@@ -22,6 +24,16 @@ export function NotificationsHeader({
   return (
     <View className="h-8 flex-row items-center justify-between">
       <View className="flex-row items-center gap-2.5">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          hitSlop={8}
+          onPress={onBack}
+          className="-ml-1.5 h-8 w-8 items-center justify-center rounded-xl"
+        >
+          <Icon name="arrow-back" size={20} color={theme.text} />
+        </Pressable>
+
         <Text className="font-heading text-xl leading-7" style={{ color: theme.text }}>
           {title}
         </Text>

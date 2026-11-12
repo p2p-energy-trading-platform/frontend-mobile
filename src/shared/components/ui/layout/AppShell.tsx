@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import { PropsWithChildren } from 'react';
+import { usePathname, useRouter } from 'expo-router';
+import { PropsWithChildren, useRef } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -19,6 +19,21 @@ type AppShellProps = PropsWithChildren<{
 export function AppShell({ children, unreadCount = 0, initials }: AppShellProps) {
   const { theme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
+  const isOpeningRef = useRef(false);
+
+  const openNotifications = () => {
+    // Already on the notifications screen, or a tap was just handled: ignore.
+    if (pathname === '/notification' || isOpeningRef.current) return;
+
+    isOpeningRef.current = true;
+    router.push('/notification');
+
+    // Release the lock once the transition has finished.
+    setTimeout(() => {
+      isOpeningRef.current = false;
+    }, 800);
+  };
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
@@ -26,7 +41,7 @@ export function AppShell({ children, unreadCount = 0, initials }: AppShellProps)
         <AppTopBar
           unreadCount={unreadCount}
           initials={initials}
-          onPressNotifications={() => router.push('/(tabs)/notification')}
+          onPressNotifications={openNotifications}
         />
       </SafeAreaView>
 

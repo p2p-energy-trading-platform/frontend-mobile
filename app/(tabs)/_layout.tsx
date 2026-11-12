@@ -63,8 +63,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Icon name="apps" color={color} size={22} />,
         }}
       />
-
-      <Tabs.Screen name="notification" options={{ href: null }} />
     </Tabs>
   );
 }

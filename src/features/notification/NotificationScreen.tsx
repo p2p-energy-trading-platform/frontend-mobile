@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
-
+import { useRouter } from 'expo-router';
 import { AppShell } from '@/shared/components/ui/layout/AppShell';
 
 import { NotificationList } from './components/NotificationList';
@@ -11,6 +11,8 @@ import type { NotificationData } from './types';
 import { groupNotifications } from './utils';
 
 export default function NotificationsScreen() {
+  const router = useRouter();
+
   const [items, setItems] = useState<NotificationData[]>(initialNotifications);
   const [showingUnreadOnly, setShowingUnreadOnly] = useState(false);
 
@@ -20,6 +22,15 @@ export default function NotificationsScreen() {
     [items, showingUnreadOnly],
   );
   const sections = useMemo(() => groupNotifications(visibleItems), [visibleItems]);
+
+  /** Back to the screen the user came from (e.g. Energy). Falls back to Home if there is no history. */
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
+  };
 
   const markAllRead = () => setItems((prev) => prev.map((item) => ({ ...item, unread: false })));
 
@@ -34,6 +45,7 @@ export default function NotificationsScreen() {
         <NotificationsHeader
           title={notificationsHeader.title}
           unreadCount={unreadCount}
+          onBack={handleBack}
           onMarkAllRead={markAllRead}
         />
 
