@@ -1,42 +1,35 @@
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Icon } from '@/shared/components/ui/Icon';
+import { FilterDropdown } from '@/shared/components/ui/FilterDropdown';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
+import { statusFilterOptions } from '../constants';
+import type { NotificationStatusFilter } from '../types';
+
 type NotificationsToolbarProps = {
+  status: NotificationStatusFilter;
+  onStatusChange: (status: NotificationStatusFilter) => void;
   unreadCount: number;
   totalCount: number;
-  showingUnreadOnly: boolean;
-  onPressFilter?: () => void;
 };
 
-/** Filter button + "3 unread · 12 total" (Figma: History controls). */
+/** Status dropdown (All / Unread / Read) + "3 unread · 12 total". */
 export function NotificationsToolbar({
+  status,
+  onStatusChange,
   unreadCount,
   totalCount,
-  showingUnreadOnly,
-  onPressFilter,
 }: NotificationsToolbarProps) {
   const { theme } = useTheme();
 
   return (
     <View className="h-9 flex-row items-center justify-between">
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={
-          showingUnreadOnly ? 'Show all notifications' : 'Show unread notifications'
-        }
-        accessibilityState={{ selected: showingUnreadOnly }}
-        onPress={onPressFilter}
-        className="h-9 flex-row items-center gap-2 rounded-xl border px-3.5"
-        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
-      >
-        <Icon name="list-filter" size={16} color={theme.text} />
-
-        <Text className="font-body-medium text-xs" style={{ color: theme.text }}>
-          {showingUnreadOnly ? 'Unread' : 'All'}
-        </Text>
-      </Pressable>
+      <FilterDropdown
+        options={statusFilterOptions}
+        value={status}
+        onChange={onStatusChange}
+        accessibilityLabel="Notification status filter"
+      />
 
       <Text className="font-body text-xs" style={{ color: theme.textTertiary }}>
         {unreadCount} unread · {totalCount} total

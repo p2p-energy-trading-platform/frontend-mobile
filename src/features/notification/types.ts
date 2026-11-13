@@ -7,9 +7,16 @@ export type NotificationPriority = 'high' | 'normal' | 'low';
 
 export type NotificationGroupKey = 'today' | 'yesterday' | 'earlier';
 
+export type NotificationCategory = 'trade' | 'wallet' | 'asset' | 'forecast' | 'account';
+
+export type NotificationCategoryFilter = NotificationCategory | 'all';
+
+export type NotificationStatusFilter = 'all' | 'unread' | 'read';
+
 export type NotificationData = {
   id: string;
   group: NotificationGroupKey;
+  category: NotificationCategory;
   icon: IconName;
   tone: NotificationTone;
   priority: NotificationPriority;

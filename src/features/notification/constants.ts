@@ -1,4 +1,9 @@
-import type { NotificationData, NotificationGroupKey } from './types';
+import type {
+  NotificationCategoryFilter,
+  NotificationData,
+  NotificationGroupKey,
+  NotificationStatusFilter,
+} from './types';
 
 export const notificationsHeader = {
   title: 'Notifications',
@@ -11,10 +16,29 @@ export const notificationGroups: { key: NotificationGroupKey; label: string }[] 
   { key: 'earlier', label: 'Earlier' },
 ];
 
+export const statusFilterOptions: readonly { label: string; value: NotificationStatusFilter }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Unread', value: 'unread' },
+  { label: 'Read', value: 'read' },
+];
+
+export const categoryFilterOptions: readonly {
+  label: string;
+  value: NotificationCategoryFilter;
+}[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Trades', value: 'trade' },
+  { label: 'Wallet', value: 'wallet' },
+  { label: 'Assets', value: 'asset' },
+  { label: 'Forecasts', value: 'forecast' },
+  { label: 'Account', value: 'account' },
+];
+
 export const notifications: NotificationData[] = [
   {
     id: 'n1',
     group: 'today',
+    category: 'trade',
     icon: 'trending-up',
     tone: 'trade',
     priority: 'high',
@@ -27,6 +51,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n2',
     group: 'today',
+    category: 'wallet',
     icon: 'account-balance-wallet',
     tone: 'success',
     priority: 'normal',
@@ -39,6 +64,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n3',
     group: 'today',
+    category: 'asset',
     icon: 'speed',
     tone: 'warning',
     priority: 'high',
@@ -51,6 +77,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n4',
     group: 'today',
+    category: 'trade',
     icon: 'trending-up',
     tone: 'trade',
     priority: 'high',
@@ -63,6 +90,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n5',
     group: 'today',
+    category: 'forecast',
     icon: 'cloud-sun',
     tone: 'neutral',
     priority: 'normal',
@@ -75,6 +103,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n6',
     group: 'yesterday',
+    category: 'account',
     icon: 'shield-check',
     tone: 'info',
     priority: 'high',
@@ -87,6 +116,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n7',
     group: 'yesterday',
+    category: 'trade',
     icon: 'trending-up',
     tone: 'trade',
     priority: 'normal',
@@ -98,6 +128,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n8',
     group: 'yesterday',
+    category: 'wallet',
     icon: 'account-balance-wallet',
     tone: 'success',
     priority: 'normal',
@@ -110,6 +141,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n9',
     group: 'yesterday',
+    category: 'asset',
     icon: 'speed',
     tone: 'warning',
     priority: 'low',
@@ -121,6 +153,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n10',
     group: 'yesterday',
+    category: 'trade',
     icon: 'trending-up',
     tone: 'trade',
     priority: 'normal',
@@ -133,6 +166,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n11',
     group: 'earlier',
+    category: 'account',
     icon: 'shield-check',
     tone: 'info',
     priority: 'high',
@@ -145,6 +179,7 @@ export const notifications: NotificationData[] = [
   {
     id: 'n12',
     group: 'earlier',
+    category: 'forecast',
     icon: 'cloud-sun',
     tone: 'neutral',
     priority: 'normal',
