@@ -11,6 +11,7 @@ type FilterDropdownProps<T extends string> = {
   value: T;
   onChange: (value: T) => void;
   accessibilityLabel?: string;
+  label?: string;
 };
 
 type Anchor = { x: number; y: number; width: number; height: number };
@@ -21,6 +22,7 @@ export function FilterDropdown<T extends string>({
   value,
   onChange,
   accessibilityLabel = 'Filter',
+  label,
 }: FilterDropdownProps<T>) {
   const { theme } = useTheme();
 
@@ -57,7 +59,7 @@ export function FilterDropdown<T extends string>({
         <Icon name="list-filter" size={16} color={theme.text} />
 
         <Text className="font-body-medium text-xs" style={{ color: theme.text }}>
-          {selected?.label}
+          {label ?? selected?.label}
         </Text>
 
         <Icon name="keyboard-arrow-down" size={16} color={theme.textTertiary} />
