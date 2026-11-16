@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ScrollView, Switch, View } from 'react-native';
+import { Pressable, ScrollView, Switch, View } from 'react-native';
+import { useRouter, type Href } from 'expo-router';
 
 import { AppText } from '@/shared/components/ui/AppText';
 import { Card } from '@/shared/components/ui/Card';
@@ -26,6 +27,7 @@ const preferences = [
 ] as const;
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const { theme, colorScheme } = useTheme();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -33,6 +35,25 @@ export default function SettingsScreen() {
   return (
     <Screen>
       <ScrollView className="flex-1" contentContainerClassName="gap-5 p-5">
+        <Pressable onPress={() => router.push('/forecast' as Href)}>
+          <Card>
+            <View className="flex-row items-center gap-3">
+              <View
+                className="h-11 w-11 items-center justify-center rounded-xl"
+                style={{ backgroundColor: theme.surfaceAlt }}
+              >
+                <Icon color={theme.accent} name="trending-up" size={20} />
+              </View>
+              <View className="flex-1 gap-1">
+                <AppText variant="body">24-Hour Price Forecast</AppText>
+                <AppText variant="caption" style={{ color: theme.textSecondary }}>
+                  Plan your energy trades around the next 24 hours.
+                </AppText>
+              </View>
+              <Icon color={theme.textTertiary} name="chevron-right" size={18} />
+            </View>
+          </Card>
+        </Pressable>
         {/* Profile */}
 
         <Card>
