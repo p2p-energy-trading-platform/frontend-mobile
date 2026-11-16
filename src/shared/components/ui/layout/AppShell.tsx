@@ -1,4 +1,4 @@
-import { usePathname, useRouter } from 'expo-router';
+import { usePathname, useRouter, type Href } from 'expo-router';
 import { PropsWithChildren, useRef } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,7 +27,7 @@ export function AppShell({ children, unreadCount = 0, initials }: AppShellProps)
     if (pathname === '/notification' || isOpeningRef.current) return;
 
     isOpeningRef.current = true;
-    router.push('/notification');
+    router.push('/notification' as Href);
 
     // Release the lock once the transition has finished.
     setTimeout(() => {

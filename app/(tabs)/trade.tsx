@@ -1,5 +1,5 @@
-import { PlaceholderScreen } from '@/shared/components/ui/PlaceholderScreen';
+import TradeScreen from '@/features/trade/TradeScreen';
 
 export default function TradeRoute() {
-  return <PlaceholderScreen title="Trade" />;
+  return <TradeScreen />;
 }
