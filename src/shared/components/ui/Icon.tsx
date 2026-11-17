@@ -44,6 +44,7 @@ import {
   Wallet,
   Wind,
   type LucideIcon,
+  CircleX,
 } from 'lucide-react-native';
 import type { ColorValue } from 'react-native';
 
@@ -61,6 +62,7 @@ const icons = {
   'check-all': CheckCheck,
   'cloud-sun': CloudSun,
   car: Car,
+  cancel: CircleX,
   'check-circle': CircleCheck,
   'chevron-left': ChevronLeft,
   'chevron-right': ChevronRight,
