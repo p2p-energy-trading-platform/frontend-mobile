@@ -2,14 +2,14 @@ import { Pressable, Text, View } from 'react-native';
 
 import { FilterDropdown } from '@/shared/components/ui/FilterDropdown';
 import { Icon } from '@/shared/components/ui/Icon';
+import type { Option } from '@/shared/components/ui/types';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
-import { tradeStatusOptions } from '../constants';
-import type { TradeStatusFilter } from '../types';
-
-type HistoryToolbarProps = {
-  status: TradeStatusFilter;
-  onStatusChange: (status: TradeStatusFilter) => void;
+type HistoryToolbarProps<T extends string> = {
+  filterOptions: readonly Option<T>[];
+  filterValue: T;
+  onFilterChange: (value: T) => void;
+  filterAccessibilityLabel?: string;
   /** e.g. "1–5 of 12 · Page 1 of 3" */
   summary: string;
   canGoPrevious: boolean;
@@ -19,25 +19,27 @@ type HistoryToolbarProps = {
 };
 
 /** Filter button + range text + prev / next pager (Figma: History controls). */
-export function HistoryToolbar({
-  status,
-  onStatusChange,
+export function HistoryToolbar<T extends string>({
+  filterOptions,
+  filterValue,
+  onFilterChange,
+  filterAccessibilityLabel,
   summary,
   canGoPrevious,
   canGoNext,
   onPrevious,
   onNext,
-}: HistoryToolbarProps) {
+}: HistoryToolbarProps<T>) {
   const { theme } = useTheme();
 
   return (
     <View className="h-9 flex-row items-center justify-between">
       <FilterDropdown
         label="Filter"
-        options={tradeStatusOptions}
-        value={status}
-        onChange={onStatusChange}
-        accessibilityLabel="Trade status filter"
+        options={filterOptions}
+        value={filterValue}
+        onChange={onFilterChange}
+        accessibilityLabel={filterAccessibilityLabel}
       />
 
       <Text className="font-body text-xs" style={{ color: theme.textTertiary }}>
