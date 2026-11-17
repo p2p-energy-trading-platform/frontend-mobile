@@ -1,4 +1,10 @@
-import type { HistoryTabOption, TradeRecord, TradeStatusFilter } from './types';
+import type {
+  HistoryTabOption,
+  OrderRecord,
+  OrderStatusFilter,
+  TradeRecord,
+  TradeStatusFilter,
+} from './types';
 
 export const historyHeader = {
   title: 'History',
@@ -183,3 +189,131 @@ export const trades: TradeRecord[] = [
     zone: 'Jumeirah',
   },
 ];
+
+/* ---------- Orders ---------- */
+
+export const orderStatusOptions: readonly { label: string; value: OrderStatusFilter }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Open', value: 'open' },
+  { label: 'Partial', value: 'partial' },
+  { label: 'Filled', value: 'filled' },
+  { label: 'Cancelled', value: 'cancelled' },
+];
+
+export const ORDERS_PAGE_SIZE = 4;
+
+/* Mock data (first 4 match Figma) */
+
+export const orders: OrderRecord[] = [
+  {
+    id: 'GX-2847',
+    side: 'sell',
+    type: 'limit',
+    status: 'filled',
+    slot: '14:00–14:30',
+    date: '17 Jul',
+    placedAt: '14:28',
+    filledKwh: 8.4,
+    totalKwh: 8.4,
+  },
+  {
+    id: 'GX-2848',
+    side: 'buy',
+    type: 'limit',
+    status: 'partial',
+    slot: '15:00–15:30',
+    date: '17 Jul',
+    placedAt: '14:30',
+    filledKwh: 2.1,
+    totalKwh: 6,
+  },
+  {
+    id: 'GX-2849',
+    side: 'buy',
+    type: 'limit',
+    status: 'open',
+    slot: '15:00–15:30',
+    date: '17 Jul',
+    placedAt: '14:31',
+    filledKwh: 0,
+    totalKwh: 8,
+  },
+  {
+    id: 'GX-2846',
+    side: 'buy',
+    type: 'market',
+    status: 'filled',
+    slot: '13:00–13:30',
+    date: '17 Jul',
+    placedAt: '13:10',
+    filledKwh: 5.2,
+    totalKwh: 5.2,
+  },
+  {
+    id: 'GX-2845',
+    side: 'sell',
+    type: 'limit',
+    status: 'filled',
+    slot: '12:00–12:30',
+    date: '17 Jul',
+    placedAt: '11:50',
+    filledKwh: 12,
+    totalKwh: 12,
+  },
+  {
+    id: 'GX-2844',
+    side: 'buy',
+    type: 'market',
+    status: 'filled',
+    slot: '10:00–10:30',
+    date: '16 Jul',
+    placedAt: '10:22',
+    filledKwh: 3.8,
+    totalKwh: 3.8,
+  },
+  {
+    id: 'GX-2843',
+    side: 'sell',
+    type: 'limit',
+    status: 'cancelled',
+    slot: '09:00–09:30',
+    date: '15 Jul',
+    placedAt: '09:05',
+    filledKwh: 0,
+    totalKwh: 9.6,
+  },
+  {
+    id: 'GX-2842',
+    side: 'buy',
+    type: 'limit',
+    status: 'filled',
+    slot: '08:00–08:30',
+    date: '15 Jul',
+    placedAt: '08:12',
+    filledKwh: 7,
+    totalKwh: 7,
+  },
+  {
+    id: 'GX-2841',
+    side: 'sell',
+    type: 'market',
+    status: 'filled',
+    slot: '14:30–15:00',
+    date: '14 Jul',
+    placedAt: '14:41',
+    filledKwh: 14,
+    totalKwh: 14,
+  },
+  {
+    id: 'GX-2840',
+    side: 'sell',
+    type: 'limit',
+    status: 'open',
+    slot: '09:00–09:30',
+    date: '14 Jul',
+    placedAt: '08:45',
+    filledKwh: 0,
+    totalKwh: 10,
+  },
+];
+
