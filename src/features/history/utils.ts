@@ -26,3 +26,11 @@ export function paginate<T>(items: readonly T[], page: number, pageSize: number)
     to: startIndex + pageItems.length,
   };
 }
+
+/** "1–4 of 10 · Page 1 of 3", or `emptyLabel` when there are no results. */
+export function formatPageSummary(page: Page<unknown>, emptyLabel: string) {
+  if (page.total === 0) return emptyLabel;
+
+  return `${page.from}–${page.to} of ${page.total} · Page ${page.page} of ${page.totalPages}`;
+}
+
