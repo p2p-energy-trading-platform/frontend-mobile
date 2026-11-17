@@ -3,12 +3,12 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
-import { TRADES_PAGE_SIZE, trades } from '../constants';
+import { TRADES_PAGE_SIZE, tradeStatusOptions, trades } from '../constants';
 import type { TradeStatusFilter } from '../types';
-import { paginate } from '../utils';
+import { formatPageSummary, paginate } from '../utils';
 
 import { HistoryToolbar } from './HistoryToolbar';
-import { TradeCard } from './Tradecard';
+import { TradeCard } from './TradeCard';
 
 /** Trades tab: status filter + pager + the page of trade cards. */
 export function TradesTab() {
@@ -24,11 +24,6 @@ export function TradesTab() {
 
   const current = paginate(filtered, page, TRADES_PAGE_SIZE);
 
-  const summary =
-    current.total === 0
-      ? 'No trades'
-      : `${current.from}–${current.to} of ${current.total} · Page ${current.page} of ${current.totalPages}`;
-
   const handleStatusChange = (next: TradeStatusFilter) => {
     setStatus(next);
     setPage(1);
@@ -37,9 +32,11 @@ export function TradesTab() {
   return (
     <View className="flex-1 gap-3 pt-4">
       <HistoryToolbar
-        status={status}
-        onStatusChange={handleStatusChange}
-        summary={summary}
+        filterOptions={tradeStatusOptions}
+        filterValue={status}
+        onFilterChange={handleStatusChange}
+        filterAccessibilityLabel="Trade status filter"
+        summary={formatPageSummary(current, 'No trades')}
         canGoPrevious={current.page > 1}
         canGoNext={current.page < current.totalPages}
         onPrevious={() => setPage(current.page - 1)}
