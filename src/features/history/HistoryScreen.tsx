@@ -7,6 +7,7 @@ import { useGoBack } from '@/shared/hooks/use-go-back';
 import { HistoryHeader } from './components/HistoryHeader';
 import { HistoryPlaceholder } from './components/HistoryPlaceholder';
 import { HistoryTabs } from './components/HistoryTabs';
+import { OrdersTab } from './components/OrderTab';
 import { TradesTab } from './components/TradesTab';
 import { historyHeader, historyTabs } from './constants';
 import type { HistoryTab } from './types';
@@ -30,7 +31,7 @@ export default function HistoryScreen() {
         </View>
 
         {tab === 'trades' ? <TradesTab /> : null}
-        {tab === 'orders' ? <HistoryPlaceholder title="Orders" /> : null}
+        {tab === 'orders' ? <OrdersTab /> : null}
         {tab === 'statements' ? <HistoryPlaceholder title="Statements" /> : null}
       </View>
     </AppShell>
