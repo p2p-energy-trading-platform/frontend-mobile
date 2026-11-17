@@ -36,3 +36,25 @@ export type TradeRecord = {
   /** e.g. "Dubai South" */
   zone: string;
 };
+
+export type OrderType = 'limit' | 'market';
+
+export type OrderStatus = 'open' | 'partial' | 'filled' | 'cancelled';
+
+export type OrderStatusFilter = OrderStatus | 'all';
+
+export type OrderRecord = {
+  /** e.g. "GX-2847" */
+  id: string;
+  side: TradeSide;
+  type: OrderType;
+  status: OrderStatus;
+  /** Delivery slot, e.g. "14:00–14:30" */
+  slot: string;
+  /** e.g. "17 Jul" */
+  date: string;
+  /** Time the order was placed, e.g. "14:28" */
+  placedAt: string;
+  filledKwh: number;
+  totalKwh: number;
+};
