@@ -58,3 +58,19 @@ export type OrderRecord = {
   filledKwh: number;
   totalKwh: number;
 };
+
+export type StatementKind = 'monthly' | 'quarterly';
+
+export type StatementFilter = StatementKind | 'all';
+
+export type StatementRecord = {
+  /** e.g. "STMT-2025-06" */
+  id: string;
+  kind: StatementKind;
+  /** e.g. "June 2025 · Monthly statement" */
+  title: string;
+  /** e.g. "148 KB" */
+  size: string;
+  /** e.g. "1 Jul 2025" */
+  issued: string;
+};
