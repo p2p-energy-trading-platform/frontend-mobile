@@ -3,7 +3,7 @@ import { Modal, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
-import { Icon } from './Icon';
+import { Icon, type IconName } from './Icon';
 import type { Option } from './types';
 
 type FilterDropdownProps<T extends string> = {
@@ -11,6 +11,7 @@ type FilterDropdownProps<T extends string> = {
   value: T;
   onChange: (value: T) => void;
   accessibilityLabel?: string;
+  icon?: IconName;
 };
 
 type Anchor = { x: number; y: number; width: number; height: number };
@@ -21,6 +22,7 @@ export function FilterDropdown<T extends string>({
   value,
   onChange,
   accessibilityLabel = 'Filter',
+  icon = 'list-filter',
 }: FilterDropdownProps<T>) {
   const { theme } = useTheme();
 
@@ -54,7 +56,7 @@ export function FilterDropdown<T extends string>({
         className="h-9 flex-row items-center gap-2 rounded-xl border px-3.5"
         style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
-        <Icon name="list-filter" size={16} color={theme.text} />
+        <Icon name={icon} size={16} color={theme.text} />
 
         <Text className="font-body-medium text-xs" style={{ color: theme.text }}>
           {selected?.label}

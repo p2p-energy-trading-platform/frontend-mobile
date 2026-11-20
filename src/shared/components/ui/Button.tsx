@@ -4,7 +4,7 @@ import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
 import { AppText } from './AppText';
 
-type Variant = 'primary' | 'accent';
+type Variant = 'primary' | 'accent' | 'destructive';
 
 interface ButtonProps extends Omit<PressableProps, 'style'> {
   title: string;
@@ -34,10 +34,15 @@ export function Button({
       background: theme.accent,
       foreground: theme.accentForeground,
     },
+    destructive: {
+      background: theme.error,
+      foreground: theme.errorForeground,
+    },
   };
 
   return (
     <Pressable
+      accessibilityRole="button"
       className="h-12 items-center justify-center rounded-xl px-5"
       style={[
         {
