@@ -1,38 +1,68 @@
-export type TradeSide = 'buy' | 'sell';
-export type OrderType = 'limit' | 'market';
-export type PriceRange = '1H' | '4H' | '1D';
+import type { Option } from '@/shared/components/ui/types';
 
-export type TradeSlot = {
-  label: string;
-  value: string;
-};
+import type { MarketSnapshot, OrderBookRow, OrderQuote, Timeframe } from './types';
 
 export const tradeHeader = {
   title: 'Trade',
-  subtitle: 'Dubai, United Arab Emirates',
-  initials: 'SW',
-  unreadCount: 2,
+  subtitle: 'Peer-to-peer market',
+  initials: 'SA',
+  unreadCount: 3,
 };
 
-export const tradeSlots: readonly TradeSlot[] = [
-  { label: '14:30 – 15:00', value: '14:30 – 15:00' },
-  { label: '15:00 – 15:30', value: '15:00 – 15:30' },
-  { label: '15:30 – 16:00', value: '15:30 – 16:00' },
+export const marketPairLabel = 'ENERGY / AED';
+export const priceUnitLabel = 'AED/kWh';
+
+export const tradeSlots: readonly Option<string>[] = [
+  { label: '14:30 – 15:00', value: '14:30-15:00' },
+  { label: '15:00 – 15:30', value: '15:00-15:30' },
+  { label: '15:30 – 16:00', value: '15:30-16:00' },
 ];
 
-export const priceRanges: readonly PriceRange[] = ['1H', '4H', '1D'];
+export const timeframes: readonly Timeframe[] = ['1m', '5m', '15m', '1H', '4H', '1D'];
 
-export const priceSeries: Record<PriceRange, readonly number[]> = {
-  '1H': [0.51, 0.53, 0.52, 0.55, 0.54, 0.57, 0.56, 0.59, 0.58, 0.6],
-  '4H': [0.43, 0.47, 0.45, 0.51, 0.49, 0.54, 0.52, 0.57, 0.55, 0.6],
-  '1D': [0.38, 0.44, 0.42, 0.49, 0.46, 0.53, 0.5, 0.56, 0.54, 0.6],
+export const timeframeSeconds: Record<Timeframe, number> = {
+  '1m': 60,
+  '5m': 300,
+  '15m': 900,
+  '1H': 3600,
+  '4H': 14400,
+  '1D': 86400,
 };
 
-export const tradePrice = 0.6;
-export const priceChange = 0.04;
-export const availableBalance = 24.5;
-export const bestAsk = 0.61;
-export const openOrderCount = 3;
-export const bestSellPrice = 0.61;
-export const bestBuyPrice = 0.59;
-export const quickAmounts = [2, 5, 10] as const;
+export const initialMarketSnapshot: MarketSnapshot = {
+  currentPrice: 0.47,
+  previousClose: 0.449,
+  high24h: 0.481,
+  low24h: 0.438,
+  volume24h: 84620,
+  status: 'open',
+  updatedAt: 0,
+};
+
+export const orderQuote: OrderQuote = {
+  availableEnergyKwh: 328.4,
+  availableBalance: 2847.5,
+  marketBuyPrice: 0.472,
+  marketSellPrice: 0.47,
+  feeRate: 0.02,
+  amountPresets: [10, 25, 50, 100],
+  defaultAmount: '25',
+  defaultPrice: '0.470',
+};
+
+export const orderBookSeed: { asks: OrderBookRow[]; bids: OrderBookRow[] } = {
+  asks: [
+    [0.476, 148],
+    [0.475, 224],
+    [0.474, 95],
+    [0.473, 310],
+    [0.472, 182],
+  ],
+  bids: [
+    [0.47, 265],
+    [0.469, 144],
+    [0.468, 380],
+    [0.467, 216],
+    [0.466, 105],
+  ],
+};
