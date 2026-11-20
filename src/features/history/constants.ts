@@ -2,6 +2,8 @@ import type {
   HistoryTabOption,
   OrderRecord,
   OrderStatusFilter,
+  StatementFilter,
+  StatementRecord,
   TradeRecord,
   TradeStatusFilter,
 } from './types';
@@ -316,4 +318,48 @@ export const orders: OrderRecord[] = [
     totalKwh: 10,
   },
 ];
+
+/* ---------- Statements ---------- */
+
+export const statementFilterOptions: readonly { label: string; value: StatementFilter }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Monthly', value: 'monthly' },
+  { label: 'Quarterly', value: 'quarterly' },
+];
+
+export const STATEMENTS_PAGE_SIZE = 4;
+
+// replace with your API data
+export const statements: StatementRecord[] = [
+  {
+    id: 'STMT-2025-06',
+    kind: 'monthly',
+    title: 'June 2025 · Monthly statement',
+    size: '148 KB',
+    issued: '1 Jul 2025',
+  },
+  {
+    id: 'STMT-2025-05',
+    kind: 'monthly',
+    title: 'May 2025 · Monthly statement',
+    size: '132 KB',
+    issued: '1 Jun 2025',
+  },
+  {
+    id: 'STMT-2025-04',
+    kind: 'monthly',
+    title: 'Apr 2025 · Monthly statement',
+    size: '121 KB',
+    issued: '1 May 2025',
+  },
+  {
+    id: 'STMT-2025-Q1',
+    kind: 'quarterly',
+    title: 'Q1 2025 · Quarterly summary',
+    size: '344 KB',
+    issued: '1 Apr 2025',
+  },
+];
+
+
 
