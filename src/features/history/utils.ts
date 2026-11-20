@@ -33,4 +33,3 @@ export function formatPageSummary(page: Page<unknown>, emptyLabel: string) {
 
   return `${page.from}–${page.to} of ${page.total} · Page ${page.page} of ${page.totalPages}`;
 }
-

@@ -33,7 +33,10 @@ export function StatementRow({ statement, isLast = false, onDownload }: Statemen
           {statement.title}
         </Text>
 
-        <Text className="mt-0.5 font-mono text-[11px] leading-4" style={{ color: theme.textDisabled }}>
+        <Text
+          className="mt-0.5 font-mono text-[11px] leading-4"
+          style={{ color: theme.textDisabled }}
+        >
           {statement.id} · {statement.size}
           {'\n'}Issued {statement.issued}
         </Text>
