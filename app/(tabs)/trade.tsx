@@ -1,1 +1,5 @@
-export { default } from '@/features/trade/TradeScreen';
+import TradeScreen from '@/features/trade/TradeScreen';
+
+export default function TradeRoute() {
+  return <TradeScreen />;
+}

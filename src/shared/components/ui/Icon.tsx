@@ -1,4 +1,5 @@
 import {
+  Activity,
   ArrowDownLeft,
   ArrowLeft,
   ArrowUpRight,
@@ -40,6 +41,7 @@ import {
   Settings,
   ShieldCheck,
   Sun,
+  TrendingDown,
   TrendingUp,
   User,
   Wallet,
@@ -93,6 +95,8 @@ const icons = {
   sync: RefreshCw,
   'shield-check': ShieldCheck,
   'trending-up': TrendingUp,
+  'trending-down': TrendingDown,
+  activity: Activity,
   'upload-file': FileUp,
   visibility: Eye,
   'visibility-off': EyeOff,
