@@ -11,6 +11,9 @@ type HistoryTabsProps = {
   onChange: (value: HistoryTab) => void;
 };
 
+// kept as a style object on purpose: class-based layout on this Pressable crashed on tab change
+const SEGMENT = { flex: 1, borderRadius: 12, minHeight: 28 } as const;
+
 /** Trades / Orders / Statements switch (Figma: Container with 3 Buttons). */
 export function HistoryTabs({ options, value, onChange }: HistoryTabsProps) {
   const { theme } = useTheme();
@@ -30,16 +33,16 @@ export function HistoryTabs({ options, value, onChange }: HistoryTabsProps) {
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
             onPress={() => onChange(option.value)}
-            className={`min-h-7 flex-1 flex-row items-center justify-center gap-1.5 rounded-xl px-2.5 ${
-              active ? 'shadow-sm' : ''
-            }`}
-            style={active ? { backgroundColor: theme.surface } : undefined}
+            className="items-center justify-center"
+            style={[SEGMENT, active && { backgroundColor: theme.surface }]}
           >
-            <Icon name={option.icon} size={13} color={color} />
+            <View className="flex-row items-center justify-center gap-1.5">
+              <Icon name={option.icon} size={13} color={color} />
 
-            <Text className="font-body-semibold text-sm" style={{ color }}>
-              {option.label}
-            </Text>
+              <Text className="font-body-semibold text-sm" style={{ color }}>
+                {option.label}
+              </Text>
+            </View>
           </Pressable>
         );
       })}
