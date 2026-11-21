@@ -1,4 +1,11 @@
-import { isValidSriLankanNicNumber, toIsoDate } from './utils';
+import {
+  getSignInErrors,
+  isValidEmail,
+  isValidSriLankanNicNumber,
+  PASSWORD_MAX_LENGTH,
+  toIsoDate,
+} from './utils';
+
 
 describe('isValidSriLankanNicNumber', () => {
   it.each(['199012345678', '199062345678', '200036612345'])('accepts new format %s', (nic) => {
@@ -38,3 +45,42 @@ describe('toIsoDate', () => {
     },
   );
 });
+
+describe('isValidEmail', () => {
+  it.each(['name@example.com', ' name@example.com ', 'first.last@mail.co.lk'])(
+    'accepts %s',
+    (email) => {
+      expect(isValidEmail(email)).toBe(true);
+    },
+  );
+
+  it.each(['', 'name', 'name@', '@example.com', 'name@example', 'na me@example.com'])(
+    'rejects "%s"',
+    (email) => {
+      expect(isValidEmail(email)).toBe(false);
+    },
+  );
+});
+
+describe('getSignInErrors', () => {
+  it('returns no errors for a valid email and password', () => {
+    expect(getSignInErrors({ email: 'name@example.com', password: 'secret' })).toEqual({});
+  });
+
+  it('requires a valid email and a password', () => {
+    expect(getSignInErrors({ email: 'nope', password: '' })).toEqual({
+      email: 'Enter a valid email address',
+      password: 'Password is required',
+    });
+  });
+
+  it('rejects a password longer than the maximum', () => {
+    const errors = getSignInErrors({
+      email: 'name@example.com',
+      password: 'a'.repeat(PASSWORD_MAX_LENGTH + 1),
+    });
+
+    expect(errors.password).toBe(`Password must be ${PASSWORD_MAX_LENGTH} characters or fewer`);
+  });
+});
+
