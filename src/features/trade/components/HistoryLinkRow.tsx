@@ -6,8 +6,8 @@ import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
 type HistoryLinkRowProps = {
   label: string;
-  /** Number shown in the badge next to the label. */
-  count: number;
+  /** Number shown in the badge next to the label. Omit to hide the badge. */
+  count?: number;
   /** Small text on the right, e.g. "Sell 0.390 · Buy 0.360". */
   summary?: string;
   onPress?: () => void;
@@ -34,7 +34,7 @@ export function HistoryLinkRow({ label, count, summary, onPress }: HistoryLinkRo
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${label}, ${count}`}
+      accessibilityLabel={count === undefined ? label : `${label}, ${count}`}
       onPress={handlePress}
       className="h-11 flex-row items-center justify-between rounded-2xl border px-3.5"
       style={{ backgroundColor: theme.surface, borderColor: theme.border }}
@@ -44,15 +44,17 @@ export function HistoryLinkRow({ label, count, summary, onPress }: HistoryLinkRo
           {label}
         </Text>
 
-        <View
-          className="h-5 items-center justify-center rounded-full px-[7px]"
-          // Figma: text/tertiary at 18% opacity (2E = 18% in hex)
-          style={{ backgroundColor: `${theme.textTertiary}2E` }}
-        >
-          <Text className="font-mono text-[11px]" style={{ color: theme.text }}>
-            {count}
-          </Text>
-        </View>
+        {count !== undefined ? (
+          <View
+            className="h-5 items-center justify-center rounded-full px-[7px]"
+            // Figma: text/tertiary at 18% opacity (2E = 18% in hex)
+            style={{ backgroundColor: `${theme.textTertiary}2E` }}
+          >
+            <Text className="font-mono text-[11px]" style={{ color: theme.text }}>
+              {count}
+            </Text>
+          </View>
+        ) : null}
       </View>
 
       <View className="flex-row items-center gap-2">

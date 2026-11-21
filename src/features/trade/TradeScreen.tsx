@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { FilterDropdown } from '@/shared/components/ui/FilterDropdown';
 import { PageHeader } from '@/shared/components/ui/PageHeader';
 import { AppShell } from '@/shared/components/ui/layout/AppShell';
 
+import { HistoryLinkRow } from './components/HistoryLinkRow';
 import { MarketStatusPill } from './components/MarketStatusPill';
 import { MarketSummaryCard } from './components/MarketSummaryCard';
 import { OrderBookCard } from './components/OrderBookCard';
@@ -14,6 +16,7 @@ import { tradeHeader, tradeSlots } from './constants';
 import { useMarket } from './hooks';
 
 export default function TradeScreen() {
+  const router = useRouter();
   const snapshot = useMarket();
   const [slot, setSlot] = useState(tradeSlots[0]?.value ?? '');
   const slotLabel = tradeSlots.find((option) => option.value === slot)?.label ?? '';
@@ -46,6 +49,8 @@ export default function TradeScreen() {
           <PriceChartCard />
           <OrderPanel slotLabel={slotLabel} />
           <OrderBookCard />
+
+          <HistoryLinkRow label="View history" onPress={() => router.push('/history')} />
         </ScrollView>
       </KeyboardAvoidingView>
     </AppShell>
