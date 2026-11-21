@@ -10,7 +10,7 @@ import { StatusPill, type StatusTone } from './StatusPill';
 
 const STATUS: Record<OrderStatus, { label: string; tone: StatusTone }> = {
   open: { label: 'Open', tone: 'info' },
-  partial: { label: 'Partial', tone: 'success' },
+  partial: { label: 'Partial', tone: 'warning' },
   filled: { label: 'Filled', tone: 'success' },
   cancelled: { label: 'Cancelled', tone: 'neutral' },
 };

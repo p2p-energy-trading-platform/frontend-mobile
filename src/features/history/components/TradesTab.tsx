@@ -4,9 +4,10 @@ import { ScrollView, Text, View } from 'react-native';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
 import { TRADES_PAGE_SIZE, tradeStatusOptions, trades } from '../constants';
-import type { TradeStatusFilter } from '../types';
-import { formatPageSummary, paginate } from '../utils';
+import type { TradeRecord, TradeStatusFilter } from '../types';
+import { formatPageSummary, paginate, tradeDetailRows } from '../utils';
 
+import { DetailsSheet } from './DetailsSheet';
 import { HistoryToolbar } from './HistoryToolbar';
 import { TradeCard } from './TradeCard';
 
@@ -16,6 +17,10 @@ export function TradesTab() {
 
   const [status, setStatus] = useState<TradeStatusFilter>('all');
   const [page, setPage] = useState(1);
+
+  // `selected` is kept after closing so the sheet content doesn't blank out while it slides away
+  const [selected, setSelected] = useState<TradeRecord | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const filtered = useMemo(
     () => (status === 'all' ? trades : trades.filter((trade) => trade.status === status)),
@@ -27,6 +32,11 @@ export function TradesTab() {
   const handleStatusChange = (next: TradeStatusFilter) => {
     setStatus(next);
     setPage(1);
+  };
+
+  const handleOpenDetails = (trade: TradeRecord) => {
+    setSelected(trade);
+    setDetailsOpen(true);
   };
 
   return (
@@ -49,7 +59,9 @@ export function TradesTab() {
         showsVerticalScrollIndicator={false}
       >
         {current.items.length > 0 ? (
-          current.items.map((trade) => <TradeCard key={trade.id} trade={trade} />)
+          current.items.map((trade) => (
+            <TradeCard key={trade.id} trade={trade} onPress={handleOpenDetails} />
+          ))
         ) : (
           <View
             className="items-center rounded-2xl border px-6 py-12"
@@ -68,6 +80,13 @@ export function TradesTab() {
           </View>
         )}
       </ScrollView>
+
+      <DetailsSheet
+        visible={detailsOpen}
+        title={selected ? `Trade ${selected.id}` : ''}
+        rows={selected ? tradeDetailRows(selected) : []}
+        onClose={() => setDetailsOpen(false)}
+      />
     </View>
   );
 }

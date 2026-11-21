@@ -74,3 +74,9 @@ export type StatementRecord = {
   /** e.g. "1 Jul 2025" */
   issued: string;
 };
+
+/** One label / value line in the details sheet. */
+export type DetailRow = {
+  label: string;
+  value: string;
+};

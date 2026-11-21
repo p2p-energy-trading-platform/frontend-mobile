@@ -35,7 +35,6 @@ export function HistoryToolbar<T extends string>({
   return (
     <View className="h-9 flex-row items-center justify-between">
       <FilterDropdown
-        label="Filter"
         options={filterOptions}
         value={filterValue}
         onChange={onFilterChange}

@@ -3,10 +3,12 @@ import { Alert, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
-import { ORDERS_PAGE_SIZE, orderStatusOptions, orders as initialOrders } from '../constants';
+import { ORDERS_PAGE_SIZE, orderStatusOptions } from '../constants';
+import { useOrdersStore } from '../store';
 import type { OrderRecord, OrderStatusFilter } from '../types';
-import { formatPageSummary, paginate } from '../utils';
+import { formatPageSummary, orderDetailRows, paginate } from '../utils';
 
+import { DetailsSheet } from './DetailsSheet';
 import { HistoryToolbar } from './HistoryToolbar';
 import { OrderCard } from './OrderCard';
 
@@ -14,10 +16,18 @@ import { OrderCard } from './OrderCard';
 export function OrdersTab() {
   const { theme } = useTheme();
 
-  // replace with your API data; cancelling below only updates local state
-  const [items, setItems] = useState<OrderRecord[]>(initialOrders);
+  // orders come from the store, so cancelling persists after the tab closes
+  const items = useOrdersStore((state) => state.orders);
+  const cancelOrder = useOrdersStore((state) => state.cancelOrder);
+
   const [status, setStatus] = useState<OrderStatusFilter>('all');
   const [page, setPage] = useState(1);
+
+  // keep the id (not the record) so the sheet shows the latest status after a cancel;
+  // it is kept after closing so the content doesn't blank out while the sheet slides away
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const selected = items.find((order) => order.id === selectedId) ?? null;
 
   const filtered = useMemo(
     () => (status === 'all' ? items : items.filter((order) => order.status === status)),
@@ -31,18 +41,18 @@ export function OrdersTab() {
     setPage(1);
   };
 
+  const handleView = (target: OrderRecord) => {
+    setSelectedId(target.id);
+    setDetailsOpen(true);
+  };
+
   const handleCancel = (target: OrderRecord) => {
     Alert.alert('Cancel order', `Cancel order ${target.id}?`, [
       { text: 'Keep order', style: 'cancel' },
       {
         text: 'Cancel order',
         style: 'destructive',
-        onPress: () =>
-          setItems((prev) =>
-            prev.map((order) =>
-              order.id === target.id ? { ...order, status: 'cancelled' } : order,
-            ),
-          ),
+        onPress: () => cancelOrder(target.id),
       },
     ]);
   };
@@ -68,7 +78,7 @@ export function OrdersTab() {
       >
         {current.items.length > 0 ? (
           current.items.map((order) => (
-            <OrderCard key={order.id} order={order} onCancel={handleCancel} />
+            <OrderCard key={order.id} order={order} onView={handleView} onCancel={handleCancel} />
           ))
         ) : (
           <View
@@ -88,6 +98,13 @@ export function OrdersTab() {
           </View>
         )}
       </ScrollView>
+
+      <DetailsSheet
+        visible={detailsOpen}
+        title={selected ? `Order ${selected.id}` : ''}
+        rows={selected ? orderDetailRows(selected) : []}
+        onClose={() => setDetailsOpen(false)}
+      />
     </View>
   );
 }

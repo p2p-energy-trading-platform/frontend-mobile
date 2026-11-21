@@ -1,3 +1,5 @@
+import type { DetailRow, OrderRecord, TradeRecord } from './types';
+
 export type Page<T> = {
   items: T[];
   page: number;
@@ -32,4 +34,35 @@ export function formatPageSummary(page: Page<unknown>, emptyLabel: string) {
   if (page.total === 0) return emptyLabel;
 
   return `${page.from}–${page.to} of ${page.total} · Page ${page.page} of ${page.totalPages}`;
+}
+
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+
+/** Rows shown in the details sheet for a trade. */
+export function tradeDetailRows(trade: TradeRecord): DetailRow[] {
+  return [
+    { label: 'Side', value: capitalize(trade.side) },
+    { label: 'Status', value: capitalize(trade.status) },
+    { label: 'Delivery slot', value: trade.slot },
+    { label: 'Date', value: trade.date },
+    { label: 'Placed at', value: trade.placedAt },
+    { label: 'Energy', value: trade.energy },
+    { label: 'Price', value: trade.price },
+    { label: 'Total', value: trade.total },
+    { label: 'Role', value: trade.role },
+    { label: 'Zone', value: trade.zone },
+  ];
+}
+
+/** Rows shown in the details sheet for an order. */
+export function orderDetailRows(order: OrderRecord): DetailRow[] {
+  return [
+    { label: 'Side', value: capitalize(order.side) },
+    { label: 'Type', value: capitalize(order.type) },
+    { label: 'Status', value: capitalize(order.status) },
+    { label: 'Delivery slot', value: order.slot },
+    { label: 'Date', value: order.date },
+    { label: 'Placed at', value: order.placedAt },
+    { label: 'Filled', value: `${order.filledKwh} / ${order.totalKwh} kWh` },
+  ];
 }

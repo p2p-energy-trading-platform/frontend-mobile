@@ -11,9 +11,6 @@ import type {
 export const historyHeader = {
   title: 'History',
   subtitle: 'Trades, orders, and account statements',
-  // replace with user / notifications data from your store
-  unreadCount: 3,
-  initials: 'SA',
 };
 
 export const historyTabs: readonly HistoryTabOption[] = [
