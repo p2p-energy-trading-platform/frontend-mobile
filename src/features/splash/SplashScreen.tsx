@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 
+import { useGoogleSignIn } from '@/features/auth/use-google-sign-in';
 import { Screen } from '@/shared/components/ui/Screen';
 
 import { SplashActions } from './components/SplashActions';
@@ -8,6 +9,7 @@ import { SplashBrand } from './components/SplashBrand';
 
 export default function SplashScreen() {
   const router = useRouter();
+  const google = useGoogleSignIn();
 
   return (
     <Screen>
@@ -20,9 +22,8 @@ export default function SplashScreen() {
 
         <SplashActions
           onSignUpWithEmail={() => router.push('/create-account')}
-          onContinueWithGoogle={() =>
-            Alert.alert('Google sign in', 'Google sign in is not connected yet.')
-          }
+          onContinueWithGoogle={() => void google.signIn()}
+          googleLoading={google.loading}
           onSignIn={() => router.push('/sign-in')}
         />
 
