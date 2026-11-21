@@ -27,6 +27,7 @@ import {
   StepHeader,
   TextField,
 } from './components/AuthComponents';
+import { useGoogleSignIn } from './use-google-sign-in';
 import { isValidSriLankanNicNumber, toIsoDate } from './utils';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -71,6 +72,7 @@ export function SignInScreen() {
   const router = useRouter();
   const { theme } = useTheme();
   const setAuthenticated = useAppStore((state) => state.setAuthenticated);
+  const google = useGoogleSignIn();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
@@ -133,9 +135,7 @@ export function SignInScreen() {
         <View className="gap-5">
           <AuthButton title="Sign in" onPress={signIn} />
           <Divider />
-          <GoogleButton
-            onPress={() => Alert.alert('Google sign in', 'Google sign in is not connected yet.')}
-          />
+          <GoogleButton onPress={() => void google.signIn()} loading={google.loading} />
         </View>
 
         <AuthFooter>
