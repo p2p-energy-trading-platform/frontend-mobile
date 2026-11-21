@@ -74,9 +74,7 @@ export function CreateAccountScreen() {
           value={password}
           onChangeText={setPassword}
           error={
-            submitted && password.length < 8
-              ? 'Password must be at least 8 characters'
-              : undefined
+            submitted && password.length < 8 ? 'Password must be at least 8 characters' : undefined
           }
         />
         <PasswordField
@@ -84,9 +82,7 @@ export function CreateAccountScreen() {
           placeholder="Re-enter your password"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
-          error={
-            submitted && confirmPassword !== password ? 'Passwords do not match' : undefined
-          }
+          error={submitted && confirmPassword !== password ? 'Passwords do not match' : undefined}
         />
       </View>
 

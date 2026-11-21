@@ -1,6 +1,5 @@
 import type { SignInErrors, SignInValues } from './types';
 
-
 export function toIsoDate(value: string): string | undefined {
   const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
   if (!match) return undefined;

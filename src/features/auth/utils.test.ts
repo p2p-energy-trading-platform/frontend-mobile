@@ -6,7 +6,6 @@ import {
   toIsoDate,
 } from './utils';
 
-
 describe('isValidSriLankanNicNumber', () => {
   it.each(['199012345678', '199062345678', '200036612345'])('accepts new format %s', (nic) => {
     expect(isValidSriLankanNicNumber(nic)).toBe(true);
@@ -83,4 +82,3 @@ describe('getSignInErrors', () => {
     expect(errors.password).toBe(`Password must be ${PASSWORD_MAX_LENGTH} characters or fewer`);
   });
 });
-
