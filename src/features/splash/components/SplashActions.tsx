@@ -10,12 +10,14 @@ import { GoogleButton } from './GoogleButton';
 type SplashActionsProps = {
   onSignUpWithEmail?: () => void;
   onContinueWithGoogle?: () => void;
+  googleLoading?: boolean;
   onSignIn?: () => void;
 };
 
 export function SplashActions({
   onSignUpWithEmail,
   onContinueWithGoogle,
+  googleLoading = false,
   onSignIn,
 }: SplashActionsProps) {
   const { theme } = useTheme();
@@ -31,7 +33,7 @@ export function SplashActions({
         }}
       />
 
-      <GoogleButton onPress={onContinueWithGoogle} />
+      <GoogleButton onPress={onContinueWithGoogle} loading={googleLoading} />
 
       <View className="flex-row items-center justify-center gap-1 pt-2">
         <AppText
