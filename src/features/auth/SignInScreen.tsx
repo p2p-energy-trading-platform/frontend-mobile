@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Alert, View } from 'react-native';
 
-import { GoogleButton } from '@/features/splash/components/GoogleButton';
 import { Checkbox } from '@/shared/components/ui/Checkbox';
 import { LabelDivider } from '@/shared/components/ui/LabelDivider';
 import { TextField } from '@/shared/components/ui/TextField';
@@ -10,15 +9,13 @@ import { useGoBack } from '@/shared/hooks/use-go-back';
 
 import { AuthButton } from './components/AuthButton';
 import { AuthFooter } from './components/AuthFooter';
+import { AuthGoogleButton } from './components/AuthGoogleButton';
 import { AuthHeader } from './components/AuthHeader';
 import { AuthLayout } from './components/AuthLayout';
-import { DemoShortcut } from './components/DemoShortcut';
+import { LogoMark } from './components/LogoMark';
 import { PasswordField } from './components/PasswordField';
 import { signInContent } from './constants';
 import { useSignIn } from './hooks';
-
-// Figma: Google button is 52 high with 16 radius on this screen
-const GOOGLE_BUTTON = { height: 52, borderRadius: 16 } as const;
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -31,12 +28,10 @@ export default function SignInScreen() {
       'Password recovery will be available when account services are connected.',
     );
 
-  const handleGoogleSignIn = () =>
-    Alert.alert('Google sign in', 'Google sign in is not connected yet.');
-
   return (
     <AuthLayout
       onBack={goBack}
+      topBarRight={<LogoMark />}
       footer={
         <>
           <AuthFooter
@@ -45,7 +40,6 @@ export default function SignInScreen() {
             onAction={() => router.push('/create-account')}
           />
 
-          <DemoShortcut onPress={form.skipToPortal} />
         </>
       }
     >
@@ -86,12 +80,12 @@ export default function SignInScreen() {
         label={signInContent.rememberMe}
       />
 
-      <View className="gap-6">
+      <View className="gap-5">
         <AuthButton title={signInContent.submit} onPress={form.submit} />
 
         <LabelDivider label={signInContent.divider} />
 
-        <GoogleButton style={GOOGLE_BUTTON} onPress={handleGoogleSignIn} />
+        <AuthGoogleButton />
       </View>
     </AuthLayout>
   );
