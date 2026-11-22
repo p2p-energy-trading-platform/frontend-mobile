@@ -1,1 +1,1 @@
-export { KycScreen as default } from '@/features/auth/AuthScreens';
+export { default } from '@/features/auth/KycScreen';
