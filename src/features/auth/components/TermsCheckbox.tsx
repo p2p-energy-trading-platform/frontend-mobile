@@ -38,7 +38,6 @@ export function TermsCheckbox({
         <Text accessibilityRole="link" style={linkStyle} onPress={onPrivacyPress}>
           {signUpContent.privacyLink}
         </Text>
-        {signUpContent.termsSuffix}
       </Checkbox>
 
       <FieldMessage error={error} />
