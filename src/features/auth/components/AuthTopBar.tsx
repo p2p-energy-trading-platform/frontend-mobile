@@ -1,22 +1,30 @@
+import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon } from '@/shared/components/ui/Icon';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
-import { LogoMark } from './LogoMark';
-
 type AuthTopBarProps = {
   onBack: () => void;
+  /** Shown on the right: the logo mark or the step indicator. */
+  right?: ReactNode;
 };
 
-/** Back button on the left, logo mark on the right (Figma: Top Bar). */
-export function AuthTopBar({ onBack }: AuthTopBarProps) {
+/** Back button on the left, logo mark or step indicator on the right (Figma: Top Bar). */
+export function AuthTopBar({ onBack, right }: AuthTopBarProps) {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ backgroundColor: theme.surface, paddingTop: insets.top }}>
+    <View
+      style={{
+        backgroundColor: theme.surface,
+        paddingTop: insets.top,
+        borderBottomWidth: 1,
+        borderBottomColor: theme.border,
+      }}
+    >
       <View className="h-14 flex-row items-center justify-between px-6">
         <Pressable
           accessibilityRole="button"
@@ -29,7 +37,7 @@ export function AuthTopBar({ onBack }: AuthTopBarProps) {
           <Icon name="chevron-left" size={20} color={theme.text} />
         </Pressable>
 
-        <LogoMark />
+        {right}
       </View>
     </View>
   );
