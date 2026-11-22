@@ -1,33 +1,33 @@
-import { Text, View } from 'react-native';
+import type { ReactNode } from 'react';
+import { View } from 'react-native';
 
-import { useTheme } from '@/shared/design-system/hooks/use-theme';
-import { FontFamily } from '@/shared/design-system/tokens';
+import { AppText } from '@/shared/components/ui/AppText';
 
 type AuthHeaderProps = {
   title: string;
-  subtitle: string;
+  /** Plain text, or text with highlighted parts. */
+  subtitle: ReactNode;
+  /** Shown above the title, e.g. an IconBadge. */
+  icon?: ReactNode;
+  /** Tighter gap between title and subtitle. */
+  compact?: boolean;
 };
 
-/** Page title + subtitle (Figma: Header). */
-export function AuthHeader({ title, subtitle }: AuthHeaderProps) {
-  const { theme } = useTheme();
-
+/** Page title + subtitle, with an optional icon above (Figma: Header). */
+export function AuthHeader({ title, subtitle, icon, compact }: AuthHeaderProps) {
   return (
-    <View className="gap-3">
-      <Text
-        accessibilityRole="header"
-        className="text-[28px] leading-9"
-        style={{ fontFamily: FontFamily.heading, color: theme.text }}
-      >
-        {title}
-      </Text>
+    <View className="gap-4">
+      {icon}
 
-      <Text
-        className="text-[15px] leading-[22px]"
-        style={{ fontFamily: FontFamily.body, color: theme.textSecondary }}
-      >
-        {subtitle}
-      </Text>
+      <View className={compact ? 'gap-2' : 'gap-3'}>
+        <AppText accessibilityRole="header" preset="title">
+          {title}
+        </AppText>
+
+        <AppText preset="subtitle" tone="textSecondary">
+          {subtitle}
+        </AppText>
+      </View>
     </View>
   );
 }
