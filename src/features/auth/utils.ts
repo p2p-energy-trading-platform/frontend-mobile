@@ -1,4 +1,15 @@
-import type { SignInErrors, SignInValues } from './types';
+import { KYC_ALLOWED_MIME_TYPES, KYC_MAX_FILE_SIZE_MB } from './constants';
+import type {
+  KycErrors,
+  KycValues,
+  PickedDocument,
+  SignInErrors,
+  SignInValues,
+  SignUpErrors,
+  SignUpValues,
+  SmartMeterErrors,
+  SmartMeterValues,
+} from './types';
 
 export function toIsoDate(value: string): string | undefined {
   const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
@@ -56,6 +67,153 @@ export function getSignInErrors({ email, password }: SignInValues): SignInErrors
     errors.password = 'Password is required';
   } else if (password.length > PASSWORD_MAX_LENGTH) {
     errors.password = `Password must be ${PASSWORD_MAX_LENGTH} characters or fewer`;
+  }
+
+  return errors;
+}
+export const PASSWORD_MIN_LENGTH = 8;
+
+/** A new password needs 8 to 128 characters, with at least one letter and one number. */
+export function isValidNewPassword(password: string) {
+  return (
+    password.length >= PASSWORD_MIN_LENGTH &&
+    password.length <= PASSWORD_MAX_LENGTH &&
+    /[A-Za-z]/.test(password) &&
+    /\d/.test(password)
+  );
+}
+
+/** Returns an error message per invalid sign-up field; an empty object means the form is valid. */
+export function getSignUpErrors({
+  email,
+  password,
+  confirmation,
+  accepted,
+}: SignUpValues): SignUpErrors {
+  const errors: SignUpErrors = {};
+
+  if (!isValidEmail(email)) {
+    errors.email = 'Enter a valid email address';
+  }
+
+  if (!isValidNewPassword(password)) {
+    errors.password = `Password must be ${PASSWORD_MIN_LENGTH} to ${PASSWORD_MAX_LENGTH} characters, with a letter and a number`;
+  }
+
+  if (!confirmation) {
+    errors.confirmation = 'Confirm your password';
+  } else if (confirmation !== password) {
+    errors.confirmation = 'Passwords do not match';
+  }
+
+  if (!accepted) {
+    errors.terms = 'You must accept the terms to continue';
+  }
+
+  return errors;
+}
+export const OTP_LENGTH = 6;
+
+export function isValidOtp(code: string) {
+  return new RegExp(`^\\d{${OTP_LENGTH}}$`).test(code);
+}
+
+const MASKED_CHARACTERS_MAX = 11;
+
+/** "sampleperson1@example.ae" -> "sa•••••••••••@example.ae" */
+export function maskEmail(email: string) {
+  const [user = '', domain = ''] = email.trim().split('@');
+
+  if (!domain) return email;
+
+  const visible = user.length <= 2 ? user.slice(0, 1) : user.slice(0, 2);
+  const hidden = '•'.repeat(Math.min(user.length - visible.length, MASKED_CHARACTERS_MAX));
+
+  return `${visible}${hidden}@${domain}`;
+}
+
+/** "12122000" -> "12/12/2000": keeps digits only and adds the slashes while typing. */
+export function formatDateInput(value: string) {
+  const digits = value.replace(/\D/g, '').slice(0, 8);
+
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
+const MINIMUM_AGE = 18;
+
+/** True when the ISO date (YYYY-MM-DD) is at least 18 years before today. */
+export function isAdult(isoDate: string, today = new Date()) {
+  const [year = 0, month = 0, day = 0] = isoDate.split('-').map(Number);
+
+  const cutoff = Date.UTC(
+    today.getUTCFullYear() - MINIMUM_AGE,
+    today.getUTCMonth(),
+    today.getUTCDate(),
+  );
+
+  return Date.UTC(year, month - 1, day) <= cutoff;
+}
+
+/** Returns an error message when the picked file is not allowed, otherwise undefined. */
+export function getDocumentError(document: Pick<PickedDocument, 'mimeType' | 'size'>) {
+  if (!(KYC_ALLOWED_MIME_TYPES as readonly string[]).includes(document.mimeType)) {
+    return 'Use a JPG, PNG or PDF file';
+  }
+
+  if (document.size !== undefined && document.size > KYC_MAX_FILE_SIZE_MB * 1024 * 1024) {
+    return `File must be ${KYC_MAX_FILE_SIZE_MB} MB or smaller`;
+  }
+
+  return undefined;
+}
+
+/** Returns an error message per invalid KYC field; an empty object means the form is valid. */
+export function getKycErrors({
+  fullName,
+  nic,
+  dateOfBirth,
+  nationality,
+  documents,
+}: KycValues): KycErrors {
+  const errors: KycErrors = {};
+
+  if (!fullName.trim()) errors.fullName = 'Full legal name is required';
+
+  if (!isValidSriLankanNicNumber(nic)) errors.nic = 'Enter a valid Sri Lankan NIC number';
+
+  const isoDate = toIsoDate(dateOfBirth);
+  if (!isoDate) {
+    errors.dateOfBirth = 'Use DD/MM/YYYY';
+  } else if (!isAdult(isoDate)) {
+    errors.dateOfBirth = 'You must be 18 or over';
+  }
+
+  if (!nationality) errors.nationality = 'Select your nationality';
+
+  if (!documents.idFront || !documents.idBack || !documents.selfie) {
+    errors.documents = 'Upload all three documents';
+  }
+
+  return errors;
+}
+
+/** Meter serials are letters, digits and dashes, e.g. "DEWA-2024-00012345". */
+export function isValidMeterSerial(value: string) {
+  return /^[A-Z0-9][A-Z0-9-]{5,29}$/.test(value.trim().toUpperCase());
+}
+
+/** Returns an error message per invalid smart meter field; an empty object means the form is valid. */
+export function getSmartMeterErrors({ serial, zone }: SmartMeterValues): SmartMeterErrors {
+  const errors: SmartMeterErrors = {};
+
+  if (!isValidMeterSerial(serial)) {
+    errors.serial = 'Enter a valid meter serial number';
+  }
+
+  if (!zone) {
+    errors.zone = 'Select your grid zone';
   }
 
   return errors;
