@@ -1,8 +1,11 @@
 import { useState, type ReactNode } from 'react';
-import { Text, TextInput, View, type TextInputProps } from 'react-native';
+import { TextInput, View, type TextInputProps } from 'react-native';
 
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
-import { FontFamily } from '@/shared/design-system/tokens';
+import { FormControl, TextStyles } from '@/shared/design-system/tokens';
+
+import { AppText } from './AppText';
+import { FieldMessage } from './FieldMessage';
 
 export type TextFieldProps = TextInputProps & {
   label: string;
@@ -31,26 +34,28 @@ export function TextField({
   return (
     <View className="gap-2">
       <View className="flex-row items-center justify-between">
-        <Text
-          className="text-[13px] leading-[18px]"
-          style={{ fontFamily: FontFamily.bodySemibold, color: theme.textSecondary }}
-        >
+        <AppText preset="label" tone="textSecondary">
           {label}
-        </Text>
+        </AppText>
 
         {labelAction}
       </View>
 
       <View
-        className="h-[52px] flex-row items-center gap-2 rounded-2xl border px-4"
-        style={{ backgroundColor: theme.surface, borderColor }}
+        className="flex-row items-center gap-2 border px-4"
+        style={{
+          height: FormControl.height,
+          borderRadius: FormControl.radius,
+          backgroundColor: theme.surface,
+          borderColor,
+        }}
       >
         <TextInput
           accessibilityLabel={label}
-          className="flex-1 text-base"
+          className="flex-1"
           placeholderTextColor={theme.textPlaceholder}
           selectionColor={theme.accent}
-          style={{ fontFamily: FontFamily.body, color: theme.text, paddingVertical: 0 }}
+          style={[TextStyles.input, { color: theme.text, paddingVertical: 0 }]}
           onFocus={(event) => {
             setFocused(true);
             onFocus?.(event);
@@ -65,22 +70,7 @@ export function TextField({
         {rightAdornment}
       </View>
 
-      {error ? (
-        <Text
-          accessibilityRole="alert"
-          className="text-xs"
-          style={{ fontFamily: FontFamily.body, color: theme.error }}
-        >
-          {error}
-        </Text>
-      ) : helper ? (
-        <Text
-          className="text-xs"
-          style={{ fontFamily: FontFamily.body, color: theme.textPlaceholder }}
-        >
-          {helper}
-        </Text>
-      ) : null}
+      <FieldMessage error={error} helper={helper} />
     </View>
   );
 }
