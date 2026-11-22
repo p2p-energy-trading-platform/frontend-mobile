@@ -108,11 +108,10 @@ export const TextStyles = {
     lineHeight: Typography.lineHeight.xs,
   },
 
-    /** Medium-weight small text, e.g. a quiet "Skip for now" link. */
+  /** Medium-weight small text, e.g. a quiet "Skip for now" link. */
   bodyMedium: {
     fontFamily: FontFamily.bodyMedium,
     fontSize: Typography.fontSize.sm,
     lineHeight: Typography.lineHeight.sm,
   },
-  
 } as const;

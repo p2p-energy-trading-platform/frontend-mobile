@@ -242,4 +242,3 @@ export function useSmartMeter() {
     skip: enterApp,
   };
 }
-

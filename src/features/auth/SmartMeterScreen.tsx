@@ -81,7 +81,11 @@ export default function SmartMeterScreen() {
 
       <ConnectionTestCard onTest={handleTest} />
 
-      <AuthButton title={smartMeterContent.submit} disabled={!form.canSubmit} onPress={form.submit} />
+      <AuthButton
+        title={smartMeterContent.submit}
+        disabled={!form.canSubmit}
+        onPress={form.submit}
+      />
     </AuthLayout>
   );
 }

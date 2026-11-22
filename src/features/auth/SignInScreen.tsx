@@ -39,7 +39,6 @@ export default function SignInScreen() {
             actionLabel={signInContent.footerAction}
             onAction={() => router.push('/create-account')}
           />
-
         </>
       }
     >
