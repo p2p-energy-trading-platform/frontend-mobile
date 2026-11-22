@@ -1,7 +1,8 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
-import { FontFamily } from '@/shared/design-system/tokens';
+
+import { AppText } from './AppText';
 
 type LabelDividerProps = {
   label: string;
@@ -15,12 +16,9 @@ export function LabelDivider({ label }: LabelDividerProps) {
     <View className="flex-row items-center gap-3">
       <View className="h-px flex-1" style={{ backgroundColor: theme.borderSubtle }} />
 
-      <Text
-        className="text-xs"
-        style={{ fontFamily: FontFamily.bodyMedium, color: theme.textPlaceholder }}
-      >
+      <AppText preset="captionMedium" tone="textPlaceholder">
         {label}
-      </Text>
+      </AppText>
 
       <View className="h-px flex-1" style={{ backgroundColor: theme.borderSubtle }} />
     </View>
