@@ -1,7 +1,11 @@
 import {
   getSignInErrors,
+  getSignUpErrors,
   isValidEmail,
+  isValidNewPassword,
+  isValidOtp,
   isValidSriLankanNicNumber,
+  maskEmail,
   PASSWORD_MAX_LENGTH,
   toIsoDate,
 } from './utils';
@@ -80,5 +84,79 @@ describe('getSignInErrors', () => {
     });
 
     expect(errors.password).toBe(`Password must be ${PASSWORD_MAX_LENGTH} characters or fewer`);
+  });
+});
+
+describe('isValidNewPassword', () => {
+  it.each(['abcdefg1', 'Passw0rdLong', '12345678a'])('accepts %s', (password) => {
+    expect(isValidNewPassword(password)).toBe(true);
+  });
+
+  it.each([
+    ['too short', 'abc123'],
+    ['no number', 'abcdefghi'],
+    ['no letter', '123456789'],
+    ['too long', `a1${'x'.repeat(PASSWORD_MAX_LENGTH)}`],
+  ])('rejects a password that is %s', (_reason, password) => {
+    expect(isValidNewPassword(password)).toBe(false);
+  });
+});
+
+describe('getSignUpErrors', () => {
+  const valid = {
+    email: 'name@example.com',
+    password: 'secret123',
+    confirmation: 'secret123',
+    accepted: true,
+  };
+
+  it('returns no errors for valid details', () => {
+    expect(getSignUpErrors(valid)).toEqual({});
+  });
+
+  it('reports every invalid field', () => {
+    const errors = getSignUpErrors({
+      email: 'nope',
+      password: 'abc',
+      confirmation: '',
+      accepted: false,
+    });
+
+    expect(Object.keys(errors).sort()).toEqual(['confirmation', 'email', 'password', 'terms']);
+    expect(errors.confirmation).toBe('Confirm your password');
+  });
+
+  it('reports a confirmation that does not match', () => {
+    expect(getSignUpErrors({ ...valid, confirmation: 'different1' }).confirmation).toBe(
+      'Passwords do not match',
+    );
+  });
+});
+
+describe('isValidOtp', () => {
+  it('accepts exactly six digits', () => {
+    expect(isValidOtp('123456')).toBe(true);
+  });
+
+  it.each(['', '12345', '1234567', '12345a', '12 456', '      '])('rejects "%s"', (code) => {
+    expect(isValidOtp(code)).toBe(false);
+  });
+});
+
+describe('maskEmail', () => {
+  it('keeps the first two characters and the domain', () => {
+    expect(maskEmail('sampleperson1@example.ae')).toBe('sa•••••••••••@example.ae');
+  });
+
+  it('keeps one character of a very short name', () => {
+    expect(maskEmail('ab@example.ae')).toBe('a•@example.ae');
+  });
+
+  it('caps the number of masked characters', () => {
+    expect(maskEmail(`${'a'.repeat(40)}@example.ae`)).toBe(`aa${'•'.repeat(11)}@example.ae`);
+  });
+
+  it('returns the input when it is not an email', () => {
+    expect(maskEmail('not an email')).toBe('not an email');
   });
 });
