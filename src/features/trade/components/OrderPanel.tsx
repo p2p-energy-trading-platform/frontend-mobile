@@ -10,10 +10,11 @@ import { Input } from '@/shared/components/ui/Input';
 import { SegmentedControl } from '@/shared/components/ui/SegmentedControl';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { FontFamily } from '@/shared/design-system/tokens';
+import { formatAed } from '@/shared/utils/format';
 
 import { orderQuote, priceUnitLabel } from '../constants';
 import type { OrderSide, OrderType } from '../types';
-import { calculateOrder, formatAed } from '../utils';
+import { calculateOrder } from '../utils';
 
 const sideOptions = [
   { label: 'Buy Energy', value: 'buy' },

@@ -1,11 +1,11 @@
 import { Pressable, Text, View } from 'react-native';
 
+import { StatusPill, type StatusTone } from '@/shared/components/ui/StatusPill';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
 import type { TradeRecord, TradeStatus } from '../types';
 
 import { SidePill } from './SidePill';
-import { StatusPill, type StatusTone } from './StatusPill';
 
 const STATUS: Record<TradeStatus, { label: string; tone: StatusTone }> = {
   settled: { label: 'Settled', tone: 'success' },

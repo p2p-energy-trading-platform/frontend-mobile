@@ -5,14 +5,15 @@ import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
 type CardProps = PropsWithChildren<{
   style?: StyleProp<ViewStyle>;
+  compact?: boolean;
 }>;
 
-export function Card({ children, style }: CardProps) {
+export function Card({ children, style, compact = false }: CardProps) {
   const { theme } = useTheme();
 
   return (
     <View
-      className="rounded-2xl p-4"
+      className={compact ? 'rounded-2xl p-3.5' : 'rounded-2xl p-4'}
       style={[
         {
           backgroundColor: theme.surface,
