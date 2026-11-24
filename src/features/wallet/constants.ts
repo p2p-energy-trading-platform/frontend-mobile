@@ -1,6 +1,15 @@
 import type { IconName } from '@/shared/components/ui/Icon';
 import type { Option } from '@/shared/components/ui/types';
-import type { TransactionStatus, TransactionType, WalletTransaction } from './types';
+
+import type {
+  PaymentCard,
+  PaymentMethodTab,
+  TransactionStatus,
+  TransactionType,
+  WalletStat,
+  WalletTransaction,
+  WalletView,
+} from './types';
 
 export const walletHeader = {
   subtitle: 'AED balance · Villa 47 · JLT Zone 4',
@@ -8,11 +17,23 @@ export const walletHeader = {
   initials: 'SA',
 };
 
-export const walletStats = [
-  { label: 'Pending', caption: 'Settling', value: '7.74' },
-  { label: 'Reserved', caption: 'Open orders', value: '2.13' },
-  { label: 'Lifetime in', caption: 'All deposits', value: '1,284.50' },
-] as const;
+export const walletBalance = {
+  available: 284.5,
+  pending: 7.74,
+  reserved: 2.13,
+  lifetimeIn: 1284.5,
+};
+
+export const walletStats: readonly WalletStat[] = [
+  { label: 'Pending', caption: 'Settling', value: walletBalance.pending, highlight: true },
+  { label: 'Reserved', caption: 'Open orders', value: walletBalance.reserved },
+  { label: 'Lifetime in', caption: 'All deposits', value: walletBalance.lifetimeIn },
+];
+
+export const walletCards: readonly PaymentCard[] = [
+  { brand: 'VISA', number: '4821', expiry: '09/27', isDefault: true },
+  { brand: 'MC', number: '3802', expiry: '04/26', isDefault: false },
+];
 
 export const walletTransactions: readonly WalletTransaction[] = [
   {
@@ -95,17 +116,17 @@ export const transactionIcons: Record<TransactionType, IconName> = {
   'trade-buy': 'trending-down',
   'metering-fee': 'file-text',
   'card-deposit': 'account-balance-wallet',
-  'bank-withdrawal': 'south-west',
+  'bank-withdrawal': 'north-east',
   refund: 'sync',
   'goodwill-credit': 'plus',
 };
 
-export const walletViewOptions: readonly Option<'payments' | 'history'>[] = [
+export const walletViewOptions: readonly Option<WalletView>[] = [
   { label: 'Payments', value: 'payments' },
   { label: 'History', value: 'history' },
 ];
 
-export const paymentMethodOptions: readonly Option<'cards' | 'banks'>[] = [
+export const paymentMethodOptions: readonly Option<PaymentMethodTab>[] = [
   { label: 'Debit/Credit', value: 'cards' },
   { label: 'Bank accounts', value: 'banks' },
 ];
