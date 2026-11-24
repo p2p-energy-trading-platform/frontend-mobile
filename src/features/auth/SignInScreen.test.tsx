@@ -7,6 +7,9 @@ import SignInScreen from './SignInScreen';
 
 // the SVG logo is not transformed by Jest
 jest.mock('@/features/splash/components/GoogleButton', () => ({ GoogleButton: () => null }));
+jest.mock('./use-google-sign-in', () => ({
+  useGoogleSignIn: () => ({ signIn: jest.fn(), loading: false }),
+}));
 
 describe('SignInScreen', () => {
   beforeEach(() => {

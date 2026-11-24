@@ -7,6 +7,9 @@ import { signUpContent } from './constants';
 
 // the SVG logo is not transformed by Jest
 jest.mock('@/features/splash/components/GoogleButton', () => ({ GoogleButton: () => null }));
+jest.mock('./use-google-sign-in', () => ({
+  useGoogleSignIn: () => ({ signIn: jest.fn(), loading: false }),
+}));
 
 const fillValidForm = async () => {
   await fireEvent.changeText(screen.getByLabelText('Email address'), ' name@example.com ');
