@@ -27,3 +27,16 @@ export type PaymentCard = {
   expiry: string;
   isDefault: boolean;
 };
+
+export type WalletStat = {
+  label: string;
+  caption: string;
+  value: number;
+  highlight?: boolean;
+};
+
+export type TransactionFilters = {
+  query: string;
+  type: 'all' | TransactionType;
+  status: 'all' | TransactionStatus;
+};

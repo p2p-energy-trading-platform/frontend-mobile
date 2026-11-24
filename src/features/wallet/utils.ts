@@ -1,13 +1,13 @@
-import { transactionTypeLabels, walletTransactions } from './constants';
-import type { TransactionStatus, TransactionType, WalletTransaction } from './types';
+import { transactionTypeLabels } from './constants';
+import type { TransactionFilters, WalletTransaction } from './types';
 
 export function filterWalletTransactions(
-  query: string,
-  type: 'all' | TransactionType,
-  status: 'all' | TransactionStatus,
+  transactions: readonly WalletTransaction[],
+  { query, type, status }: TransactionFilters,
 ): readonly WalletTransaction[] {
   const normalizedQuery = query.trim().toLowerCase();
-  return walletTransactions.filter((transaction) => {
+
+  return transactions.filter((transaction) => {
     const matchesType = type === 'all' || transaction.type === type;
     const matchesStatus = status === 'all' || transaction.status === status;
     const matchesSearch =
@@ -19,6 +19,7 @@ export function filterWalletTransactions(
         transaction.status,
         transactionTypeLabels[transaction.type],
       ].some((value) => value.toLowerCase().includes(normalizedQuery));
+
     return matchesType && matchesStatus && matchesSearch;
   });
 }
@@ -35,6 +36,7 @@ export function transactionsToCsv(transactions: readonly WalletTransaction[]): s
       transaction.status,
     ]),
   ];
+
   return rows
     .map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(','))
     .join('\n');

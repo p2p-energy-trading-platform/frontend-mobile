@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { filterWalletTransactions } from './utils';
+import { walletCards, walletTransactions } from './constants';
 import type {
   PaymentCard,
   PaymentMethodTab,
@@ -8,6 +8,7 @@ import type {
   TransactionType,
   WalletView,
 } from './types';
+import { filterWalletTransactions } from './utils';
 
 export function useWalletView() {
   const [view, setView] = useState<WalletView>('payments');
@@ -18,20 +19,21 @@ export function useWalletHistory() {
   const [query, setQuery] = useState('');
   const [type, setType] = useState<'all' | TransactionType>('all');
   const [status, setStatus] = useState<'all' | TransactionStatus>('all');
+
   const transactions = useMemo(
-    () => filterWalletTransactions(query, type, status),
+    () => filterWalletTransactions(walletTransactions, { query, type, status }),
     [query, status, type],
   );
+
   return { query, setQuery, type, setType, status, setStatus, transactions };
 }
 
 export function usePaymentMethods() {
   const [tab, setTab] = useState<PaymentMethodTab>('cards');
-  const [cards, setCards] = useState<PaymentCard[]>([
-    { brand: 'VISA', number: '4821', expiry: '09/27', isDefault: true },
-    { brand: 'MC', number: '3802', expiry: '04/26', isDefault: false },
-  ]);
+  const [cards, setCards] = useState<readonly PaymentCard[]>(walletCards);
+
   const removeCard = (number: string) =>
     setCards((current) => current.filter((card) => card.number !== number));
+
   return { tab, setTab, cards, removeCard };
 }
