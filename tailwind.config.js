@@ -10,6 +10,13 @@ export default {
         navy: Palette.navy,
         teal: Palette.teal,
       },
+      fontFamily: {
+        body: ['Inter_400Regular'],
+        'body-medium': ['Inter_500Medium'],
+        'body-semibold': ['Inter_600SemiBold'],
+        'body-bold': ['Inter_700Bold'],
+        mono: ['RobotoMono_700Bold'],
+      },
     },
   },
   plugins: [],

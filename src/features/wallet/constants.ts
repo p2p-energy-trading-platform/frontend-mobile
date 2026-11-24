@@ -1,26 +1,6 @@
 import type { IconName } from '@/shared/components/ui/Icon';
 import type { Option } from '@/shared/components/ui/types';
-
-export type TransactionType =
-  | 'trade-sale'
-  | 'trade-buy'
-  | 'metering-fee'
-  | 'card-deposit'
-  | 'bank-withdrawal'
-  | 'refund'
-  | 'goodwill-credit';
-
-export type TransactionStatus = 'Settled' | 'Pending' | 'Failed';
-
-export type WalletTransaction = {
-  id: string;
-  type: TransactionType;
-  title: string;
-  date: string;
-  reference: string;
-  amount: number;
-  status: TransactionStatus;
-};
+import type { TransactionStatus, TransactionType, WalletTransaction } from './types';
 
 export const walletHeader = {
   subtitle: 'AED balance · Villa 47 · JLT Zone 4',
