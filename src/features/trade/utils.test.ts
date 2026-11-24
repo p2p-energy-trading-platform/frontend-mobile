@@ -2,7 +2,6 @@ import { initialMarketSnapshot, orderQuote } from './constants';
 import {
   advanceMarketSnapshot,
   calculateOrder,
-  formatAed,
   getMarketStatus,
   getPercentageChange,
   getSpread,
@@ -132,12 +131,5 @@ describe('calculateOrder', () => {
 
   it.each(['', '0', '-5', 'abc'])('rejects amount %p', (amount) => {
     expect(calculateOrder({ ...base, side: 'buy', amount, price: '0.47' }).valid).toBe(false);
-  });
-});
-
-describe('formatAed', () => {
-  it('formats with thousands separators', () => {
-    expect(formatAed(2847.5)).toBe('AED 2,847.50');
-    expect(formatAed(0.47, 3)).toBe('AED 0.470');
   });
 });

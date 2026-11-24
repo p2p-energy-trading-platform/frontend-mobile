@@ -1,3 +1,5 @@
+import { formatAed } from '@/shared/utils/format';
+
 import { timeframeSeconds } from './constants';
 import type {
   Candle,
@@ -11,13 +13,6 @@ import type {
 } from './types';
 
 const GST_OFFSET_HOURS = 4;
-
-export function formatAed(value: number, decimals = 2) {
-  return `AED ${value.toLocaleString('en-US', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  })}`;
-}
 
 export function formatPrice(value: number) {
   return formatAed(value, 3);
