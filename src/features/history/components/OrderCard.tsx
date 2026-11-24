@@ -1,12 +1,12 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { Icon } from '@/shared/components/ui/Icon';
+import { StatusPill, type StatusTone } from '@/shared/components/ui/StatusPill';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
 import type { OrderRecord, OrderStatus } from '../types';
 
 import { SidePill } from './SidePill';
-import { StatusPill, type StatusTone } from './StatusPill';
 
 const STATUS: Record<OrderStatus, { label: string; tone: StatusTone }> = {
   open: { label: 'Open', tone: 'info' },
