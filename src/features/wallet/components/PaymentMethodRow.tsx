@@ -1,8 +1,10 @@
-import { Alert, Pressable, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, View } from 'react-native';
 
 import { AppText } from '@/shared/components/ui/AppText';
 import { Card } from '@/shared/components/ui/Card';
 import { Chip } from '@/shared/components/ui/Chip';
+import { ConfirmDialog } from '@/shared/components/ui/ConfirmDialog';
 import { Icon } from '@/shared/components/ui/Icon';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 
@@ -12,11 +14,7 @@ export function PaymentMethodRow({ card, onRemove }: { card: PaymentCard; onRemo
   const { theme } = useTheme();
   const brandName = card.brand === 'VISA' ? 'Visa' : 'Mastercard';
 
-  const confirmRemove = () =>
-    Alert.alert('Remove card?', `${brandName} ending in ${card.number} will be removed.`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Remove', style: 'destructive', onPress: onRemove },
-    ]);
+  const [confirming, setConfirming] = useState(false);
 
   return (
     <Card compact>
@@ -44,13 +42,26 @@ export function PaymentMethodRow({ card, onRemove }: { card: PaymentCard; onRemo
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Remove ${brandName} ending in ${card.number}`}
-            onPress={confirmRemove}
+            onPress={() => setConfirming(true)}
             hitSlop={8}
           >
             <Icon name="close" size={18} color={theme.textTertiary} />
           </Pressable>
         )}
       </View>
+
+      <ConfirmDialog
+        visible={confirming}
+        title="Remove card?"
+        message={`${brandName} ending in ${card.number} will be removed.`}
+        confirmLabel="Remove"
+        destructive
+        onCancel={() => setConfirming(false)}
+        onConfirm={() => {
+          setConfirming(false);
+          onRemove();
+        }}
+      />
     </Card>
   );
 }
