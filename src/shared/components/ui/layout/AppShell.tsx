@@ -42,6 +42,9 @@ export function AppShell({ children, unreadCount = 0, initials }: AppShellProps)
           unreadCount={unreadCount}
           initials={initials}
           onPressNotifications={openNotifications}
+          onPressAccount={() => {
+            if (pathname !== '/settings') router.push('/settings');
+          }}
         />
       </SafeAreaView>
 

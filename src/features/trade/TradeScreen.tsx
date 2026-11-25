@@ -5,7 +5,6 @@ import { FilterDropdown } from '@/shared/components/ui/FilterDropdown';
 import { PageHeader } from '@/shared/components/ui/PageHeader';
 import { AppShell } from '@/shared/components/ui/layout/AppShell';
 
-import { HistoryButton } from './components/HistoryButton';
 import { MarketStatusPill } from './components/MarketStatusPill';
 import { MarketSummaryCard } from './components/MarketSummaryCard';
 import { OrderBookCard } from './components/OrderBookCard';
@@ -30,10 +29,7 @@ export default function TradeScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerClassName="gap-3 px-6 pb-6 pt-3"
         >
-          <View className="flex-row items-start justify-between">
-            <PageHeader title={tradeHeader.title} subtitle={tradeHeader.subtitle} />
-            <HistoryButton />
-          </View>
+          <PageHeader title={tradeHeader.title} subtitle={tradeHeader.subtitle} />
 
           <View className="flex-row items-center justify-between">
             <FilterDropdown
