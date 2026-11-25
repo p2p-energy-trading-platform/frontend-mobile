@@ -79,6 +79,7 @@ export default function KycScreen() {
               options={NATIONALITY_OPTIONS}
               value={form.nationality}
               onChange={form.setNationality}
+              error={form.errors.nationality}
             />
           </View>
         </View>
@@ -107,7 +108,7 @@ export default function KycScreen() {
         ))}
       </View>
 
-      <AuthButton title={kycContent.submit} disabled={!form.canSubmit} onPress={form.submit} />
+      <AuthButton title={kycContent.submit} onPress={form.submit} />
     </AuthLayout>
   );
 }
