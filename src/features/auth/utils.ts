@@ -182,8 +182,14 @@ export function getDocumentError(document: Pick<PickedDocument, 'mimeType' | 'si
     return 'Use a JPG, PNG or PDF file';
   }
 
-  if (document.size !== undefined && document.size > KYC_MAX_FILE_SIZE_MB * 1024 * 1024) {
-    return `File must be ${KYC_MAX_FILE_SIZE_MB} MB or smaller`;
+  if (document.size !== undefined) {
+    if (document.size === 0) {
+      return 'File is empty';
+    }
+
+    if (document.size > KYC_MAX_FILE_SIZE_MB * 1024 * 1024) {
+      return `File must be ${KYC_MAX_FILE_SIZE_MB} MB or smaller`;
+    }
   }
 
   return undefined;

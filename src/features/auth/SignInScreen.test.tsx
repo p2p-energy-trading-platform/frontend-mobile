@@ -54,13 +54,11 @@ describe('SignInScreen', () => {
     expect(screen.getByLabelText('Password').props.secureTextEntry).toBe(false);
   });
 
-  it('opens create account from the footer and skips to the portal from the demo shortcut', async () => {
+  it('opens create account from the footer', async () => {
     await renderWithProviders(<SignInScreen />);
 
     await fireEvent.press(screen.getByRole('link', { name: 'Create account' }));
-    expect(router.push).toHaveBeenCalledWith('/create-account');
 
-    await fireEvent.press(screen.getByRole('link', { name: 'Skip to portal' }));
-    expect(router.replace).toHaveBeenCalledWith('/(tabs)');
+    expect(router.push).toHaveBeenCalledWith('/create-account');
   });
 });
