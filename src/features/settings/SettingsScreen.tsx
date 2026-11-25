@@ -100,7 +100,7 @@ export default function SettingsScreen() {
       >
         <PageHeader title="Settings" subtitle="Account, security, and preferences" />
 
-        <Card className="rounded-2xl">
+        <Card>
           <View className="gap-3">
             <View className="flex-row items-center justify-between">
               <AppText style={{ fontSize: 15, fontWeight: '700' }}>Account readiness</AppText>

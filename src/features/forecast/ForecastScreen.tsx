@@ -40,7 +40,7 @@ export default function ForecastScreen() {
         </Card>
         <View className="gap-2">
           <AppText style={{ fontSize: 15, fontWeight: '700' }}>3-day outlook</AppText>
-          <Card className="gap-4">
+          <Card style={{ gap: 16 }}>
             {forecast.map((item, index) => (
               <View key={item.day}>
                 {index ? (

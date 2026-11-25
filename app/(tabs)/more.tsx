@@ -47,7 +47,7 @@ export default function MoreScreen() {
         contentContainerClassName="gap-5 px-4 pb-8 pt-4"
       >
         <PageHeader title="More" subtitle="Explore your account and energy tools" />
-        <Card className="overflow-hidden p-0">
+        <Card style={{ overflow: 'hidden', padding: 0 }}>
           {menuItems.map((item, index) => (
             <View key={item.title}>
               <Pressable
