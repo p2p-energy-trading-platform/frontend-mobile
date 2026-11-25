@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 
+import { KYC_DOCUMENTS, kycContent } from './constants';
 import { pickDocument } from './pick-document';
 import type { KycDocumentKey, KycDocuments, KycErrors, MeterType, SignUpErrors } from './types';
 import {
@@ -140,8 +141,9 @@ export function useKyc() {
   const [dateOfBirth, setDateOfBirthValue] = useState('');
   const [nationality, setNationality] = useState('');
   const [documents, setDocuments] = useState<KycDocuments>({});
-  const [documentErrors, setDocumentErrors] = useState<Partial<Record<KycDocumentKey, string>>>({});
+  const [pickErrors, setPickErrors] = useState<Partial<Record<KycDocumentKey, string>>>({});
   const [touched, setTouched] = useState<Partial<Record<KycField, boolean>>>({});
+  const [submitted, setSubmitted] = useState(false);
   const [picking, setPicking] = useState(false);
 
   // a ref blocks a second tap in the same frame, before `picking` has re-rendered
@@ -149,17 +151,23 @@ export function useKyc() {
 
   const allErrors = getKycErrors({ fullName, nic, dateOfBirth, nationality, documents });
 
-  // a field shows its error after it was left once
-  const showError = (field: KycField) => (touched[field] ? allErrors[field] : undefined);
+  // a field shows its error after it was left once, or after the first submit attempt
+  const showError = (field: KycField) =>
+    submitted || touched[field] ? allErrors[field] : undefined;
 
   const errors: KycErrors = {
     fullName: showError('fullName'),
     nic: showError('nic'),
     dateOfBirth: showError('dateOfBirth'),
+    nationality: submitted ? allErrors.nationality : undefined,
   };
 
-  // the submit button stays disabled until everything is valid
-  const canSubmit = Object.keys(allErrors).length === 0;
+  const documentErrors = Object.fromEntries(
+    KYC_DOCUMENTS.map(({ key }) => [
+      key,
+      pickErrors[key] ?? (submitted && !documents[key] ? kycContent.documentRequired : undefined),
+    ]),
+  ) as Partial<Record<KycDocumentKey, string>>;
 
   const touch = (field: KycField) => setTouched((prev) => ({ ...prev, [field]: true }));
 
@@ -176,7 +184,7 @@ export function useKyc() {
       const { document, error: pickerError } = await pickDocument();
 
       if (pickerError) {
-        setDocumentErrors((prev) => ({ ...prev, [key]: pickerError }));
+        setPickErrors((prev) => ({ ...prev, [key]: pickerError }));
         return;
       }
 
@@ -184,7 +192,7 @@ export function useKyc() {
       if (!document) return;
 
       const error = getDocumentError(document);
-      setDocumentErrors((prev) => ({ ...prev, [key]: error }));
+      setPickErrors((prev) => ({ ...prev, [key]: error }));
 
       if (!error) {
         setDocuments((prev) => ({ ...prev, [key]: document }));
@@ -196,7 +204,9 @@ export function useKyc() {
   };
 
   const submit = () => {
-    if (!canSubmit) return;
+    setSubmitted(true);
+
+    if (Object.keys(allErrors).length > 0) return;
 
     // TODO(api): upload the documents and call POST /api/v1/kyc with the form values first.
     router.push('/smart-meter');
@@ -216,7 +226,6 @@ export function useKyc() {
     documents,
     documentErrors,
     errors,
-    canSubmit,
     picking,
     touch,
     browse,
