@@ -28,8 +28,7 @@ export const signUpContent = {
   passwordHint: 'At least 8 characters, with a letter and a number.',
   confirmationLabel: 'Confirm password',
   confirmationPlaceholder: 'Re-enter your password',
-  termsLabel:
-    'I agree to the Terms of Service and Privacy Policy. I confirm I am 18 or over and a UAE resident.',
+  termsLabel: 'I agree to the Terms of Service and Privacy Policy.',
   termsPrefix: 'I agree to the ',
   termsLink: 'Terms of Service',
   termsJoin: ' and ',
@@ -74,6 +73,7 @@ export const kycContent = {
   browse: 'Browse',
   replace: 'Replace',
   pickerError: 'Could not open the file picker. Please try again.',
+  documentRequired: 'Upload this document',
   submit: 'Submit for verification',
   skip: 'Skip for now, verify later in Settings',
 };
