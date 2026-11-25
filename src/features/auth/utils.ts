@@ -50,9 +50,25 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const PASSWORD_MAX_LENGTH = 128;
 
+//The backend rejects full names longer than this.
+export const FULL_NAME_MAX_LENGTH = 255;
+
 export function isValidEmail(value: string) {
   const email = value.trim();
   return email.length <= 254 && EMAIL_PATTERN.test(email);
+}
+
+/** Returns an error message when the full name is empty or too long, otherwise undefined. */
+export function getFullNameError(value: string) {
+  const fullName = value.trim();
+
+  if (!fullName) return 'Full legal name is required';
+
+  if (fullName.length > FULL_NAME_MAX_LENGTH) {
+    return `Full legal name must be ${FULL_NAME_MAX_LENGTH} characters or fewer`;
+  }
+
+  return undefined;
 }
 
 /** Returns an error message per invalid sign-in field; an empty object means the form is valid. */
@@ -85,12 +101,16 @@ export function isValidNewPassword(password: string) {
 
 /** Returns an error message per invalid sign-up field; an empty object means the form is valid. */
 export function getSignUpErrors({
+  fullName,
   email,
   password,
   confirmation,
   accepted,
 }: SignUpValues): SignUpErrors {
   const errors: SignUpErrors = {};
+
+  const fullNameError = getFullNameError(fullName);
+  if (fullNameError) errors.fullName = fullNameError;
 
   if (!isValidEmail(email)) {
     errors.email = 'Enter a valid email address';
@@ -179,7 +199,8 @@ export function getKycErrors({
 }: KycValues): KycErrors {
   const errors: KycErrors = {};
 
-  if (!fullName.trim()) errors.fullName = 'Full legal name is required';
+  const fullNameError = getFullNameError(fullName);
+  if (fullNameError) errors.fullName = fullNameError;
 
   if (!isValidSriLankanNicNumber(nic)) errors.nic = 'Enter a valid Sri Lankan NIC number';
 

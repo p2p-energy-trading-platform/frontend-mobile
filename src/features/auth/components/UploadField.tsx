@@ -13,11 +13,20 @@ type UploadFieldProps = {
   description: string;
   document?: PickedDocument;
   error?: string;
+  /** Blocks taps, e.g. while a file picker is already open. */
+  disabled?: boolean;
   onBrowse: () => void;
 };
 
 /** Dashed row with an upload tile, title and a "Browse" action (Figma: Upload). */
-export function UploadField({ title, description, document, error, onBrowse }: UploadFieldProps) {
+export function UploadField({
+  title,
+  description,
+  document,
+  error,
+  disabled = false,
+  onBrowse,
+}: UploadFieldProps) {
   const { theme } = useTheme();
   const picked = Boolean(document);
 
@@ -26,11 +35,14 @@ export function UploadField({ title, description, document, error, onBrowse }: U
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${picked ? kycContent.replace : kycContent.browse} ${title}`}
+        accessibilityState={{ disabled }}
+        disabled={disabled}
         onPress={onBrowse}
         className="flex-row items-center gap-3 rounded-2xl border border-dashed py-3 pl-3 pr-4"
         style={{
           backgroundColor: theme.surface,
           borderColor: error ? theme.error : theme.borderInput,
+          opacity: disabled ? 0.6 : 1,
         }}
       >
         <View

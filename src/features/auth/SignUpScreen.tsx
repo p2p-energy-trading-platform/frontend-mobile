@@ -44,6 +44,18 @@ export default function SignUpScreen() {
 
       <View className="gap-5">
         <TextField
+          label={signUpContent.fullNameLabel}
+          placeholder={signUpContent.fullNamePlaceholder}
+          value={form.fullName}
+          onChangeText={form.setFullName}
+          onBlur={() => form.touch('fullName')}
+          autoCapitalize="words"
+          autoComplete="name"
+          textContentType="name"
+          error={form.errors.fullName}
+        />
+
+        <TextField
           label={signUpContent.emailLabel}
           placeholder={signUpContent.emailPlaceholder}
           value={form.email}

@@ -13,17 +13,14 @@ export const signInContent = {
   footerAction: 'Create account',
 };
 
-export const demoShortcut = {
-  prompt: 'Demo shortcut:',
-  action: 'Skip to portal',
-};
-
 /** Steps in the sign-up flow: account, verify email, KYC, smart meter. */
 export const AUTH_TOTAL_STEPS = 4;
 
 export const signUpContent = {
   title: 'Create your account',
-  subtitle: 'Enter your email and choose a password.',
+  subtitle: 'Enter your full legal name, email and choose a password.',
+  fullNameLabel: 'Full name',
+  fullNamePlaceholder: 'Enter your full name',
   emailLabel: 'Email address',
   emailPlaceholder: 'you@example.com',
   passwordLabel: 'Password',
@@ -56,7 +53,7 @@ export const verifyEmailContent = {
   footerAction: 'Change email address',
 };
 
-export const KYC_MAX_FILE_SIZE_MB = 5;
+export const KYC_MAX_FILE_SIZE_MB = 10;
 
 export const KYC_ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'application/pdf'] as const;
 

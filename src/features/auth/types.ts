@@ -9,6 +9,7 @@ export type SignInErrors = {
 };
 
 export type SignUpValues = {
+  fullName: string;
   email: string;
   password: string;
   confirmation: string;
@@ -16,6 +17,7 @@ export type SignUpValues = {
 };
 
 export type SignUpErrors = {
+  fullName?: string;
   email?: string;
   password?: string;
   confirmation?: string;
@@ -31,6 +33,12 @@ export type PickedDocument = {
   mimeType: string;
   /** Size in bytes, when the picker could read it. */
   size?: number;
+};
+
+/** Outcome of opening the file picker: empty when cancelled, `error` when it failed. */
+export type PickDocumentResult = {
+  document?: PickedDocument;
+  error?: string;
 };
 
 export type KycDocuments = Partial<Record<KycDocumentKey, PickedDocument>>;

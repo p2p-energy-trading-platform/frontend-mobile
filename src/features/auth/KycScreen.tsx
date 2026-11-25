@@ -101,6 +101,7 @@ export default function KycScreen() {
             description={item.description}
             document={form.documents[item.key]}
             error={form.documentErrors[item.key]}
+            disabled={form.picking}
             onBrowse={() => void form.browse(item.key)}
           />
         ))}

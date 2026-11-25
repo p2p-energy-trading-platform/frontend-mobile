@@ -1,4 +1,9 @@
+import { KYC_MAX_FILE_SIZE_MB } from './constants';
 import {
+  FULL_NAME_MAX_LENGTH,
+  getDocumentError,
+  getFullNameError,
+  getKycErrors,
   getSignInErrors,
   getSignUpErrors,
   isValidEmail,
@@ -65,6 +70,26 @@ describe('isValidEmail', () => {
   );
 });
 
+describe('getFullNameError', () => {
+  it.each(['Jane Doe', ' Jane Doe ', 'a'.repeat(FULL_NAME_MAX_LENGTH)])('accepts %p', (name) => {
+    expect(getFullNameError(name)).toBeUndefined();
+  });
+
+  it.each(['', '   '])('requires a name, rejecting %p', (name) => {
+    expect(getFullNameError(name)).toBe('Full legal name is required');
+  });
+
+  it('rejects a name longer than the maximum', () => {
+    expect(getFullNameError('a'.repeat(FULL_NAME_MAX_LENGTH + 1))).toBe(
+      `Full legal name must be ${FULL_NAME_MAX_LENGTH} characters or fewer`,
+    );
+  });
+
+  it('does not count surrounding whitespace towards the maximum', () => {
+    expect(getFullNameError(` ${'a'.repeat(FULL_NAME_MAX_LENGTH)} `)).toBeUndefined();
+  });
+});
+
 describe('getSignInErrors', () => {
   it('returns no errors for a valid email and password', () => {
     expect(getSignInErrors({ email: 'name@example.com', password: 'secret' })).toEqual({});
@@ -104,6 +129,7 @@ describe('isValidNewPassword', () => {
 
 describe('getSignUpErrors', () => {
   const valid = {
+    fullName: 'Jane Doe',
     email: 'name@example.com',
     password: 'secret123',
     confirmation: 'secret123',
@@ -116,19 +142,120 @@ describe('getSignUpErrors', () => {
 
   it('reports every invalid field', () => {
     const errors = getSignUpErrors({
+      fullName: '',
       email: 'nope',
       password: 'abc',
       confirmation: '',
       accepted: false,
     });
 
-    expect(Object.keys(errors).sort()).toEqual(['confirmation', 'email', 'password', 'terms']);
+    expect(Object.keys(errors).sort()).toEqual([
+      'confirmation',
+      'email',
+      'fullName',
+      'password',
+      'terms',
+    ]);
     expect(errors.confirmation).toBe('Confirm your password');
+  });
+
+  it('requires a full name', () => {
+    expect(getSignUpErrors({ ...valid, fullName: '  ' }).fullName).toBe(
+      'Full legal name is required',
+    );
+  });
+
+  it('rejects a full name longer than the maximum', () => {
+    expect(
+      getSignUpErrors({ ...valid, fullName: 'a'.repeat(FULL_NAME_MAX_LENGTH + 1) }).fullName,
+    ).toBe(`Full legal name must be ${FULL_NAME_MAX_LENGTH} characters or fewer`);
   });
 
   it('reports a confirmation that does not match', () => {
     expect(getSignUpErrors({ ...valid, confirmation: 'different1' }).confirmation).toBe(
       'Passwords do not match',
+    );
+  });
+});
+
+describe('getDocumentError', () => {
+  const MB = 1024 * 1024;
+
+  it.each(['image/jpeg', 'image/png', 'application/pdf'])('accepts a small %s file', (mimeType) => {
+    expect(getDocumentError({ mimeType, size: 1024 })).toBeUndefined();
+  });
+
+  it('accepts a file when the picker could not read its size', () => {
+    expect(getDocumentError({ mimeType: 'image/png', size: undefined })).toBeUndefined();
+  });
+
+  it('accepts a file exactly at the size limit', () => {
+    expect(
+      getDocumentError({ mimeType: 'application/pdf', size: KYC_MAX_FILE_SIZE_MB * MB }),
+    ).toBeUndefined();
+  });
+
+  it('uses the same 10 MB limit as the web app and backend', () => {
+    expect(KYC_MAX_FILE_SIZE_MB).toBe(10);
+    expect(getDocumentError({ mimeType: 'image/jpeg', size: 6 * MB })).toBeUndefined();
+  });
+
+  it('rejects a file over the size limit', () => {
+    expect(
+      getDocumentError({ mimeType: 'application/pdf', size: KYC_MAX_FILE_SIZE_MB * MB + 1 }),
+    ).toBe(`File must be ${KYC_MAX_FILE_SIZE_MB} MB or smaller`);
+  });
+
+  it('rejects an empty file', () => {
+    expect(getDocumentError({ mimeType: 'image/jpeg', size: 0 })).toBe('File is empty');
+  });
+
+  it.each(['image/gif', 'text/plain', ''])('rejects the file type %p', (mimeType) => {
+    expect(getDocumentError({ mimeType, size: 1024 })).toBe('Use a JPG, PNG or PDF file');
+  });
+});
+
+describe('getKycErrors', () => {
+  const document = {
+    uri: 'file:///cache/nic.jpg',
+    name: 'nic.jpg',
+    mimeType: 'image/jpeg',
+    size: 1024,
+  };
+
+  const valid = {
+    fullName: 'Jane Doe',
+    nic: '199012345678',
+    dateOfBirth: '15/03/1995',
+    nationality: 'LK',
+    documents: { idFront: document, idBack: document, selfie: document },
+  };
+
+  it('returns no errors for valid details', () => {
+    expect(getKycErrors(valid)).toEqual({});
+  });
+
+  it('requires a full name', () => {
+    expect(getKycErrors({ ...valid, fullName: '   ' }).fullName).toBe(
+      'Full legal name is required',
+    );
+  });
+
+  it('rejects a full name longer than the maximum', () => {
+    expect(
+      getKycErrors({ ...valid, fullName: 'a'.repeat(FULL_NAME_MAX_LENGTH + 1) }).fullName,
+    ).toBe(`Full legal name must be ${FULL_NAME_MAX_LENGTH} characters or fewer`);
+  });
+
+  it('accepts a full name exactly at the maximum', () => {
+    expect(
+      getKycErrors({ ...valid, fullName: 'a'.repeat(FULL_NAME_MAX_LENGTH) }).fullName,
+    ).toBeUndefined();
+  });
+
+  it('requires all three documents', () => {
+    expect(getKycErrors({ ...valid, documents: { idFront: document } }).documents).toBe(
+      'Upload all three documents',
     );
   });
 });

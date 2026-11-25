@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { pickDocument } from './pick-document';
 import type { KycDocumentKey, KycDocuments, KycErrors, MeterType, SignUpErrors } from './types';
@@ -54,12 +54,13 @@ export function useSignIn() {
   };
 }
 
-type SignUpField = 'email' | 'password' | 'confirmation';
+type SignUpField = 'fullName' | 'email' | 'password' | 'confirmation';
 
 /** Sign-up form state, validation and submit (step 1 of 4). */
 export function useSignUp() {
   const router = useRouter();
 
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
@@ -67,12 +68,13 @@ export function useSignUp() {
   const [submitted, setSubmitted] = useState(false);
   const [touched, setTouched] = useState<Partial<Record<SignUpField, boolean>>>({});
 
-  const allErrors = getSignUpErrors({ email, password, confirmation, accepted });
+  const allErrors = getSignUpErrors({ fullName, email, password, confirmation, accepted });
 
   // a field shows its error after it was left once, or after the first submit attempt
   const showError = (field: SignUpField) => submitted || touched[field];
 
   const errors: SignUpErrors = {
+    fullName: showError('fullName') ? allErrors.fullName : undefined,
     email: showError('email') ? allErrors.email : undefined,
     password: showError('password') ? allErrors.password : undefined,
     confirmation: showError('confirmation') ? allErrors.confirmation : undefined,
@@ -86,11 +88,13 @@ export function useSignUp() {
 
     if (Object.keys(allErrors).length > 0) return;
 
-    // TODO(api): call POST /api/v1/auth/register with { email, password } first.
+    // TODO(api): call POST /api/v1/auth/register with { fullName: fullName.trim(), email, password } first.
     router.push({ pathname: '/verify-email', params: { email: email.trim() } });
   };
 
   return {
+    fullName,
+    setFullName,
     email,
     setEmail,
     password,
@@ -138,6 +142,10 @@ export function useKyc() {
   const [documents, setDocuments] = useState<KycDocuments>({});
   const [documentErrors, setDocumentErrors] = useState<Partial<Record<KycDocumentKey, string>>>({});
   const [touched, setTouched] = useState<Partial<Record<KycField, boolean>>>({});
+  const [picking, setPicking] = useState(false);
+
+  // a ref blocks a second tap in the same frame, before `picking` has re-rendered
+  const pickingRef = useRef(false);
 
   const allErrors = getKycErrors({ fullName, nic, dateOfBirth, nationality, documents });
 
@@ -158,14 +166,32 @@ export function useKyc() {
   const setDateOfBirth = (value: string) => setDateOfBirthValue(formatDateInput(value));
 
   const browse = async (key: KycDocumentKey) => {
-    const picked = await pickDocument();
-    if (!picked) return;
+    // only one picker can be open at a time
+    if (pickingRef.current) return;
 
-    const error = getDocumentError(picked);
-    setDocumentErrors((prev) => ({ ...prev, [key]: error }));
+    pickingRef.current = true;
+    setPicking(true);
 
-    if (!error) {
-      setDocuments((prev) => ({ ...prev, [key]: picked }));
+    try {
+      const { document, error: pickerError } = await pickDocument();
+
+      if (pickerError) {
+        setDocumentErrors((prev) => ({ ...prev, [key]: pickerError }));
+        return;
+      }
+
+      // the user cancelled
+      if (!document) return;
+
+      const error = getDocumentError(document);
+      setDocumentErrors((prev) => ({ ...prev, [key]: error }));
+
+      if (!error) {
+        setDocuments((prev) => ({ ...prev, [key]: document }));
+      }
+    } finally {
+      pickingRef.current = false;
+      setPicking(false);
     }
   };
 
@@ -191,6 +217,7 @@ export function useKyc() {
     documentErrors,
     errors,
     canSubmit,
+    picking,
     touch,
     browse,
     submit,

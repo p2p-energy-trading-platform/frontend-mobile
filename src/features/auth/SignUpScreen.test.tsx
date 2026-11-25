@@ -4,6 +4,7 @@ import { fireEvent, renderWithProviders, screen } from '@/test/render';
 
 import SignUpScreen from './SignUpScreen';
 import { signUpContent } from './constants';
+import { FULL_NAME_MAX_LENGTH } from './utils';
 
 // the SVG logo is not transformed by Jest
 jest.mock('@/features/splash/components/GoogleButton', () => ({ GoogleButton: () => null }));
@@ -12,6 +13,7 @@ jest.mock('./use-google-sign-in', () => ({
 }));
 
 const fillValidForm = async () => {
+  await fireEvent.changeText(screen.getByLabelText(signUpContent.fullNameLabel), ' Jane Doe ');
   await fireEvent.changeText(screen.getByLabelText('Email address'), ' name@example.com ');
   await fireEvent.changeText(screen.getByLabelText('Password'), 'secret123');
   await fireEvent.changeText(screen.getByLabelText('Confirm password'), 'secret123');
@@ -30,15 +32,38 @@ describe('SignUpScreen', () => {
     expect(screen.getByText(signUpContent.passwordHint)).toBeOnTheScreen();
   });
 
+  it('asks for the full name', async () => {
+    await renderWithProviders(<SignUpScreen />);
+
+    expect(screen.getByLabelText(signUpContent.fullNameLabel)).toBeOnTheScreen();
+  });
+
   it('shows every error and stays on the screen when submitted empty', async () => {
     await renderWithProviders(<SignUpScreen />);
 
     await fireEvent.press(screen.getByRole('button', { name: 'Create account' }));
 
+    expect(screen.getByText('Full legal name is required')).toBeOnTheScreen();
     expect(screen.getByText('Enter a valid email address')).toBeOnTheScreen();
     expect(screen.getByText(/Password must be 8 to 128 characters/)).toBeOnTheScreen();
     expect(screen.getByText('Confirm your password')).toBeOnTheScreen();
     expect(screen.getByText('You must accept the terms to continue')).toBeOnTheScreen();
+    expect(router.push).not.toHaveBeenCalled();
+  });
+
+  it('rejects a full name longer than the maximum', async () => {
+    await renderWithProviders(<SignUpScreen />);
+
+    await fillValidForm();
+    await fireEvent.changeText(
+      screen.getByLabelText(signUpContent.fullNameLabel),
+      'a'.repeat(FULL_NAME_MAX_LENGTH + 1),
+    );
+    await fireEvent.press(screen.getByRole('button', { name: 'Create account' }));
+
+    expect(
+      screen.getByText(`Full legal name must be ${FULL_NAME_MAX_LENGTH} characters or fewer`),
+    ).toBeOnTheScreen();
     expect(router.push).not.toHaveBeenCalled();
   });
 
