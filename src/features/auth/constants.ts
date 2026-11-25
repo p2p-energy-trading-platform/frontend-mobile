@@ -73,6 +73,7 @@ export const kycContent = {
   documentsHint: `JPG, PNG or PDF · max ${KYC_MAX_FILE_SIZE_MB} MB`,
   browse: 'Browse',
   replace: 'Replace',
+  pickerError: 'Could not open the file picker. Please try again.',
   submit: 'Submit for verification',
   skip: 'Skip for now, verify later in Settings',
 };
