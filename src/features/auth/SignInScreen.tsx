@@ -80,7 +80,7 @@ export default function SignInScreen() {
       />
 
       <View className="gap-5">
-        <AuthButton title={signInContent.submit} onPress={form.submit} />
+        <AuthButton title={signInContent.submit} disabled={form.submitting} onPress={form.submit} />
 
         <LabelDivider label={signInContent.divider} />
 
