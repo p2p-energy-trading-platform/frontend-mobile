@@ -6,7 +6,6 @@ export const signInContent = {
   passwordLabel: 'Password',
   passwordPlaceholder: 'Enter your password',
   forgotPassword: 'Forgot password?',
-  rememberMe: 'Remember me for 30 days',
   submit: 'Sign in',
   divider: 'or continue with',
   footerPrompt: 'Don’t have an account?',
@@ -39,6 +38,9 @@ export const signUpContent = {
   footerAction: 'Sign in',
 };
 
+/** Wait time before another verification code can be requested. */
+export const RESEND_COOLDOWN_SECONDS = 60;
+
 export const verifyEmailContent = {
   title: 'Verify your email',
   subtitlePrefix: 'We sent a 6-digit code to ',
@@ -47,6 +49,8 @@ export const verifyEmailContent = {
   submit: 'Verify email',
   resendPrompt: 'Didn’t get a code?',
   resendAction: 'Resend code',
+  resendingAction: 'Sending…',
+  resendCooldownAction: (seconds: number) => `Resend code in ${seconds}s`,
   resendNotice: 'We sent a new code to your email address.',
   footerPrompt: 'Wrong email?',
   footerAction: 'Change email address',
