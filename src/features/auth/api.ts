@@ -24,6 +24,12 @@ export type MeResponse = SessionUser & {
   role: string;
 };
 
+export type GoogleExchangeResponse = SessionTokensPayload & {
+  userId: string;
+  email: string;
+  isNewUser: boolean;
+};
+
 export function login(body: { email: string; password: string }) {
   return apiRequest<LoginResponse>('/api/v1/auth/login', { method: 'POST', body, auth: false });
 }
@@ -55,6 +61,14 @@ export function resendOtp(email: string) {
 
 export function getMe() {
   return apiRequest<MeResponse>('/api/v1/auth/me');
+}
+
+export function exchangeGoogleHandoff(body: { handoff: string; codeVerifier: string }) {
+  return apiRequest<GoogleExchangeResponse>('/api/v1/auth/google/mobile/exchange', {
+    method: 'POST',
+    body,
+    auth: false,
+  });
 }
 
 /** Public route: it only needs the refresh token, so it also works with an expired access token. */
