@@ -7,8 +7,13 @@ export type SessionUser = {
   email: string;
   name?: string;
   role?: string;
+  status?: string;
   kycStatus?: 'PENDING' | 'VERIFIED' | 'REJECTED';
 };
+
+export function isEmailUnverified(user: Pick<SessionUser, 'status'> | null): boolean {
+  return user?.status === 'PENDING';
+}
 
 type AppStore = {
   initialized: boolean;
