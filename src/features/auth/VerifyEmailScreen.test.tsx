@@ -1,5 +1,4 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { Alert } from 'react-native';
 
 import { ApiError } from '@/lib/api-client';
 import { fireEvent, renderWithProviders, screen, waitFor } from '@/test/render';
@@ -68,7 +67,6 @@ describe('VerifyEmailScreen', () => {
   });
 
   it('shows an error and stays on the screen when the code is wrong', async () => {
-    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
     jest
       .mocked(verifyEmail)
       .mockRejectedValue(new ApiError('VALIDATION_ERROR', 'Invalid or expired code.', 400));
@@ -78,15 +76,12 @@ describe('VerifyEmailScreen', () => {
     await enterCode('123456');
     await fireEvent.press(screen.getByRole('button', { name: 'Verify email' }));
 
-    await waitFor(() =>
-      expect(alert).toHaveBeenCalledWith('Verification failed', 'Invalid or expired code.'),
-    );
+    expect(await screen.findByText('Invalid or expired code.')).toBeOnTheScreen();
 
     expect(router.push).not.toHaveBeenCalled();
   });
 
   it('lets the user resend the code', async () => {
-    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
     jest.mocked(resendOtp).mockResolvedValue({ success: true });
 
     await renderWithProviders(<VerifyEmailScreen />);
@@ -94,9 +89,38 @@ describe('VerifyEmailScreen', () => {
     await fireEvent.press(screen.getByRole('link', { name: 'Resend code' }));
 
     await waitFor(() =>
-      expect(alert).toHaveBeenCalledWith('Resend code', verifyEmailContent.resendNotice),
+      expect(screen.getByText(verifyEmailContent.resendNotice)).toBeOnTheScreen(),
     );
     expect(resendOtp).toHaveBeenCalledWith('sampleperson1@example.ae');
+
+    const cooling = screen.getByRole('link', { name: 'Resend code in 60s' });
+    expect(cooling).toBeDisabled();
+
+    await fireEvent.press(cooling);
+    expect(resendOtp).toHaveBeenCalledTimes(1);
+  });
+
+  it('disables resend while sending and shows resend failures inline', async () => {
+    let resolveResend: (value: { success: boolean }) => void = () => {};
+    jest.mocked(resendOtp).mockReturnValue(
+      new Promise((resolve) => {
+        resolveResend = resolve;
+      }),
+    );
+
+    await renderWithProviders(<VerifyEmailScreen />);
+    await fireEvent.press(screen.getByRole('link', { name: 'Resend code' }));
+
+    const sending = screen.getByRole('link', { name: 'Sending…' });
+    expect(sending).toBeDisabled();
+    await fireEvent.press(sending);
+    expect(resendOtp).toHaveBeenCalledTimes(1);
+
+    resolveResend({ success: false });
+
+    expect(
+      await screen.findByText('We could not send a new code. Try again.'),
+    ).toBeOnTheScreen();
   });
 
   it('goes back to create account from the footer', async () => {
