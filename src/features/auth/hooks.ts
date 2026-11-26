@@ -1,8 +1,12 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
+import { Alert } from 'react-native';
 
-import { KYC_DOCUMENTS, kycContent } from './constants';
+import { login, register, resendOtp, verifyEmail } from './api';
+import { KYC_DOCUMENTS, kycContent, verifyEmailContent } from './constants';
+import { getAuthErrorMessage } from './errors';
 import { pickDocument } from './pick-document';
+import { beginSession, saveSessionTokens } from './session';
 import type { KycDocumentKey, KycDocuments, KycErrors, MeterType, SignUpErrors } from './types';
 import {
   formatDateInput,
@@ -18,19 +22,37 @@ import { useAppStore } from '@/store/app-store';
 /** Sign-in form state, validation and submit. */
 export function useSignIn() {
   const router = useRouter();
-  const setAuthenticated = useAppStore((state) => state.setAuthenticated);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  // a ref blocks a second tap in the same frame, before `submitting` has re-rendered
+  const submittingRef = useRef(false);
 
   // errors only show after the first submit attempt
   const errors = submitted ? getSignInErrors({ email, password }) : {};
 
-  const enterApp = () => {
-    setAuthenticated(true);
-    router.replace('/(tabs)');
+  const signIn = async () => {
+    if (submittingRef.current) return;
+
+    submittingRef.current = true;
+    setSubmitting(true);
+
+    try {
+      // `remember` is not sent: the gateway decides how long the refresh token lasts (30 days).
+      const session = await login({ email: email.trim(), password });
+
+      await beginSession(session);
+      router.replace('/(tabs)');
+    } catch (error) {
+      Alert.alert('Sign in failed', getAuthErrorMessage(error, 'signIn'));
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
+    }
   };
 
   const submit = () => {
@@ -38,9 +60,7 @@ export function useSignIn() {
 
     if (Object.keys(getSignInErrors({ email, password })).length > 0) return;
 
-    // TODO(api): call POST /api/v1/auth/login, keep the session for 30 days when `remember`
-    // is set, and show API errors before entering the app.
-    enterApp();
+    void signIn();
   };
 
   return {
@@ -51,6 +71,7 @@ export function useSignIn() {
     remember,
     setRemember,
     errors,
+    submitting,
     submit,
   };
 }
@@ -67,7 +88,10 @@ export function useSignUp() {
   const [confirmation, setConfirmation] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [touched, setTouched] = useState<Partial<Record<SignUpField, boolean>>>({});
+
+  const submittingRef = useRef(false);
 
   const allErrors = getSignUpErrors({ fullName, email, password, confirmation, accepted });
 
@@ -84,13 +108,40 @@ export function useSignUp() {
 
   const touch = (field: SignUpField) => setTouched((prev) => ({ ...prev, [field]: true }));
 
+  const signUp = async () => {
+    if (submittingRef.current) return;
+
+    submittingRef.current = true;
+    setSubmitting(true);
+
+    try {
+      const trimmedEmail = email.trim();
+
+      const account = await register({
+        name: fullName.trim(),
+        email: trimmedEmail,
+        password,
+      });
+
+      // The account exists but is not verified yet. The tokens are kept for the KYC step, and
+      // the user only enters the app at the end of the sign-up flow.
+      await saveSessionTokens(account);
+
+      router.push({ pathname: '/verify-email', params: { email: trimmedEmail } });
+    } catch (error) {
+      Alert.alert('Could not create account', getAuthErrorMessage(error, 'register'));
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
+    }
+  };
+
   const submit = () => {
     setSubmitted(true);
 
     if (Object.keys(allErrors).length > 0) return;
 
-    // TODO(api): call POST /api/v1/auth/register with { fullName: fullName.trim(), email, password } first.
-    router.push({ pathname: '/verify-email', params: { email: email.trim() } });
+    void signUp();
   };
 
   return {
@@ -105,6 +156,7 @@ export function useSignUp() {
     accepted,
     setAccepted,
     errors,
+    submitting,
     touch,
     submit,
   };
@@ -117,17 +169,75 @@ export function useVerifyEmail() {
 
   const email = typeof params.email === 'string' ? params.email : '';
   const [code, setCode] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const [resending, setResending] = useState(false);
+
+  const verifyingRef = useRef(false);
+  const resendingRef = useRef(false);
 
   const codeValid = isValidOtp(code);
 
-  const verify = () => {
-    if (!codeValid) return;
+  const submitCode = async () => {
+    if (verifyingRef.current) return;
 
-    // TODO(api): call POST /api/v1/auth/verify-email with { email, otp: code } first.
-    router.push('/kyc');
+    verifyingRef.current = true;
+    setVerifying(true);
+
+    try {
+      const result = await verifyEmail({ email, otp: code });
+
+      if (!result.success) {
+        Alert.alert('Verification failed', result.message || 'That code is not valid.');
+        return;
+      }
+
+      router.push('/kyc');
+    } catch (error) {
+      Alert.alert('Verification failed', getAuthErrorMessage(error, 'verifyEmail'));
+    } finally {
+      verifyingRef.current = false;
+      setVerifying(false);
+    }
   };
 
-  return { email, code, setCode, codeValid, verify };
+  const verify = () => {
+    if (!codeValid || !email) return;
+
+    void submitCode();
+  };
+
+  const sendNewCode = async () => {
+    if (resendingRef.current) return;
+
+    if (!email) {
+      Alert.alert(verifyEmailContent.resendAction, 'Go back and enter your email address first.');
+      return;
+    }
+
+    resendingRef.current = true;
+    setResending(true);
+
+    try {
+      const result = await resendOtp(email);
+
+      if (result.success) {
+        Alert.alert(verifyEmailContent.resendAction, verifyEmailContent.resendNotice);
+      } else {
+        Alert.alert(verifyEmailContent.resendAction, 'We could not send a new code. Try again.');
+      }
+    } catch (error) {
+      Alert.alert(verifyEmailContent.resendAction, getAuthErrorMessage(error, 'resendOtp'));
+    } finally {
+      resendingRef.current = false;
+      setResending(false);
+    }
+  };
+
+  const resend = () => {
+    void sendNewCode();
+  };
+
+  return { email, code, setCode, codeValid, verifying, resending, verify, resend };
 }
 
 type KycField = 'fullName' | 'nic' | 'dateOfBirth';
