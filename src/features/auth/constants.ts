@@ -47,7 +47,7 @@ export const verifyEmailContent = {
   submit: 'Verify email',
   resendPrompt: 'Didn’t get a code?',
   resendAction: 'Resend code',
-  resendNotice: 'A new code will be sent when email delivery is connected.',
+  resendNotice: 'We sent a new code to your email address.',
   footerPrompt: 'Wrong email?',
   footerAction: 'Change email address',
 };
