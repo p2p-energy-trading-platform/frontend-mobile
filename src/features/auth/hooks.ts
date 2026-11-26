@@ -1,13 +1,18 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Alert } from 'react-native';
 
 import { login, register, resendOtp, verifyEmail } from './api';
-import { KYC_DOCUMENTS, kycContent, verifyEmailContent } from './constants';
+import {
+  KYC_DOCUMENTS,
+  RESEND_COOLDOWN_SECONDS,
+  kycContent,
+  verifyEmailContent,
+} from './constants';
 import { getAuthErrorMessage } from './errors';
 import { pickDocument } from './pick-document';
-import { beginSession, saveSessionTokens } from './session';
+import { beginSession, beginSignUp, markEmailVerified, restoreSession } from './session';
 import type { KycDocumentKey, KycDocuments, KycErrors, MeterType, SignUpErrors } from './types';
+import { useCountdown } from './components/use-countdown';
 import {
   formatDateInput,
   getDocumentError,
@@ -17,6 +22,7 @@ import {
   isValidOtp,
   getSmartMeterErrors,
 } from './utils';
+import { ApiError } from '@/lib/api-client';
 import { useAppStore } from '@/store/app-store';
 
 /** Sign-in form state, validation and submit. */
@@ -25,9 +31,9 @@ export function useSignIn() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [remember, setRemember] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string>();
 
   // a ref blocks a second tap in the same frame, before `submitting` has re-rendered
   const submittingRef = useRef(false);
@@ -40,23 +46,35 @@ export function useSignIn() {
 
     submittingRef.current = true;
     setSubmitting(true);
+    setFormError(undefined);
 
     try {
-      // `remember` is not sent: the gateway decides how long the refresh token lasts (30 days).
-      const session = await login({ email: email.trim(), password });
+      const trimmedEmail = email.trim();
+      const session = await login({ email: trimmedEmail, password });
 
-      await beginSession(session);
+      if ((await beginSession(session)) === 'unverified') {
+        router.replace({ pathname: '/verify-email', params: { email: trimmedEmail } });
+        return;
+      }
+
       router.replace('/(tabs)');
     } catch (error) {
-      Alert.alert('Sign in failed', getAuthErrorMessage(error, 'signIn'));
+      setFormError(getAuthErrorMessage(error, 'signIn'));
     } finally {
       submittingRef.current = false;
       setSubmitting(false);
     }
   };
 
+  // an old error is hidden as soon as the user edits the form
+  const clearingError = (setValue: (value: string) => void) => (value: string) => {
+    setFormError(undefined);
+    setValue(value);
+  };
+
   const submit = () => {
     setSubmitted(true);
+    setFormError(undefined);
 
     if (Object.keys(getSignInErrors({ email, password })).length > 0) return;
 
@@ -65,12 +83,11 @@ export function useSignIn() {
 
   return {
     email,
-    setEmail,
+    setEmail: clearingError(setEmail),
     password,
-    setPassword,
-    remember,
-    setRemember,
+    setPassword: clearingError(setPassword),
     errors,
+    formError,
     submitting,
     submit,
   };
@@ -90,6 +107,7 @@ export function useSignUp() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [touched, setTouched] = useState<Partial<Record<SignUpField, boolean>>>({});
+  const [formError, setFormError] = useState<string>();
 
   const submittingRef = useRef(false);
 
@@ -113,6 +131,7 @@ export function useSignUp() {
 
     submittingRef.current = true;
     setSubmitting(true);
+    setFormError(undefined);
 
     try {
       const trimmedEmail = email.trim();
@@ -125,19 +144,26 @@ export function useSignUp() {
 
       // The account exists but is not verified yet. The tokens are kept for the KYC step, and
       // the user only enters the app at the end of the sign-up flow.
-      await saveSessionTokens(account);
+      await beginSignUp(account);
 
       router.push({ pathname: '/verify-email', params: { email: trimmedEmail } });
     } catch (error) {
-      Alert.alert('Could not create account', getAuthErrorMessage(error, 'register'));
+      setFormError(getAuthErrorMessage(error, 'register'));
     } finally {
       submittingRef.current = false;
       setSubmitting(false);
     }
   };
 
+  // an old error is hidden as soon as the user edits the form
+  const clearingError = (setValue: (value: string) => void) => (value: string) => {
+    setFormError(undefined);
+    setValue(value);
+  };
+
   const submit = () => {
     setSubmitted(true);
+    setFormError(undefined);
 
     if (Object.keys(allErrors).length > 0) return;
 
@@ -146,16 +172,17 @@ export function useSignUp() {
 
   return {
     fullName,
-    setFullName,
+    setFullName: clearingError(setFullName),
     email,
-    setEmail,
+    setEmail: clearingError(setEmail),
     password,
-    setPassword,
+    setPassword: clearingError(setPassword),
     confirmation,
-    setConfirmation,
+    setConfirmation: clearingError(setConfirmation),
     accepted,
     setAccepted,
     errors,
+    formError,
     submitting,
     touch,
     submit,
@@ -168,32 +195,47 @@ export function useVerifyEmail() {
   const params = useLocalSearchParams<{ email?: string }>();
 
   const email = typeof params.email === 'string' ? params.email : '';
-  const [code, setCode] = useState('');
+  const [code, setCodeValue] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [resending, setResending] = useState(false);
+  const [formError, setFormError] = useState<string>();
+  const [notice, setNotice] = useState<string>();
+  const { secondsLeft: resendSecondsLeft, start: startResendCooldown } = useCountdown();
 
   const verifyingRef = useRef(false);
   const resendingRef = useRef(false);
 
   const codeValid = isValidOtp(code);
 
+  const clearMessages = () => {
+    setFormError(undefined);
+    setNotice(undefined);
+  };
+
+  const setCode = (value: string) => {
+    clearMessages();
+    setCodeValue(value);
+  };
+
   const submitCode = async () => {
     if (verifyingRef.current) return;
 
     verifyingRef.current = true;
     setVerifying(true);
+    clearMessages();
 
     try {
       const result = await verifyEmail({ email, otp: code });
 
       if (!result.success) {
-        Alert.alert('Verification failed', result.message || 'That code is not valid.');
+        setFormError(result.message || 'That code is not valid.');
         return;
       }
 
+      await markEmailVerified();
       router.push('/kyc');
     } catch (error) {
-      Alert.alert('Verification failed', getAuthErrorMessage(error, 'verifyEmail'));
+      setFormError(getAuthErrorMessage(error, 'verifyEmail'));
     } finally {
       verifyingRef.current = false;
       setVerifying(false);
@@ -207,10 +249,12 @@ export function useVerifyEmail() {
   };
 
   const sendNewCode = async () => {
-    if (resendingRef.current) return;
+    if (resendingRef.current || resendSecondsLeft > 0) return;
+
+    clearMessages();
 
     if (!email) {
-      Alert.alert(verifyEmailContent.resendAction, 'Go back and enter your email address first.');
+      setFormError('Go back and enter your email address first.');
       return;
     }
 
@@ -221,12 +265,17 @@ export function useVerifyEmail() {
       const result = await resendOtp(email);
 
       if (result.success) {
-        Alert.alert(verifyEmailContent.resendAction, verifyEmailContent.resendNotice);
+        setNotice(verifyEmailContent.resendNotice);
+        startResendCooldown(RESEND_COOLDOWN_SECONDS);
       } else {
-        Alert.alert(verifyEmailContent.resendAction, 'We could not send a new code. Try again.');
+        setFormError('We could not send a new code. Try again.');
       }
     } catch (error) {
-      Alert.alert(verifyEmailContent.resendAction, getAuthErrorMessage(error, 'resendOtp'));
+      setFormError(getAuthErrorMessage(error, 'resendOtp'));
+
+      if (error instanceof ApiError && error.code === 'RATE_LIMITED') {
+        startResendCooldown(RESEND_COOLDOWN_SECONDS);
+      }
     } finally {
       resendingRef.current = false;
       setResending(false);
@@ -237,7 +286,19 @@ export function useVerifyEmail() {
     void sendNewCode();
   };
 
-  return { email, code, setCode, codeValid, verifying, resending, verify, resend };
+  return {
+    email,
+    code,
+    setCode,
+    codeValid,
+    verifying,
+    resending,
+    resendSecondsLeft,
+    formError,
+    notice,
+    verify,
+    resend,
+  };
 }
 
 type KycField = 'fullName' | 'nic' | 'dateOfBirth';
@@ -347,12 +408,14 @@ export function useKyc() {
 /** Smart meter form state and submit (step 4 of 4). Ends the sign-up flow. */
 export function useSmartMeter() {
   const router = useRouter();
-  const setAuthenticated = useAppStore((state) => state.setAuthenticated);
 
   const [meterType, setMeterType] = useState<MeterType>('advanced');
   const [serial, setSerialValue] = useState('');
   const [zone, setZone] = useState('');
   const [serialTouched, setSerialTouched] = useState(false);
+  const [entering, setEntering] = useState(false);
+
+  const enteringRef = useRef(false);
 
   const allErrors = getSmartMeterErrors({ serial, zone });
 
@@ -362,9 +425,32 @@ export function useSmartMeter() {
   // the submit button stays disabled until everything is valid
   const canSubmit = Object.keys(allErrors).length === 0;
 
+  const finishSignUp = async () => {
+    if (enteringRef.current) return;
+
+    enteringRef.current = true;
+    setEntering(true);
+
+    try {
+      // loads the user's details and marks them as signed in
+      const state = await restoreSession();
+
+      if (state === 'active') {
+        router.replace('/(tabs)');
+      } else if (state === 'unverified') {
+        const email = useAppStore.getState().user?.email ?? '';
+        router.replace({ pathname: '/verify-email', params: { email } });
+      } else {
+        router.replace('/sign-in');
+      }
+    } finally {
+      enteringRef.current = false;
+      setEntering(false);
+    }
+  };
+
   const enterApp = () => {
-    setAuthenticated(true);
-    router.replace('/(tabs)');
+    void finishSignUp();
   };
 
   const submit = () => {
@@ -384,6 +470,7 @@ export function useSmartMeter() {
     zone,
     setZone,
     canSubmit,
+    entering,
     submit,
     skip: enterApp,
   };
