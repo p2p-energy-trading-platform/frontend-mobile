@@ -107,4 +107,3 @@ describe('VerifyEmailScreen', () => {
     expect(router.replace).toHaveBeenCalledWith('/create-account');
   });
 });
-
