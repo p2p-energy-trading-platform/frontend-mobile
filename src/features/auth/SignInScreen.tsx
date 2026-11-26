@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Alert, View } from 'react-native';
 
-import { Checkbox } from '@/shared/components/ui/Checkbox';
 import { LabelDivider } from '@/shared/components/ui/LabelDivider';
 import { TextField } from '@/shared/components/ui/TextField';
 import { TextLink } from '@/shared/components/ui/TextLink';
@@ -12,6 +11,7 @@ import { AuthFooter } from './components/AuthFooter';
 import { AuthGoogleButton } from './components/AuthGoogleButton';
 import { AuthHeader } from './components/AuthHeader';
 import { AuthLayout } from './components/AuthLayout';
+import { AuthMessage } from './components/AuthMessage';
 import { LogoMark } from './components/LogoMark';
 import { PasswordField } from './components/PasswordField';
 import { signInContent } from './constants';
@@ -73,11 +73,7 @@ export default function SignInScreen() {
         />
       </View>
 
-      <Checkbox
-        checked={form.remember}
-        onChange={form.setRemember}
-        label={signInContent.rememberMe}
-      />
+      <AuthMessage message={form.formError} />
 
       <View className="gap-5">
         <AuthButton title={signInContent.submit} disabled={form.submitting} onPress={form.submit} />
