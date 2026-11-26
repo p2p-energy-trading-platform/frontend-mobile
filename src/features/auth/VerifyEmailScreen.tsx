@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 
 import { OtpInput } from '@/shared/components/ui/OtpInput';
 import { useGoBack } from '@/shared/hooks/use-go-back';
@@ -22,9 +22,6 @@ export default function VerifyEmailScreen() {
   const form = useVerifyEmail();
 
   const recipient = form.email ? maskEmail(form.email) : verifyEmailContent.fallbackRecipient;
-
-  const handleResend = () =>
-    Alert.alert(verifyEmailContent.resendAction, verifyEmailContent.resendNotice);
 
   return (
     <AuthLayout
@@ -56,14 +53,14 @@ export default function VerifyEmailScreen() {
       <View className="gap-5">
         <AuthButton
           title={verifyEmailContent.submit}
-          disabled={!form.codeValid}
+          disabled={!form.codeValid || form.verifying}
           onPress={form.verify}
         />
 
         <PromptLink
           prompt={verifyEmailContent.resendPrompt}
           actionLabel={verifyEmailContent.resendAction}
-          onAction={handleResend}
+          onAction={form.resend}
         />
       </View>
     </AuthLayout>
