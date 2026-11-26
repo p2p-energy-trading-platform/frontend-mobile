@@ -49,38 +49,6 @@ describe('VerifyEmailScreen', () => {
     expect(router.push).not.toHaveBeenCalled();
   });
 
-  it('spreads a pasted code over the boxes and continues to KYC', async () => {
-    await renderWithProviders(<VerifyEmailScreen />);
-
-    await enterCode('123456');
-
-    expect(screen.getByLabelText('Verification code digit 6').props.value).toBe('6');
-
-    const verify = screen.getByRole('button', { name: 'Verify email' });
-    expect(verify).toBeEnabled();
-
-    await fireEvent.press(verify);
-    expect(router.push).toHaveBeenCalledWith('/kyc');
-  });
-
-  it('lets the user resend the code', async () => {
-    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
-
-    await renderWithProviders(<VerifyEmailScreen />);
-
-    await fireEvent.press(screen.getByRole('link', { name: 'Resend code' }));
-
-    expect(alert).toHaveBeenCalledWith('Resend code', verifyEmailContent.resendNotice);
-  });
-
-  it('goes back to create account from the footer', async () => {
-    await renderWithProviders(<VerifyEmailScreen />);
-
-    await fireEvent.press(screen.getByRole('link', { name: 'Change email address' }));
-
-    expect(router.replace).toHaveBeenCalledWith('/create-account');
-  });
-
   it('spreads a pasted code over the boxes, verifies it and continues to KYC', async () => {
     jest.mocked(verifyEmail).mockResolvedValue({ success: true, message: 'Email verified.' });
 
@@ -130,4 +98,13 @@ describe('VerifyEmailScreen', () => {
     );
     expect(resendOtp).toHaveBeenCalledWith('sampleperson1@example.ae');
   });
+
+  it('goes back to create account from the footer', async () => {
+    await renderWithProviders(<VerifyEmailScreen />);
+
+    await fireEvent.press(screen.getByRole('link', { name: 'Change email address' }));
+
+    expect(router.replace).toHaveBeenCalledWith('/create-account');
+  });
 });
+

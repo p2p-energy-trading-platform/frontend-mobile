@@ -34,40 +34,6 @@ describe('SignInScreen', () => {
   });
 
   it('signs in and opens the app with valid details', async () => {
-    await renderWithProviders(<SignInScreen />);
-
-    await fireEvent.changeText(screen.getByLabelText('Email address'), 'name@example.com');
-    await fireEvent.changeText(screen.getByLabelText('Password'), 'secret123');
-    await fireEvent.press(screen.getByRole('button', { name: 'Sign in' }));
-
-    expect(useAppStore.getState().isAuthenticated).toBe(true);
-    expect(router.replace).toHaveBeenCalledWith('/(tabs)');
-  });
-
-  it('toggles remember me and password visibility', async () => {
-    await renderWithProviders(<SignInScreen />);
-
-    const remember = screen.getByRole('checkbox', { name: 'Remember me for 30 days' });
-    expect(remember).not.toBeChecked();
-
-    await fireEvent.press(remember);
-    expect(remember).toBeChecked();
-
-    expect(screen.getByLabelText('Password').props.secureTextEntry).toBe(true);
-
-    await fireEvent.press(screen.getByRole('button', { name: 'Show password' }));
-    expect(screen.getByLabelText('Password').props.secureTextEntry).toBe(false);
-  });
-
-  it('opens create account from the footer', async () => {
-    await renderWithProviders(<SignInScreen />);
-
-    await fireEvent.press(screen.getByRole('link', { name: 'Create account' }));
-
-    expect(router.push).toHaveBeenCalledWith('/create-account');
-  });
-
-  it('signs in and opens the app with valid details', async () => {
     jest.mocked(login).mockResolvedValue({
       userId: 'user-1',
       email: 'name@example.com',
@@ -107,5 +73,28 @@ describe('SignInScreen', () => {
 
     expect(router.replace).not.toHaveBeenCalled();
     expect(useAppStore.getState().isAuthenticated).toBe(false);
+  });
+
+  it('toggles remember me and password visibility', async () => {
+    await renderWithProviders(<SignInScreen />);
+
+    const remember = screen.getByRole('checkbox', { name: 'Remember me for 30 days' });
+    expect(remember).not.toBeChecked();
+
+    await fireEvent.press(remember);
+    expect(remember).toBeChecked();
+
+    expect(screen.getByLabelText('Password').props.secureTextEntry).toBe(true);
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Show password' }));
+    expect(screen.getByLabelText('Password').props.secureTextEntry).toBe(false);
+  });
+
+  it('opens create account from the footer', async () => {
+    await renderWithProviders(<SignInScreen />);
+
+    await fireEvent.press(screen.getByRole('link', { name: 'Create account' }));
+
+    expect(router.push).toHaveBeenCalledWith('/create-account');
   });
 });

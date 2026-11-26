@@ -9,12 +9,13 @@ import SignUpScreen from './SignUpScreen';
 import { signUpContent } from './constants';
 import { FULL_NAME_MAX_LENGTH } from './utils';
 
-jest.mock('./api', () => ({ register: jest.fn() }));
 // the SVG logo is not transformed by Jest
 jest.mock('@/features/splash/components/GoogleButton', () => ({ GoogleButton: () => null }));
 jest.mock('./use-google-sign-in', () => ({
   useGoogleSignIn: () => ({ signIn: jest.fn(), loading: false }),
 }));
+
+jest.mock('./api', () => ({ register: jest.fn() }));
 
 const fillValidForm = async () => {
   await fireEvent.changeText(screen.getByLabelText(signUpContent.fullNameLabel), ' Jane Doe ');
@@ -81,26 +82,6 @@ describe('SignUpScreen', () => {
     expect(screen.getByText('Passwords do not match')).toBeOnTheScreen();
   });
 
-  it('continues to email verification with valid details', async () => {
-    await renderWithProviders(<SignUpScreen />);
-
-    await fillValidForm();
-    await fireEvent.press(screen.getByRole('button', { name: 'Create account' }));
-
-    expect(router.push).toHaveBeenCalledWith({
-      pathname: '/verify-email',
-      params: { email: 'name@example.com' },
-    });
-  });
-
-  it('goes to sign in from the footer', async () => {
-    await renderWithProviders(<SignUpScreen />);
-
-    await fireEvent.press(screen.getByRole('link', { name: 'Sign in' }));
-
-    expect(router.replace).toHaveBeenCalledWith('/sign-in');
-  });
-
   it('creates the account and continues to email verification', async () => {
     jest.mocked(register).mockResolvedValue({
       userId: 'user-1',
@@ -148,5 +129,13 @@ describe('SignUpScreen', () => {
     );
 
     expect(router.push).not.toHaveBeenCalled();
+  });
+
+  it('goes to sign in from the footer', async () => {
+    await renderWithProviders(<SignUpScreen />);
+
+    await fireEvent.press(screen.getByRole('link', { name: 'Sign in' }));
+
+    expect(router.replace).toHaveBeenCalledWith('/sign-in');
   });
 });
