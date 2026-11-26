@@ -1,10 +1,14 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { Alert } from 'react-native';
 
-import { fireEvent, renderWithProviders, screen } from '@/test/render';
+import { ApiError } from '@/lib/api-client';
+import { fireEvent, renderWithProviders, screen, waitFor } from '@/test/render';
 
+import { resendOtp, verifyEmail } from './api';
 import VerifyEmailScreen from './VerifyEmailScreen';
 import { verifyEmailContent } from './constants';
+
+jest.mock('./api', () => ({ verifyEmail: jest.fn(), resendOtp: jest.fn() }));
 
 const mockedParams = jest.mocked(useLocalSearchParams);
 
@@ -76,4 +80,55 @@ describe('VerifyEmailScreen', () => {
 
     expect(router.replace).toHaveBeenCalledWith('/create-account');
   });
+  
+    it('spreads a pasted code over the boxes, verifies it and continues to KYC', async () => {
+    jest.mocked(verifyEmail).mockResolvedValue({ success: true, message: 'Email verified.' });
+
+    await renderWithProviders(<VerifyEmailScreen />);
+
+    await enterCode('123456');
+
+    expect(screen.getByLabelText('Verification code digit 6').props.value).toBe('6');
+
+    const verify = screen.getByRole('button', { name: 'Verify email' });
+    expect(verify).toBeEnabled();
+
+    await fireEvent.press(verify);
+
+    await waitFor(() => expect(router.push).toHaveBeenCalledWith('/kyc'));
+    expect(verifyEmail).toHaveBeenCalledWith({ email: 'sampleperson1@example.ae', otp: '123456' });
+  });
+
+  it('shows an error and stays on the screen when the code is wrong', async () => {
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    jest
+      .mocked(verifyEmail)
+      .mockRejectedValue(new ApiError('VALIDATION_ERROR', 'Invalid or expired code.', 400));
+
+    await renderWithProviders(<VerifyEmailScreen />);
+
+    await enterCode('123456');
+    await fireEvent.press(screen.getByRole('button', { name: 'Verify email' }));
+
+    await waitFor(() =>
+      expect(alert).toHaveBeenCalledWith('Verification failed', 'Invalid or expired code.'),
+    );
+
+    expect(router.push).not.toHaveBeenCalled();
+  });
+
+  it('lets the user resend the code', async () => {
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    jest.mocked(resendOtp).mockResolvedValue({ success: true });
+
+    await renderWithProviders(<VerifyEmailScreen />);
+
+    await fireEvent.press(screen.getByRole('link', { name: 'Resend code' }));
+
+    await waitFor(() =>
+      expect(alert).toHaveBeenCalledWith('Resend code', verifyEmailContent.resendNotice),
+    );
+    expect(resendOtp).toHaveBeenCalledWith('sampleperson1@example.ae');
+  });
+  
 });
