@@ -83,7 +83,7 @@ export default function SmartMeterScreen() {
 
       <AuthButton
         title={smartMeterContent.submit}
-        disabled={!form.canSubmit}
+        disabled={!form.canSubmit || form.entering}
         onPress={form.submit}
       />
     </AuthLayout>
