@@ -101,7 +101,7 @@ export default function SignUpScreen() {
       />
 
       <View className="gap-5">
-        <AuthButton title={signUpContent.submit} onPress={form.submit} />
+        <AuthButton title={signUpContent.submit} disabled={form.submitting} onPress={form.submit} />
 
         <LabelDivider label={signUpContent.divider} />
 
