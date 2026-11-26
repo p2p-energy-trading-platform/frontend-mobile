@@ -2,12 +2,11 @@ import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 
 import { OtpInput } from '@/shared/components/ui/OtpInput';
-import { useGoBack } from '@/shared/hooks/use-go-back';
-
 import { AuthButton } from './components/AuthButton';
 import { AuthFooter } from './components/AuthFooter';
 import { AuthHeader } from './components/AuthHeader';
 import { AuthLayout } from './components/AuthLayout';
+import { AuthMessage } from './components/AuthMessage';
 import { IconBadge } from './components/IconBadge';
 import { PromptLink } from './components/PromptLink';
 import { StepIndicator } from './components/StepIndicator';
@@ -18,9 +17,21 @@ import { OTP_LENGTH, maskEmail } from './utils';
 
 export default function VerifyEmailScreen() {
   const router = useRouter();
-  const goBack = useGoBack();
   const form = useVerifyEmail();
+  // With no history (opened by the unverified redirect), Home would only redirect back here.
+  const goBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/splash');
+    }
+  };
 
+  const resendLabel = form.resending
+    ? verifyEmailContent.resendingAction
+    : form.resendSecondsLeft > 0
+      ? verifyEmailContent.resendCooldownAction(form.resendSecondsLeft)
+      : verifyEmailContent.resendAction;
   const recipient = form.email ? maskEmail(form.email) : verifyEmailContent.fallbackRecipient;
 
   return (
@@ -51,6 +62,8 @@ export default function VerifyEmailScreen() {
       />
 
       <View className="gap-5">
+        <AuthMessage message={form.formError} />
+        <AuthMessage message={form.notice} tone="success" />
         <AuthButton
           title={verifyEmailContent.submit}
           disabled={!form.codeValid || form.verifying}
@@ -59,8 +72,9 @@ export default function VerifyEmailScreen() {
 
         <PromptLink
           prompt={verifyEmailContent.resendPrompt}
-          actionLabel={verifyEmailContent.resendAction}
+          actionLabel={resendLabel}
           onAction={form.resend}
+          disabled={form.resending || form.resendSecondsLeft > 0}
         />
       </View>
     </AuthLayout>
