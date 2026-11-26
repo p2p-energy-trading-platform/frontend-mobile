@@ -67,7 +67,7 @@ describe('SignInScreen', () => {
     expect(router.push).toHaveBeenCalledWith('/create-account');
   });
 
-    it('signs in and opens the app with valid details', async () => {
+  it('signs in and opens the app with valid details', async () => {
     jest.mocked(login).mockResolvedValue({
       userId: 'user-1',
       email: 'name@example.com',
@@ -108,6 +108,4 @@ describe('SignInScreen', () => {
     expect(router.replace).not.toHaveBeenCalled();
     expect(useAppStore.getState().isAuthenticated).toBe(false);
   });
-  
 });
-

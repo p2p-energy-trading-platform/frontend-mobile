@@ -80,8 +80,8 @@ describe('VerifyEmailScreen', () => {
 
     expect(router.replace).toHaveBeenCalledWith('/create-account');
   });
-  
-    it('spreads a pasted code over the boxes, verifies it and continues to KYC', async () => {
+
+  it('spreads a pasted code over the boxes, verifies it and continues to KYC', async () => {
     jest.mocked(verifyEmail).mockResolvedValue({ success: true, message: 'Email verified.' });
 
     await renderWithProviders(<VerifyEmailScreen />);
@@ -130,5 +130,4 @@ describe('VerifyEmailScreen', () => {
     );
     expect(resendOtp).toHaveBeenCalledWith('sampleperson1@example.ae');
   });
-  
 });

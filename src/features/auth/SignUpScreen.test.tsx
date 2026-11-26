@@ -9,7 +9,6 @@ import SignUpScreen from './SignUpScreen';
 import { signUpContent } from './constants';
 import { FULL_NAME_MAX_LENGTH } from './utils';
 
-
 jest.mock('./api', () => ({ register: jest.fn() }));
 // the SVG logo is not transformed by Jest
 jest.mock('@/features/splash/components/GoogleButton', () => ({ GoogleButton: () => null }));
@@ -102,7 +101,7 @@ describe('SignUpScreen', () => {
     expect(router.replace).toHaveBeenCalledWith('/sign-in');
   });
 
-    it('creates the account and continues to email verification', async () => {
+  it('creates the account and continues to email verification', async () => {
     jest.mocked(register).mockResolvedValue({
       userId: 'user-1',
       email: 'name@example.com',
@@ -150,5 +149,4 @@ describe('SignUpScreen', () => {
 
     expect(router.push).not.toHaveBeenCalled();
   });
-  
 });

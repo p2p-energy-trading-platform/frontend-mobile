@@ -80,9 +80,7 @@ async function toApiError(response: Response): Promise<ApiError> {
 
   try {
     body = (await response.json()) as GatewayErrorBody;
-  } catch {
-
-  }
+  } catch {}
 
   return new ApiError(
     body.error?.code ?? 'UNKNOWN',
