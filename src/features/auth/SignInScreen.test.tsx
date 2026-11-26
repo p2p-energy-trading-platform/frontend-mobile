@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { Alert } from 'react-native';
 
 import { ApiError } from '@/lib/api-client';
 import { useAppStore } from '@/store/app-store';
@@ -41,7 +40,13 @@ describe('SignInScreen', () => {
       refreshToken: 'refresh',
       expiresIn: 900,
     });
-    jest.mocked(getMe).mockRejectedValue(new Error('offline'));
+    jest.mocked(getMe).mockResolvedValue({
+      userId: 'user-1',
+      email: 'name@example.com',
+      name: 'Jane Doe',
+      role: 'PROSUMER',
+      status: 'ACTIVE',
+    });
 
     await renderWithProviders(<SignInScreen />);
 
@@ -55,8 +60,38 @@ describe('SignInScreen', () => {
     expect(useAppStore.getState().isAuthenticated).toBe(true);
   });
 
-  it('shows an error and stays signed out when the credentials are wrong', async () => {
-    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+  it('sends an unverified user to the verify email screen', async () => {
+    jest.mocked(login).mockResolvedValue({
+      userId: 'user-1',
+      email: 'name@example.com',
+      accessToken: 'access',
+      refreshToken: 'refresh',
+    });
+    jest.mocked(getMe).mockResolvedValue({
+      userId: 'user-1',
+      email: 'name@example.com',
+      name: 'Jane Doe',
+      role: 'PROSUMER',
+      status: 'PENDING',
+    });
+
+    await renderWithProviders(<SignInScreen />);
+
+    await fireEvent.changeText(screen.getByLabelText('Email address'), 'name@example.com');
+    await fireEvent.changeText(screen.getByLabelText('Password'), 'secret123');
+    await fireEvent.press(screen.getByRole('button', { name: 'Sign in' }));
+
+    await waitFor(() =>
+      expect(router.replace).toHaveBeenCalledWith({
+        pathname: '/verify-email',
+        params: { email: 'name@example.com' },
+      }),
+    );
+    expect(router.replace).not.toHaveBeenCalledWith('/(tabs)');
+    expect(useAppStore.getState().isAuthenticated).toBe(false);
+  });
+
+  it('shows an inline error and stays signed out when the credentials are wrong', async () => {
     jest
       .mocked(login)
       .mockRejectedValue(new ApiError('UNAUTHENTICATED', 'Invalid credentials.', 401));
@@ -67,22 +102,16 @@ describe('SignInScreen', () => {
     await fireEvent.changeText(screen.getByLabelText('Password'), 'wrong-password');
     await fireEvent.press(screen.getByRole('button', { name: 'Sign in' }));
 
-    await waitFor(() =>
-      expect(alert).toHaveBeenCalledWith('Sign in failed', 'Incorrect email or password.'),
-    );
+    expect(await screen.findByText('Incorrect email or password.')).toBeOnTheScreen();
 
     expect(router.replace).not.toHaveBeenCalled();
     expect(useAppStore.getState().isAuthenticated).toBe(false);
   });
 
-  it('toggles remember me and password visibility', async () => {
+  it('does not show a non-functional remember-me checkbox and toggles password visibility', async () => {
     await renderWithProviders(<SignInScreen />);
 
-    const remember = screen.getByRole('checkbox', { name: 'Remember me for 30 days' });
-    expect(remember).not.toBeChecked();
-
-    await fireEvent.press(remember);
-    expect(remember).toBeChecked();
+    expect(screen.queryByRole('checkbox', { name: /remember me/i })).toBeNull();
 
     expect(screen.getByLabelText('Password').props.secureTextEntry).toBe(true);
 
