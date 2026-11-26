@@ -3,6 +3,10 @@ import { useAppStore } from '@/store/app-store';
 jest.mock('react-native-worklets', () => require('react-native-worklets/src/mock'));
 require('react-native-reanimated').setUpTests();
 
+jest.mock('@/config/env', () => ({
+  env: { EXPO_PUBLIC_API_BASE_URL: 'http://localhost:8000' },
+}));
+
 jest.mock('expo-router', () => require('./src/test/mocks/expo-router'));
 
 jest.mock(
