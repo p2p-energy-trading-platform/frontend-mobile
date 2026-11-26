@@ -118,9 +118,7 @@ describe('VerifyEmailScreen', () => {
 
     resolveResend({ success: false });
 
-    expect(
-      await screen.findByText('We could not send a new code. Try again.'),
-    ).toBeOnTheScreen();
+    expect(await screen.findByText('We could not send a new code. Try again.')).toBeOnTheScreen();
   });
 
   it('goes back to create account from the footer', async () => {

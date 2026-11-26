@@ -13,7 +13,7 @@ export default function TabLayout() {
 
   const isAuthenticated = useAppStore((state) => state.isAuthenticated);
 
-    const user = useAppStore((state) => state.user);
+  const user = useAppStore((state) => state.user);
 
   if (!isAuthenticated) {
     if (user && isEmailUnverified(user)) {
