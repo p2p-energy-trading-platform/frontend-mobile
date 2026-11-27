@@ -196,13 +196,7 @@ export function getDocumentError(document: Pick<PickedDocument, 'mimeType' | 'si
 }
 
 /** Returns an error message per invalid KYC field; an empty object means the form is valid. */
-export function getKycErrors({
-  fullName,
-  nic,
-  dateOfBirth,
-  nationality,
-  documents,
-}: KycValues): KycErrors {
+export function getKycErrors({ fullName, nic, dateOfBirth, documents }: KycValues): KycErrors {
   const errors: KycErrors = {};
 
   const fullNameError = getFullNameError(fullName);
@@ -217,11 +211,7 @@ export function getKycErrors({
     errors.dateOfBirth = 'You must be 18 or over';
   }
 
-  if (!nationality) errors.nationality = 'Select your nationality';
-
-  if (!documents.idFront || !documents.idBack || !documents.selfie) {
-    errors.documents = 'Upload all three documents';
-  }
+  if (!documents.nic) errors.documents = 'Upload your NIC ID';
 
   return errors;
 }
