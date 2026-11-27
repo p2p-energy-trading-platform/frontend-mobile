@@ -1,21 +1,30 @@
+import { Redirect } from 'expo-router';
+import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
 import { AppText } from '@/shared/components/ui/AppText';
-import { SelectField } from '@/shared/components/ui/SelectField';
 import { TextField } from '@/shared/components/ui/TextField';
 import { useGoBack } from '@/shared/hooks/use-go-back';
+import { canAccessKyc, useAppStore } from '@/store/app-store';
 
 import { AuthButton } from './components/AuthButton';
 import { AuthHeader } from './components/AuthHeader';
 import { AuthLayout } from './components/AuthLayout';
+import { AuthMessage } from './components/AuthMessage';
 import { StepIndicator } from './components/StepIndicator';
 import { UploadField } from './components/UploadField';
-import { AUTH_TOTAL_STEPS, KYC_DOCUMENTS, NATIONALITY_OPTIONS, kycContent } from './constants';
+import { AUTH_TOTAL_STEPS, KYC_DOCUMENTS, kycContent } from './constants';
 import { useKyc } from './hooks';
 
 export default function KycScreen() {
   const goBack = useGoBack();
   const form = useKyc();
+  // checked once on open, so a successful submit still moves on to the smart meter step
+  const [allowed] = useState(() => canAccessKyc(useAppStore.getState().user));
+
+  if (!allowed) {
+    return <Redirect href="/(tabs)" />;
+  }
 
   return (
     <AuthLayout
@@ -58,31 +67,16 @@ export default function KycScreen() {
           error={form.errors.nic}
         />
 
-        <View className="flex-row items-start gap-3">
-          <View className="flex-1">
-            <TextField
-              label={kycContent.dateOfBirthLabel}
-              placeholder={kycContent.dateOfBirthPlaceholder}
-              value={form.dateOfBirth}
-              onChangeText={form.setDateOfBirth}
-              onBlur={() => form.touch('dateOfBirth')}
-              keyboardType="number-pad"
-              maxLength={10}
-              error={form.errors.dateOfBirth}
-            />
-          </View>
-
-          <View className="flex-1">
-            <SelectField
-              label={kycContent.nationalityLabel}
-              placeholder={kycContent.nationalityPlaceholder}
-              options={NATIONALITY_OPTIONS}
-              value={form.nationality}
-              onChange={form.setNationality}
-              error={form.errors.nationality}
-            />
-          </View>
-        </View>
+        <TextField
+          label={kycContent.dateOfBirthLabel}
+          placeholder={kycContent.dateOfBirthPlaceholder}
+          value={form.dateOfBirth}
+          onChangeText={form.setDateOfBirth}
+          onBlur={() => form.touch('dateOfBirth')}
+          keyboardType="number-pad"
+          maxLength={10}
+          error={form.errors.dateOfBirth}
+        />
       </View>
 
       <View className="gap-2">
@@ -102,13 +96,19 @@ export default function KycScreen() {
             description={item.description}
             document={form.documents[item.key]}
             error={form.documentErrors[item.key]}
-            disabled={form.picking}
+            disabled={form.picking || form.submitting}
             onBrowse={() => void form.browse(item.key)}
           />
         ))}
       </View>
 
-      <AuthButton title={kycContent.submit} onPress={form.submit} />
+      <AuthMessage message={form.formError} />
+
+      <AuthButton
+        title={form.submitting ? kycContent.submitting : kycContent.submit}
+        disabled={form.submitting}
+        onPress={form.submit}
+      />
     </AuthLayout>
   );
 }
