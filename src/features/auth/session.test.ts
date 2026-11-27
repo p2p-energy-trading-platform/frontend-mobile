@@ -1,8 +1,22 @@
-import { getPendingVerification, getRefreshToken, saveAuthTokens } from '@/lib/auth-token-store';
+import * as SecureStore from 'expo-secure-store';
+
+import { ApiError } from '@/lib/api-client';
+import {
+  getPendingVerification,
+  getRefreshToken,
+  getSessionUser,
+  saveAuthTokens,
+} from '@/lib/auth-token-store';
 import { useAppStore } from '@/store/app-store';
 
 import { getMe } from './api';
-import { beginSession, beginSignUp, markEmailVerified, restoreSession } from './session';
+import {
+  beginSession,
+  beginSignUp,
+  endSession,
+  markEmailVerified,
+  restoreSession,
+} from './session';
 
 jest.mock('./api', () => ({ getMe: jest.fn(), logout: jest.fn() }));
 
@@ -75,6 +89,67 @@ describe('session', () => {
 
     expect(useAppStore.getState().isAuthenticated).toBe(false);
     expect(useAppStore.getState().user).toBeNull();
+  });
+
+  describe('offline cold start', () => {
+    const offline = new ApiError('NETWORK', 'Could not reach GridX.');
+
+    // a verified user signed in before, then the app was closed (memory is empty again)
+    const signInThenRestart = async () => {
+      await saveAuthTokens(TOKENS);
+      jest.mocked(getMe).mockResolvedValueOnce(me('ACTIVE'));
+      await restoreSession();
+      useAppStore.getState().reset();
+    };
+
+    it('opens the app with the saved user when the server cannot be reached', async () => {
+      await signInThenRestart();
+      jest.mocked(getMe).mockRejectedValue(offline);
+
+      await expect(restoreSession()).resolves.toBe('active');
+
+      expect(useAppStore.getState().isAuthenticated).toBe(true);
+      expect(useAppStore.getState().user?.name).toBe('Jane Doe');
+    });
+
+    it('also works when the server is down', async () => {
+      await signInThenRestart();
+      jest.mocked(getMe).mockRejectedValue(new ApiError('UPSTREAM_UNAVAILABLE', 'Down', 503));
+
+      await expect(restoreSession()).resolves.toBe('active');
+    });
+
+    it('signs out when the server rejects the user', async () => {
+      await signInThenRestart();
+      jest.mocked(getMe).mockRejectedValue(new ApiError('FORBIDDEN', 'Account suspended', 403));
+
+      await expect(restoreSession()).resolves.toBe('signedOut');
+
+      expect(useAppStore.getState().isAuthenticated).toBe(false);
+    });
+
+    it('does not keep the saved user after sign out', async () => {
+      await signInThenRestart();
+      await endSession();
+
+      expect(await getSessionUser()).toBeNull();
+    });
+
+    it('never saves an unverified user for offline starts', async () => {
+      await saveAuthTokens(TOKENS);
+      jest.mocked(getMe).mockResolvedValueOnce(me('PENDING'));
+      await restoreSession();
+
+      expect(await getSessionUser()).toBeNull();
+    });
+
+    it('ignores a broken saved value', async () => {
+      await saveAuthTokens(TOKENS);
+      await SecureStore.setItemAsync('gridx.session-user', '{not json');
+      jest.mocked(getMe).mockRejectedValue(offline);
+
+      await expect(restoreSession()).resolves.toBe('signedOut');
+    });
   });
 
   it('does not sign in when the user cannot be loaded', async () => {
