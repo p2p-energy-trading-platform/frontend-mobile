@@ -1,6 +1,6 @@
 import { ApiError } from '@/lib/api-client';
 
-export type AuthAction = 'signIn' | 'register' | 'verifyEmail' | 'resendOtp';
+export type AuthAction = 'signIn' | 'register' | 'verifyEmail' | 'resendOtp' | 'submitKyc';
 
 /** Turns an API failure into a message the user can act on. */
 export function getAuthErrorMessage(error: unknown, action: AuthAction): string {
@@ -20,8 +20,12 @@ export function getAuthErrorMessage(error: unknown, action: AuthAction): string 
       return action === 'signIn' ? 'Incorrect email or password.' : error.message;
 
     case 'CONFLICT':
-      return action === 'register'
-        ? 'An account with this email already exists. Try signing in instead.'
+      if (action === 'register') {
+        return 'An account with this email already exists. Try signing in instead.';
+      }
+
+      return action === 'submitKyc'
+        ? 'Your KYC details were already submitted. We will review them shortly.'
         : error.message;
 
     case 'UPSTREAM_UNAVAILABLE':
