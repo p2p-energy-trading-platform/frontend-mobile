@@ -15,6 +15,10 @@ export function isEmailUnverified(user: Pick<SessionUser, 'status'> | null): boo
   return user?.status === 'PENDING';
 }
 
+export function canAccessKyc(user: Pick<SessionUser, 'kycStatus'> | null): boolean {
+  return !user?.kycStatus || user.kycStatus === 'REJECTED';
+}
+
 type AppStore = {
   initialized: boolean;
   status: AppStatus;
