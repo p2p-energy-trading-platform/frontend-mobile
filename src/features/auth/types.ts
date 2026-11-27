@@ -24,7 +24,7 @@ export type SignUpErrors = {
   terms?: string;
 };
 
-export type KycDocumentKey = 'idFront' | 'idBack' | 'selfie';
+export type KycDocumentKey = 'nic';
 
 /** A file the user picked for one of the KYC documents. */
 export type PickedDocument = {
@@ -47,7 +47,6 @@ export type KycValues = {
   fullName: string;
   nic: string;
   dateOfBirth: string;
-  nationality: string;
   documents: KycDocuments;
 };
 
@@ -55,7 +54,6 @@ export type KycErrors = {
   fullName?: string;
   nic?: string;
   dateOfBirth?: string;
-  nationality?: string;
   documents?: string;
 };
 
