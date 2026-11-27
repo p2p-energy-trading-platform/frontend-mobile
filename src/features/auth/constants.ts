@@ -70,33 +70,20 @@ export const kycContent = {
   nicPlaceholder: '123456789V or 200012345678',
   dateOfBirthLabel: 'Date of birth',
   dateOfBirthPlaceholder: 'DD / MM / YYYY',
-  nationalityLabel: 'Nationality',
-  nationalityPlaceholder: 'Select',
-  documentsLabel: 'Documents',
+  documentsLabel: 'Document',
   documentsHint: `JPG, PNG or PDF · max ${KYC_MAX_FILE_SIZE_MB} MB`,
   browse: 'Browse',
   replace: 'Replace',
   pickerError: 'Could not open the file picker. Please try again.',
   documentRequired: 'Upload this document',
   submit: 'Submit for verification',
+  submitting: 'Submitting…',
+  uploadError: 'We couldn’t upload your document. Please try again.',
   skip: 'Skip for now, verify later in Settings',
 };
 
 export const KYC_DOCUMENTS = [
-  { key: 'idFront', title: 'NIC ID — front', description: 'Name and ID number visible' },
-  { key: 'idBack', title: 'NIC ID — back', description: 'Barcode side visible' },
-  { key: 'selfie', title: 'Selfie holding your NIC ID', description: 'Face and ID both visible' },
-] as const;
-
-// TODO(api): load from the countries endpoint once it exists.
-export const NATIONALITY_OPTIONS = [
-  { label: 'Sri Lankan', value: 'LK' },
-  { label: 'Indian', value: 'IN' },
-  { label: 'Maldivian', value: 'MV' },
-  { label: 'British', value: 'GB' },
-  { label: 'Australian', value: 'AU' },
-  { label: 'American', value: 'US' },
-  { label: 'Other', value: 'OTHER' },
+  { key: 'nic', title: 'NIC ID', description: 'Name and ID number visible' },
 ] as const;
 
 export const smartMeterContent = {
