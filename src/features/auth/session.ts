@@ -1,12 +1,16 @@
+import { ApiError } from '@/lib/api-client';
 import {
   clearAuthTokens,
   clearPendingVerification,
+  clearSessionUser,
   getPendingVerification,
   getRefreshToken,
+  getSessionUser,
   saveAuthTokens,
   savePendingVerification,
+  saveSessionUser,
 } from '@/lib/auth-token-store';
-import { isEmailUnverified, useAppStore } from '@/store/app-store';
+import { isEmailUnverified, type SessionUser, useAppStore } from '@/store/app-store';
 
 import * as authApi from './api';
 import type { MeResponse, RegisterResponse, SessionTokensPayload } from './api';
@@ -26,22 +30,27 @@ export async function saveSessionTokens(payload: SessionTokensPayload): Promise<
 async function applyUser(me: MeResponse): Promise<'active' | 'unverified'> {
   const unverified = isEmailUnverified(me);
 
-  if (unverified) {
-    await savePendingVerification({ userId: me.userId, email: me.email });
-  } else {
-    await clearPendingVerification();
-  }
-
-  const store = useAppStore.getState();
-
-  store.setUser({
+  const user: SessionUser = {
     userId: me.userId,
     email: me.email,
     name: me.name,
     role: me.role,
     status: me.status,
     ...(me.kycStatus ? { kycStatus: me.kycStatus } : {}),
-  });
+  };
+
+  if (unverified) {
+    await Promise.all([
+      savePendingVerification({ userId: me.userId, email: me.email }),
+      clearSessionUser(),
+    ]);
+  } else {
+    await Promise.all([clearPendingVerification(), saveSessionUser(user)]);
+  }
+
+  const store = useAppStore.getState();
+
+  store.setUser(user);
   store.setAuthenticated(!unverified);
 
   return unverified ? 'unverified' : 'active';
@@ -109,7 +118,7 @@ export async function restoreSession(): Promise<SessionState> {
   try {
     // An expired access token is refreshed inside the API client.
     return await applyUser(await authApi.getMe());
-  } catch {
+  } catch (error) {
     // The refresh token was revoked or expired: the client already cleared the tokens.
     if (!(await getRefreshToken())) {
       store.clearSession();
@@ -131,9 +140,33 @@ export async function restoreSession(): Promise<SessionState> {
       return 'active';
     }
 
+    // Cold start without a server answer: trust the verified user saved at the last successful
+    if (isServerUnreachable(error)) {
+      const saved = await getSessionUser();
+
+      if (saved && !isEmailUnverified(saved)) {
+        store.setUser(saved);
+        store.setAuthenticated(true);
+        return 'active';
+      }
+    }
+
     store.clearSession();
     return 'signedOut';
   }
+}
+
+const UNREACHABLE_CODES = new Set([
+  'NETWORK',
+  'TIMEOUT',
+  'RATE_LIMITED',
+  'UPSTREAM_UNAVAILABLE',
+  'UPSTREAM_TIMEOUT',
+  'INTERNAL_ERROR',
+]);
+
+function isServerUnreachable(error: unknown): boolean {
+  return error instanceof ApiError && (UNREACHABLE_CODES.has(error.code) || error.status >= 500);
 }
 
 /** Revokes the session on the server (best effort) and clears everything stored on the device. */
