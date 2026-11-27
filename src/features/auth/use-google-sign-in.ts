@@ -1,19 +1,17 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert } from 'react-native';
-
-import { useAppStore } from '@/store/app-store';
 
 import { GoogleSignInError, signInWithGoogle } from './google-sign-in';
 
 export function useGoogleSignIn() {
   const router = useRouter();
-  const setAuthenticated = useAppStore((state) => state.setAuthenticated);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>();
 
   const signIn = useCallback(async () => {
     if (loading) return;
     setLoading(true);
+    setError(undefined);
 
     try {
       const result = await signInWithGoogle();
@@ -21,18 +19,22 @@ export function useGoogleSignIn() {
       // Closing the browser is a normal choice, not an error.
       if (result.status === 'cancelled') return;
 
-      setAuthenticated(true);
+      if (result.status === 'unverified') {
+        router.replace({ pathname: '/verify-email', params: { email: result.email } });
+        return;
+      }
+
       router.replace(result.isNewUser ? '/kyc' : '/(tabs)');
-    } catch (error) {
-      const message =
-        error instanceof GoogleSignInError
-          ? error.message
-          : 'Google sign-in failed. Please try again.';
-      Alert.alert('Google sign in', message);
+    } catch (caught) {
+      setError(
+        caught instanceof GoogleSignInError
+          ? caught.message
+          : 'Google sign-in failed. Please try again.',
+      );
     } finally {
       setLoading(false);
     }
-  }, [loading, router, setAuthenticated]);
+  }, [loading, router]);
 
-  return { signIn, loading };
+  return { signIn, loading, error };
 }

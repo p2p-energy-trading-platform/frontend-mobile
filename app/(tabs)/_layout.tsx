@@ -5,7 +5,7 @@ import { Icon } from '@/shared/components/ui/Icon';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { createTabScreenOptions } from '@/shared/navigation';
 import { renderTabLabel } from '@/shared/navigation/tab-options';
-import { useAppStore } from '@/store/app-store';
+import { isEmailUnverified, useAppStore } from '@/store/app-store';
 
 export default function TabLayout() {
   const { theme } = useTheme();
@@ -13,7 +13,13 @@ export default function TabLayout() {
 
   const isAuthenticated = useAppStore((state) => state.isAuthenticated);
 
+  const user = useAppStore((state) => state.user);
+
   if (!isAuthenticated) {
+    if (user && isEmailUnverified(user)) {
+      return <Redirect href={{ pathname: '/verify-email', params: { email: user.email } }} />;
+    }
+
     return <Redirect href="/splash" />;
   }
 

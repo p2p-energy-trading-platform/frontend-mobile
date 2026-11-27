@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 
+import { AuthMessage } from '@/features/auth/components/AuthMessage';
 import { useGoogleSignIn } from '@/features/auth/use-google-sign-in';
 import { Screen } from '@/shared/components/ui/Screen';
 
@@ -18,7 +19,9 @@ export default function SplashScreen() {
 
         <SplashBrand />
 
-        <View className="h-24" />
+        <View className="h-24 justify-center">
+          <AuthMessage message={google.error} />
+        </View>
 
         <SplashActions
           onSignUpWithEmail={() => router.push('/create-account')}

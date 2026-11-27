@@ -1,6 +1,7 @@
 import * as WebBrowser from 'expo-web-browser';
 
 import { getAccessToken, getRefreshToken } from '@/lib/auth-token-store';
+import { useAppStore } from '@/store/app-store';
 
 import {
   createCodeChallenge,
@@ -64,16 +65,24 @@ const SESSION = {
   isNewUser: false,
 };
 
-function mockFetch(response: { ok: boolean; status?: number; body?: unknown } | Error) {
-  const fetchMock = jest.fn(async () => {
+type MockResponse = { ok: boolean; status?: number; body?: unknown };
+
+function mockFetch(responses: MockResponse | MockResponse[] | Error) {
+  const queue = Array.isArray(responses) ? responses : [responses];
+  let index = 0;
+  const fetchMock = jest.fn(async (_input: RequestInfo | URL, _init?: RequestInit) => {
+    const response = queue[index++];
+
+    if (!response) throw new Error('Unexpected API request in Google sign-in test.');
+
     if (response instanceof Error) throw response;
     return {
       ok: response.ok,
       status: response.status ?? (response.ok ? 200 : 401),
       json: async () => response.body,
-    };
+    } as Response;
   });
-  globalThis.fetch = fetchMock as unknown as typeof fetch;
+  globalThis.fetch = fetchMock;
   return fetchMock;
 }
 
@@ -136,7 +145,19 @@ describe('signInWithGoogle', () => {
     openAuthSession.mockResolvedValue(
       browserResult({ type: 'success', url: `${REDIRECT}?handoff=handoff-1` }),
     );
-    const fetchMock = mockFetch({ ok: true, body: { ...SESSION, isNewUser: true } });
+    const fetchMock = mockFetch([
+      { ok: true, body: { ...SESSION, isNewUser: true } },
+      {
+        ok: true,
+        body: {
+          userId: 'user-1',
+          email: 'user@gmail.com',
+          name: 'Google User',
+          role: 'PROSUMER',
+          status: 'ACTIVE',
+        },
+      },
+    ]);
 
     const result = await signInWithGoogle();
 
@@ -145,6 +166,7 @@ describe('signInWithGoogle', () => {
     const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe('http://localhost:8000/api/v1/auth/google/mobile/exchange');
     expect(init.headers).toMatchObject({ 'X-Client-Type': 'mobile' });
+    expect(fetchMock.mock.calls[1]?.[0]).toBe('http://localhost:8000/api/v1/auth/me');
 
     // The verifier sent must be the one behind the challenge sent to /start.
     const { handoff, codeVerifier } = JSON.parse(String(init.body)) as {
@@ -159,6 +181,32 @@ describe('signInWithGoogle', () => {
 
     expect(await getAccessToken()).toBe('access-token');
     expect(await getRefreshToken()).toBe('refresh-token');
+    expect(useAppStore.getState().user?.name).toBe('Google User');
+  });
+
+  it('loads the Google user and reports unverified accounts for email verification', async () => {
+    openAuthSession.mockResolvedValue(
+      browserResult({ type: 'success', url: `${REDIRECT}?handoff=handoff-1` }),
+    );
+    mockFetch([
+      { ok: true, body: { ...SESSION, isNewUser: false } },
+      {
+        ok: true,
+        body: {
+          userId: 'user-1',
+          email: 'user@gmail.com',
+          name: 'Google User',
+          role: 'PROSUMER',
+          status: 'PENDING',
+        },
+      },
+    ]);
+
+    await expect(signInWithGoogle()).resolves.toEqual({
+      status: 'unverified',
+      email: 'user@gmail.com',
+    });
+    expect(useAppStore.getState().isAuthenticated).toBe(false);
   });
 
   it.each(['cancel', 'dismiss'] as const)(

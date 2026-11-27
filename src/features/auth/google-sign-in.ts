@@ -3,7 +3,10 @@ import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 
 import { env } from '@/config/env';
-import { saveAuthTokens } from '@/lib/auth-token-store';
+import { ApiError } from '@/lib/api-client';
+
+import { exchangeGoogleHandoff } from './api';
+import { beginSession } from './session';
 
 const REDIRECT_PATH = 'auth/google';
 
@@ -11,7 +14,9 @@ const VERIFIER_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0
 const VERIFIER_LENGTH = 64;
 
 export type GoogleSignInResult =
-  { status: 'success'; isNewUser: boolean } | { status: 'cancelled' };
+  | { status: 'success'; isNewUser: boolean }
+  | { status: 'unverified'; email: string }
+  | { status: 'cancelled' };
 
 export class GoogleSignInError extends Error {
   constructor(message: string) {
@@ -20,14 +25,20 @@ export class GoogleSignInError extends Error {
   }
 }
 
-type ExchangeResponse = {
-  userId: string;
-  email: string;
-  accessToken: string;
-  refreshToken: string;
-  expiresIn: number;
-  isNewUser: boolean;
-};
+/** Swaps the handoff code for tokens, then starts the session like an email sign in. */
+async function completeSignIn(handoff: string, codeVerifier: string) {
+  try {
+    const session = await exchangeGoogleHandoff({ handoff, codeVerifier });
+
+    return { session, state: await beginSession(session) };
+  } catch (error) {
+    if (error instanceof ApiError && (error.code === 'NETWORK' || error.code === 'TIMEOUT')) {
+      throw new GoogleSignInError(error.message);
+    }
+
+    throw new GoogleSignInError('Google sign-in could not be completed. Please try again.');
+  }
+}
 
 export function googleRedirectUri(): string {
   return Linking.createURL(REDIRECT_PATH);
@@ -79,25 +90,6 @@ function apiUrl(path: string): string {
   return `${env.EXPO_PUBLIC_API_BASE_URL.replace(/\/$/, '')}${path}`;
 }
 
-async function exchangeHandoff(handoff: string, codeVerifier: string): Promise<ExchangeResponse> {
-  let response: Response;
-  try {
-    response = await fetch(apiUrl('/api/v1/auth/google/mobile/exchange'), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Client-Type': 'mobile' },
-      body: JSON.stringify({ handoff, codeVerifier }),
-    });
-  } catch {
-    throw new GoogleSignInError('Could not reach GridX. Check your connection and try again.');
-  }
-
-  if (!response.ok) {
-    throw new GoogleSignInError('Google sign-in could not be completed. Please try again.');
-  }
-
-  return (await response.json()) as ExchangeResponse;
-}
-
 export async function signInWithGoogle(): Promise<GoogleSignInResult> {
   const redirectUri = googleRedirectUri();
 
@@ -124,8 +116,11 @@ export async function signInWithGoogle(): Promise<GoogleSignInResult> {
     throw new GoogleSignInError('Google sign-in failed. Please try again.');
   }
 
-  const session = await exchangeHandoff(handoff, codeVerifier);
-  await saveAuthTokens({ accessToken: session.accessToken, refreshToken: session.refreshToken });
+  const { session, state } = await completeSignIn(handoff, codeVerifier);
+
+  if (state === 'unverified') {
+    return { status: 'unverified', email: session.email };
+  }
 
   return { status: 'success', isNewUser: session.isNewUser };
 }

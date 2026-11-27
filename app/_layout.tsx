@@ -16,6 +16,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 import '../global.css';
 
+import { useSessionBootstrap } from '@/features/auth/use-session-bootstrap';
 import { useTheme } from '@/shared/design-system/hooks/use-theme';
 import { QueryProvider } from '@/providers';
 
@@ -37,15 +38,18 @@ export default function RootLayout() {
     RobotoMono_700Bold,
   });
 
-  const fontsReady = fontsLoaded || fontError !== null;
+  // restores the saved session, so signed-in users do not flash the splash screen
+  const sessionReady = useSessionBootstrap();
+
+  const appReady = (fontsLoaded || fontError !== null) && sessionReady;
 
   useEffect(() => {
-    if (fontsReady) {
+    if (appReady) {
       void SplashScreen.hideAsync();
     }
-  }, [fontsReady]);
+  }, [appReady]);
 
-  if (!fontsReady) {
+  if (!appReady) {
     return null;
   }
 

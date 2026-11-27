@@ -6,7 +6,6 @@ export const signInContent = {
   passwordLabel: 'Password',
   passwordPlaceholder: 'Enter your password',
   forgotPassword: 'Forgot password?',
-  rememberMe: 'Remember me for 30 days',
   submit: 'Sign in',
   divider: 'or continue with',
   footerPrompt: 'Don’t have an account?',
@@ -39,6 +38,9 @@ export const signUpContent = {
   footerAction: 'Sign in',
 };
 
+/** Wait time before another verification code can be requested. */
+export const RESEND_COOLDOWN_SECONDS = 60;
+
 export const verifyEmailContent = {
   title: 'Verify your email',
   subtitlePrefix: 'We sent a 6-digit code to ',
@@ -47,7 +49,9 @@ export const verifyEmailContent = {
   submit: 'Verify email',
   resendPrompt: 'Didn’t get a code?',
   resendAction: 'Resend code',
-  resendNotice: 'A new code will be sent when email delivery is connected.',
+  resendingAction: 'Sending…',
+  resendCooldownAction: (seconds: number) => `Resend code in ${seconds}s`,
+  resendNotice: 'We sent a new code to your email address.',
   footerPrompt: 'Wrong email?',
   footerAction: 'Change email address',
 };
@@ -66,33 +70,20 @@ export const kycContent = {
   nicPlaceholder: '123456789V or 200012345678',
   dateOfBirthLabel: 'Date of birth',
   dateOfBirthPlaceholder: 'DD / MM / YYYY',
-  nationalityLabel: 'Nationality',
-  nationalityPlaceholder: 'Select',
-  documentsLabel: 'Documents',
+  documentsLabel: 'Document',
   documentsHint: `JPG, PNG or PDF · max ${KYC_MAX_FILE_SIZE_MB} MB`,
   browse: 'Browse',
   replace: 'Replace',
   pickerError: 'Could not open the file picker. Please try again.',
   documentRequired: 'Upload this document',
   submit: 'Submit for verification',
+  submitting: 'Submitting…',
+  uploadError: 'We couldn’t upload your document. Please try again.',
   skip: 'Skip for now, verify later in Settings',
 };
 
 export const KYC_DOCUMENTS = [
-  { key: 'idFront', title: 'NIC ID — front', description: 'Name and ID number visible' },
-  { key: 'idBack', title: 'NIC ID — back', description: 'Barcode side visible' },
-  { key: 'selfie', title: 'Selfie holding your NIC ID', description: 'Face and ID both visible' },
-] as const;
-
-// TODO(api): load from the countries endpoint once it exists.
-export const NATIONALITY_OPTIONS = [
-  { label: 'Sri Lankan', value: 'LK' },
-  { label: 'Indian', value: 'IN' },
-  { label: 'Maldivian', value: 'MV' },
-  { label: 'British', value: 'GB' },
-  { label: 'Australian', value: 'AU' },
-  { label: 'American', value: 'US' },
-  { label: 'Other', value: 'OTHER' },
+  { key: 'nic', title: 'NIC ID', description: 'Name and ID number visible' },
 ] as const;
 
 export const smartMeterContent = {

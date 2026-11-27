@@ -10,9 +10,10 @@ import { AuthFooter } from './components/AuthFooter';
 import { AuthGoogleButton } from './components/AuthGoogleButton';
 import { AuthHeader } from './components/AuthHeader';
 import { AuthLayout } from './components/AuthLayout';
+import { TermsCheckbox } from './components/TermsCheckbox';
 import { PasswordField } from './components/PasswordField';
 import { StepIndicator } from './components/StepIndicator';
-import { TermsCheckbox } from './components/TermsCheckbox';
+import { AuthMessage } from './components/AuthMessage';
 import { AUTH_TOTAL_STEPS, signUpContent } from './constants';
 import { useSignUp } from './hooks';
 
@@ -90,18 +91,19 @@ export default function SignUpScreen() {
           textContentType="newPassword"
           error={form.errors.confirmation}
         />
+
+        <TermsCheckbox
+          checked={form.accepted}
+          onChange={form.setAccepted}
+          onTermsPress={showTerms}
+          onPrivacyPress={showPrivacy}
+          error={form.errors.terms}
+        />
       </View>
 
-      <TermsCheckbox
-        checked={form.accepted}
-        onChange={form.setAccepted}
-        onTermsPress={showTerms}
-        onPrivacyPress={showPrivacy}
-        error={form.errors.terms}
-      />
-
+      <AuthMessage message={form.formError} />
       <View className="gap-5">
-        <AuthButton title={signUpContent.submit} onPress={form.submit} />
+        <AuthButton title={signUpContent.submit} disabled={form.submitting} onPress={form.submit} />
 
         <LabelDivider label={signUpContent.divider} />
 

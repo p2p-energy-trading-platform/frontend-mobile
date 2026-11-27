@@ -227,8 +227,7 @@ describe('getKycErrors', () => {
     fullName: 'Jane Doe',
     nic: '199012345678',
     dateOfBirth: '15/03/1995',
-    nationality: 'LK',
-    documents: { idFront: document, idBack: document, selfie: document },
+    documents: { nic: document },
   };
 
   it('returns no errors for valid details', () => {
@@ -253,10 +252,8 @@ describe('getKycErrors', () => {
     ).toBeUndefined();
   });
 
-  it('requires all three documents', () => {
-    expect(getKycErrors({ ...valid, documents: { idFront: document } }).documents).toBe(
-      'Upload all three documents',
-    );
+  it('requires the NIC document', () => {
+    expect(getKycErrors({ ...valid, documents: {} }).documents).toBe('Upload your NIC ID');
   });
 });
 
