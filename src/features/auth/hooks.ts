@@ -9,9 +9,17 @@ import {
   verifyEmailContent,
 } from './constants';
 import { getAuthErrorMessage } from './errors';
+import { KycUploadError, submitKycWithDocument } from './kyc-api';
 import { pickDocument } from './pick-document';
 import { beginSession, beginSignUp, markEmailVerified, restoreSession } from './session';
-import type { KycDocumentKey, KycDocuments, KycErrors, MeterType, SignUpErrors } from './types';
+import type {
+  KycDocumentKey,
+  KycDocuments,
+  KycErrors,
+  MeterType,
+  PickedDocument,
+  SignUpErrors,
+} from './types';
 import { useCountdown } from './components/use-countdown';
 import {
   formatDateInput,
@@ -21,6 +29,7 @@ import {
   getSignUpErrors,
   isValidOtp,
   getSmartMeterErrors,
+  toIsoDate,
 } from './utils';
 import { ApiError } from '@/lib/api-client';
 import { useAppStore } from '@/store/app-store';
@@ -310,17 +319,19 @@ export function useKyc() {
   const [fullName, setFullName] = useState('');
   const [nic, setNic] = useState('');
   const [dateOfBirth, setDateOfBirthValue] = useState('');
-  const [nationality, setNationality] = useState('');
   const [documents, setDocuments] = useState<KycDocuments>({});
   const [pickErrors, setPickErrors] = useState<Partial<Record<KycDocumentKey, string>>>({});
   const [touched, setTouched] = useState<Partial<Record<KycField, boolean>>>({});
   const [submitted, setSubmitted] = useState(false);
   const [picking, setPicking] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string>();
 
   // a ref blocks a second tap in the same frame, before `picking` has re-rendered
   const pickingRef = useRef(false);
+  const submittingRef = useRef(false);
 
-  const allErrors = getKycErrors({ fullName, nic, dateOfBirth, nationality, documents });
+  const allErrors = getKycErrors({ fullName, nic, dateOfBirth, documents });
 
   // a field shows its error after it was left once, or after the first submit attempt
   const showError = (field: KycField) =>
@@ -330,7 +341,6 @@ export function useKyc() {
     fullName: showError('fullName'),
     nic: showError('nic'),
     dateOfBirth: showError('dateOfBirth'),
-    nationality: submitted ? allErrors.nationality : undefined,
   };
 
   const documentErrors = Object.fromEntries(
@@ -374,13 +384,44 @@ export function useKyc() {
     }
   };
 
+  const sendKyc = async (document: PickedDocument, isoDateOfBirth: string) => {
+    if (submittingRef.current) return;
+
+    submittingRef.current = true;
+    setSubmitting(true);
+    setFormError(undefined);
+
+    try {
+      const submission = await submitKycWithDocument(
+        { fullName: fullName.trim(), nicNumber: nic, dateOfBirth: isoDateOfBirth },
+        document,
+      );
+
+      const { user, setUser } = useAppStore.getState();
+      if (user) setUser({ ...user, kycStatus: submission.state });
+
+      router.push('/smart-meter');
+    } catch (error) {
+      setFormError(
+        error instanceof KycUploadError
+          ? kycContent.uploadError
+          : getAuthErrorMessage(error, 'submitKyc'),
+      );
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
+    }
+  };
+
   const submit = () => {
     setSubmitted(true);
+    setFormError(undefined);
 
-    if (Object.keys(allErrors).length > 0) return;
+    const isoDateOfBirth = toIsoDate(dateOfBirth);
 
-    // TODO(api): upload the documents and call POST /api/v1/kyc with the form values first.
-    router.push('/smart-meter');
+    if (Object.keys(allErrors).length > 0 || !documents.nic || !isoDateOfBirth) return;
+
+    void sendKyc(documents.nic, isoDateOfBirth);
   };
 
   const skip = () => router.push('/smart-meter');
@@ -392,12 +433,12 @@ export function useKyc() {
     setNic: (value: string) => setNic(value.replace(/\s/g, '').toUpperCase()),
     dateOfBirth,
     setDateOfBirth,
-    nationality,
-    setNationality,
     documents,
     documentErrors,
     errors,
     picking,
+    submitting,
+    formError,
     touch,
     browse,
     submit,
